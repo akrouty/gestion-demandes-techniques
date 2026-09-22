@@ -1,13 +1,25 @@
-# Référence du projet
+# PROJECT_TRUTH
 
-## État initial
+## Phase actuelle
 
-Le dépôt contient uniquement la structure documentaire et les emplacements du backend et du frontend.
-Cette initialisation n’ajoute aucune décision fonctionnelle ou d’architecture.
+Analyse fonctionnelle et conception UML.
 
-## Référence des validations
+## Implémenté et vérifié
 
-Les décisions fonctionnelles validées sont consignées dans la conversation « 01 — Analyse fonctionnelle & UML » :
-chatgpt-conversation://6ab150dc-95ac-83ea-8a26-0da3354520bf
+- Rien pour le moment.
 
-Leur transcription détaillée dans ce document reste à réaliser à partir des validations existantes.
+## En cours
+
+- Diagramme Use Case V1.
+
+## Prévu
+
+- Backend Spring Boot.
+- Frontend Angular.
+- Authentification et RBAC.
+- Gestion des demandes.
+- Assistance IA.
+
+## Limites actuelles
+
+- Aucun module applicatif encore implémenté.
