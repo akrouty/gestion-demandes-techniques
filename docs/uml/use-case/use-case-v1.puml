@@ -1,0 +1,56 @@
+@startuml
+
+' ============================================================
+' Diagramme de cas d'utilisation global - V1
+' Statut : DRAFT
+' Ne pas considérer cette version comme finale avant validation.
+' ============================================================
+
+title Diagramme de cas d'utilisation global - V1\nDRAFT
+
+left to right direction
+
+actor "Responsable technique" as RT
+actor "Agent technique" as AT
+actor "Administrateur" as ADMIN
+
+rectangle "Système de gestion des demandes techniques" {
+
+    usecase "Enregistrer\nune demande" as UC_REGISTER
+    usecase "Qualifier\nune demande" as UC_QUALIFY
+    usecase "Analyser avec\nl'IA" as UC_AI
+
+    usecase "Gérer l'affectation\nd'une demande" as UC_ASSIGN
+    usecase "Suivre les\ndemandes" as UC_TRACK
+    usecase "Examiner une\ndemande résolue" as UC_REVIEW
+    usecase "Annuler une\ndemande" as UC_CANCEL
+
+    usecase "Consulter ses\ndemandes affectées" as UC_ASSIGNED
+    usecase "Traiter une\ndemande" as UC_PROCESS
+
+    usecase "Gérer les\nutilisateurs" as UC_USERS
+    usecase "Gérer les\nrôles métier" as UC_ROLES
+}
+
+' Responsable technique
+RT --> UC_REGISTER
+RT --> UC_QUALIFY
+RT --> UC_AI
+RT --> UC_ASSIGN
+RT --> UC_TRACK
+RT --> UC_REVIEW
+RT --> UC_CANCEL
+
+' Agent technique
+AT --> UC_ASSIGNED
+AT --> UC_PROCESS
+
+' Administrateur
+ADMIN --> UC_USERS
+ADMIN --> UC_ROLES
+
+' Relations entre cas d'utilisation
+UC_REGISTER ..> UC_QUALIFY : <<include>>
+UC_AI ..> UC_QUALIFY : <<extend>>
+
+@enduml
