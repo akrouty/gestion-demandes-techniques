@@ -9,6 +9,9 @@
 title Diagramme de cas d'utilisation global - V1\nDRAFT
 
 left to right direction
+skinparam linetype polyline
+skinparam nodesep 25
+skinparam ranksep 35
 
 actor "Responsable technique" as RT
 actor "Agent technique" as AT
@@ -16,9 +19,13 @@ actor "Administrateur" as ADMIN
 
 rectangle "Système de gestion des demandes techniques" {
 
-    usecase "Enregistrer\nune demande" as UC_REGISTER
-    usecase "Qualifier\nune demande" as UC_QUALIFY
-    usecase "Analyser avec\nl'IA" as UC_AI
+    usecase "Se connecter" as UC_LOGIN
+
+    together {
+        usecase "Enregistrer\nune demande" as UC_REGISTER
+        usecase "Qualifier\nune demande" as UC_QUALIFY
+        usecase "Analyser avec\nl'IA" as UC_AI
+    }
 
     usecase "Gérer l'affectation\nd'une demande" as UC_ASSIGN
     usecase "Suivre les\ndemandes" as UC_TRACK
@@ -33,24 +40,27 @@ rectangle "Système de gestion des demandes techniques" {
 }
 
 ' Responsable technique
-RT --> UC_REGISTER
-RT --> UC_QUALIFY
-RT --> UC_AI
-RT --> UC_ASSIGN
-RT --> UC_TRACK
-RT --> UC_REVIEW
-RT --> UC_CANCEL
+RT -- UC_LOGIN
+RT -- UC_REGISTER
+RT -- UC_QUALIFY
+RT -- UC_AI
+RT -- UC_ASSIGN
+RT -- UC_TRACK
+RT -- UC_REVIEW
+RT -- UC_CANCEL
 
 ' Agent technique
-AT --> UC_ASSIGNED
-AT --> UC_PROCESS
+AT -- UC_LOGIN
+AT -- UC_ASSIGNED
+AT -- UC_PROCESS
 
 ' Administrateur
-ADMIN --> UC_USERS
-ADMIN --> UC_ROLES
+ADMIN -- UC_LOGIN
+ADMIN -- UC_USERS
+ADMIN -- UC_ROLES
 
 ' Relations entre cas d'utilisation
-UC_REGISTER ..> UC_QUALIFY : <<include>>
-UC_AI ..> UC_QUALIFY : <<extend>>
+UC_REGISTER .[norank].> UC_QUALIFY : <<include>>
+UC_AI .[norank].> UC_QUALIFY : <<extend>>
 
 @enduml

@@ -1,0 +1,108 @@
+@startuml
+
+' ============================================================
+' Diagramme d'activité - Cycle de vie d'une demande - V1
+' Statut : DRAFT
+' Ne pas considérer cette version comme finale avant validation.
+' ============================================================
+
+title Cycle de vie d'une demande - V1\nDRAFT
+
+skinparam shadowing false
+
+|Responsable technique|
+start
+:Renseigner les informations\nde la demande;
+if (Utiliser l'IA ?) then (Oui)
+  :Déclencher l'analyse IA;
+  |Système|
+  if (Analyse IA réussie ?) then (Oui)
+    :Proposer une catégorie\net une priorité;
+  else (Non)
+  endif
+  |Responsable technique|
+else (Non)
+endif
+:Définir ou valider la catégorie\net la priorité;
+:Enregistrer la demande;
+
+|Système|
+:Définir le statut\n**NOUVELLE**;
+
+|Responsable technique|
+
+if (Annuler la demande ?) then (Oui)
+  :Renseigner le motif d'annulation;
+  |Système|
+  :Définir le statut\n**ANNULEE**;
+  stop
+else (Non)
+  |Responsable technique|
+  :Affecter la demande\nà un Agent technique;
+  |Système|
+  :Définir le statut\n**ASSIGNEE**;
+endif
+
+|Responsable technique|
+if (Annuler la demande ?) then (Oui)
+  :Renseigner le motif d'annulation;
+  |Système|
+  :Définir le statut\n**ANNULEE**;
+  stop
+else (Non)
+  |Agent technique|
+  :Commencer le traitement;
+  |Système|
+  :Définir le statut\n**EN_COURS**;
+endif
+
+repeat
+  |Responsable technique|
+  if (Réaffecter la demande ?) then (Oui)
+    :Réaffecter la demande\nà un autre Agent technique;
+    |Système|
+    :Définir le statut\n**ASSIGNEE**;
+
+    |Responsable technique|
+    if (Annuler la demande ?) then (Oui)
+      :Renseigner le motif d'annulation;
+      |Système|
+      :Définir le statut\n**ANNULEE**;
+      stop
+    else (Non)
+      |Agent technique|
+      :Commencer le traitement;
+      |Système|
+      :Définir le statut\n**EN_COURS**;
+    endif
+  else (Non)
+  endif
+
+  |Responsable technique|
+  if (Annuler la demande ?) then (Oui)
+    :Renseigner le motif d'annulation;
+    |Système|
+    :Définir le statut\n**ANNULEE**;
+    stop
+  else (Non)
+    |Agent technique|
+    :Poursuivre ou reprendre le traitement;
+    :Renseigner la description\ndu traitement et la solution;
+    :Déclarer la demande résolue;
+    |Système|
+    :Définir le statut\n**RESOLUE**;
+  endif
+
+  |Responsable technique|
+  :Examiner la demande résolue;
+
+  |Système|
+  backward :Définir le statut\n**EN_COURS**;
+  |Responsable technique|
+repeat while (Résolution acceptée ?) is (Non) not (Oui)
+
+|Système|
+:Définir le statut\n**CLOTUREE**;
+stop
+
+@enduml
