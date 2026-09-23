@@ -2,11 +2,10 @@
 
 ' ============================================================
 ' Diagramme d'activité - Cycle de vie d'une demande - V1
-' Statut : DRAFT
-' Ne pas considérer cette version comme finale avant validation.
+' Statut : VALIDATED
 ' ============================================================
 
-title Cycle de vie d'une demande - V1\nDRAFT
+title Cycle de vie d'une demande - V1\nVALIDATED
 
 skinparam shadowing false
 

@@ -1,0 +1,25 @@
+@startuml
+
+' Statut : DRAFT
+title Examiner une demande résolue - V1\nDRAFT
+
+actor "Responsable technique" as RT
+participant "Système de gestion\ndes demandes techniques" as SYSTEM
+actor "Agent technique" as AGENT
+
+RT -> SYSTEM : Examiner la demande RESOLUE
+SYSTEM --> RT : Présenter la demande et sa solution
+
+alt Résolution acceptée
+  RT -> SYSTEM : Accepter la résolution
+  SYSTEM -> SYSTEM : Définir le statut CLOTUREE
+  SYSTEM --> RT : Demande clôturée
+else Résolution refusée
+  RT -> SYSTEM : Refuser la résolution
+  SYSTEM -> SYSTEM : Définir le statut EN_COURS
+  opt Reprise du traitement
+    AGENT -> SYSTEM : Reprendre le traitement
+  end
+end
+
+@enduml

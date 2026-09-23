@@ -4,22 +4,20 @@
 
 Analyse fonctionnelle et conception UML.
 
-## Implémenté et vérifié
+## État des livrables
 
-- Rien pour le moment.
+- Périmètre fonctionnel V1 : validé.
+- Diagramme Use Case global : validé.
+- Diagramme d'activité du cycle de vie : validé.
+- Fiches détaillées des cas d'utilisation : DRAFT.
+- Diagrammes de séquence : DRAFT.
+- Diagramme de classes métier : DRAFT.
 
-## En cours
+## État de l'implémentation
 
-- Diagramme Use Case V1.
-
-## Prévu
-
-- Backend Spring Boot.
-- Frontend Angular.
-- Authentification et RBAC.
-- Gestion des demandes.
-- Assistance IA.
-
-## Limites actuelles
-
-- Aucun module applicatif encore implémenté.
+- Backend : non commencé.
+- Frontend : non commencé.
+- Base de données : non implémentée.
+- Sécurité JWT/RBAC : prévue, non implémentée.
+- Module IA : prévu dans le périmètre fonctionnel, non implémenté.
+- Architecture IA : non encore décidée.

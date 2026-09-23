@@ -1,0 +1,26 @@
+@startuml
+
+' Statut : DRAFT
+title Traiter et résoudre une demande - V1\nDRAFT
+
+actor "Agent technique" as AGENT
+participant "Système de gestion\ndes demandes techniques" as SYSTEM
+
+AGENT -> SYSTEM : Consulter ses demandes affectées
+SYSTEM --> AGENT : Présenter les demandes affectées
+AGENT -> SYSTEM : Consulter la demande
+
+alt Demande ASSIGNEE
+  AGENT -> SYSTEM : Commencer le traitement
+  SYSTEM -> SYSTEM : Définir le statut EN_COURS
+else Demande déjà EN_COURS
+  AGENT -> SYSTEM : Poursuivre ou reprendre le traitement
+end
+
+AGENT -> SYSTEM : Renseigner la description du traitement
+AGENT -> SYSTEM : Renseigner la solution
+AGENT -> SYSTEM : Déclarer la demande résolue
+SYSTEM -> SYSTEM : Définir le statut RESOLUE
+SYSTEM --> AGENT : Demande déclarée résolue
+
+@enduml

@@ -1,0 +1,24 @@
+@startuml
+
+' Statut : DRAFT
+title Analyser une demande avec l'IA - V1\nDRAFT
+
+actor "Responsable technique" as RT
+participant "Système de gestion\ndes demandes techniques" as SYSTEM
+
+RT -> SYSTEM : Demander « Analyser avec l'IA »
+SYSTEM -> SYSTEM : Analyser la demande
+
+alt Analyse réussie
+  SYSTEM --> RT : Proposer une catégorie et une priorité
+  alt Propositions validées
+    RT -> SYSTEM : Valider la catégorie et la priorité
+  else Propositions modifiées
+    RT -> SYSTEM : Modifier puis valider la catégorie et la priorité
+  end
+else Analyse échouée ou indisponible
+  SYSTEM --> RT : Permettre la qualification manuelle
+  RT -> SYSTEM : Définir et valider la catégorie et la priorité
+end
+
+@enduml

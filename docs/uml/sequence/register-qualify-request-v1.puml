@@ -1,0 +1,26 @@
+@startuml
+
+' Statut : DRAFT
+title Enregistrer et qualifier une demande - V1\nDRAFT
+
+actor "Responsable technique" as RT
+participant "Système de gestion\ndes demandes techniques" as SYSTEM
+
+RT -> SYSTEM : Renseigner les informations de la demande
+RT -> SYSTEM : Rechercher et sélectionner un client existant
+
+alt Client existant
+  SYSTEM --> RT : Client sélectionné
+else Client non enregistré
+  RT -> SYSTEM : Renseigner les informations minimales du client
+  SYSTEM -> SYSTEM : Conserver le nouveau client
+end
+
+RT -> SYSTEM : Définir ou valider la catégorie
+RT -> SYSTEM : Définir ou valider la priorité
+RT -> SYSTEM : Enregistrer la demande
+SYSTEM -> SYSTEM : Conserver la demande
+SYSTEM -> SYSTEM : Définir le statut NOUVELLE
+SYSTEM --> RT : Demande enregistrée
+
+@enduml

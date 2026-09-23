@@ -1,0 +1,26 @@
+@startuml
+
+' Statut : DRAFT
+title Affecter et réaffecter une demande - V1\nDRAFT
+
+actor "Responsable technique" as RT
+participant "Système de gestion\ndes demandes techniques" as SYSTEM
+actor "Agent technique" as AGENT
+actor "Nouvel Agent technique" as NEW_AGENT
+
+RT -> SYSTEM : Affecter la demande à l'Agent technique
+SYSTEM -> SYSTEM : Conserver l'affectation
+SYSTEM -> SYSTEM : Définir le statut ASSIGNEE
+
+AGENT -> SYSTEM : Commencer le traitement
+SYSTEM -> SYSTEM : Définir le statut EN_COURS
+
+opt Réaffectation pendant EN_COURS
+  RT -> SYSTEM : Réaffecter la demande au nouvel Agent technique
+  SYSTEM -> SYSTEM : Remplacer l'Agent affecté
+  SYSTEM -> SYSTEM : Définir le statut ASSIGNEE
+  NEW_AGENT -> SYSTEM : Commencer le traitement
+  SYSTEM -> SYSTEM : Définir le statut EN_COURS
+end
+
+@enduml

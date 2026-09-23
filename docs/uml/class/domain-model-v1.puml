@@ -1,0 +1,71 @@
+@startuml
+
+' Statut : DRAFT
+title Modèle conceptuel métier - V1\nDRAFT
+
+hide methods
+skinparam classAttributeIconSize 0
+
+class Utilisateur
+class Client
+class DemandeTechnique
+class HistoriqueDemande
+class AnalyseIA
+
+enum Role {
+  RESPONSABLE_TECHNIQUE
+  AGENT_TECHNIQUE
+  ADMINISTRATEUR
+}
+
+enum StatutDemande {
+  NOUVELLE
+  ASSIGNEE
+  EN_COURS
+  RESOLUE
+  CLOTUREE
+  ANNULEE
+}
+
+enum Priorite {
+  BASSE
+  MOYENNE
+  HAUTE
+  CRITIQUE
+}
+
+enum Categorie {
+  Étude de dangers
+  Analyse de risques industriels
+  Protection incendie
+  Note de calcul
+  Dossier technique
+  Assistance réglementaire
+  Autre
+}
+
+Utilisateur "*" -- "*" Role : possède
+
+Client "1" -- "0..*" DemandeTechnique : concerne
+Utilisateur "1" -- "0..*" DemandeTechnique : crée
+Utilisateur "0..1" -- "0..*" DemandeTechnique : est affecté à
+
+Categorie "1" -- "0..*" DemandeTechnique : catégorise
+Priorite "1" -- "0..*" DemandeTechnique : priorise
+StatutDemande "1" -- "0..*" DemandeTechnique : décrit l'état
+
+DemandeTechnique "1" -- "0..*" HistoriqueDemande : possède
+DemandeTechnique -- AnalyseIA : peut faire l'objet de
+AnalyseIA --> Categorie : propose
+AnalyseIA --> Priorite : propose
+
+note "Le créateur possède le rôle\nRESPONSABLE_TECHNIQUE." as CreatorRule
+CreatorRule .. DemandeTechnique
+
+note "L'utilisateur affecté, s'il existe, possède le rôle\nAGENT_TECHNIQUE. Une demande a au maximum\nun Agent technique affecté à un instant donné." as AssignmentRule
+AssignmentRule .. DemandeTechnique
+
+note "Une proposition IA ne modifie jamais seule\nla catégorie ou la priorité de la demande." as AiRule
+AiRule .. AnalyseIA
+
+@enduml
