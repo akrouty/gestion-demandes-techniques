@@ -14,7 +14,7 @@ Conception technique en cours.
 - Diagramme de classes métier : validé.
 - Conventions de conception technique : DRAFT.
 - ADR-001 architecture applicative V1 : DRAFT.
-- ADR-002 architecture backend V1 : DRAFT.
+- ADR-002 architecture backend V1 : validé.
 - Diagramme de composants V1 : validé.
 - Diagramme de classes de conception backend V1 : DRAFT (préliminaire, non validable tant que les conceptions backend, persistance, API REST et sécurité ne sont pas suffisamment définies).
 
@@ -31,7 +31,7 @@ Conception technique en cours.
 - Sécurité : Spring Security, JWT, RBAC et contrôles métier complémentaires dans la couche application/service.
 - IA : frontière architecturale définie par un port abstrait réalisé par un adaptateur ; fonctionnement non bloquant et validation humaine obligatoire.
 
-Ces décisions portent sur l'architecture générale. Les classes techniques exactes et leurs dépendances détaillées ne sont pas encore décidées.
+Ces décisions portent sur l'architecture générale et l'architecture backend. Les classes techniques exactes et leurs dépendances détaillées ne sont pas encore décidées.
 
 ## État de l'implémentation
 
