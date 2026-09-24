@@ -14,13 +14,19 @@ Conception technique en cours.
 - Diagramme de classes métier : validé.
 - Conventions de conception technique : DRAFT.
 - ADR-001 architecture applicative V1 : DRAFT.
+- ADR-002 architecture backend V1 : DRAFT.
 - Diagramme de composants V1 : validé.
 - Diagramme de classes de conception backend V1 : DRAFT (préliminaire, non validable tant que les conceptions backend, persistance, API REST et sécurité ne sont pas suffisamment définies).
 
 ## Décisions d'architecture retenues
 
 - Frontend : Angular SPA.
-- Backend : API REST Spring Boot sous forme de monolithe modulaire organisé par domaines fonctionnels et responsabilités internes.
+- Backend : API REST Spring Boot sous forme de monolithe modulaire organisé module-first autour de `request`, `identity / administration`, `security` et `ai`.
+- Responsabilités internes du backend : `presentation`, `application`, `domain` et `persistence`, sans figer les packages Java exacts.
+- La responsabilité `application` orchestre les cas d'utilisation et porte les transactions ; le `domain` porte les invariants intrinsèques.
+- Les dépendances inter-modules passent par les responsabilités publiques des modules fournisseurs, sans accès direct à leurs repositories internes.
+- Une modification métier et son historisation associée sont atomiques.
+- Le cycle de vie utilise un enum de statut, des opérations métier explicites et des validations explicites, sans State Pattern.
 - Persistance : PostgreSQL avec JPA/Hibernate et Spring Data JPA ; DTO séparés des entités JPA.
 - Sécurité : Spring Security, JWT, RBAC et contrôles métier complémentaires dans la couche application/service.
 - IA : frontière architecturale définie par un port abstrait réalisé par un adaptateur ; fonctionnement non bloquant et validation humaine obligatoire.
