@@ -1,0 +1,41 @@
+@startuml
+
+' Statut : DRAFT
+' Niveau : conception logique
+' Objectif : représenter l'architecture logique décidée de l'application
+title Diagramme de composants applicatifs - V1\nDRAFT\nNiveau : conception logique
+
+top to bottom direction
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam componentStyle uml2
+skinparam linetype polyline
+skinparam nodesep 45
+skinparam ranksep 55
+
+rectangle "Système de gestion des demandes techniques" as SYSTEM {
+  component "Angular SPA" as SPA
+
+  component "Backend Spring Boot\n« monolithe modulaire »" as BACKEND {
+    component "Request" as REQUEST
+    component "Identity /\nAdministration" as IDENTITY
+    component "Security" as SECURITY
+    component "AI" as AI
+    interface "Contrat abstrait\nd'analyse IA" as AI_CONTRACT
+  }
+
+  database "PostgreSQL" as POSTGRES
+}
+
+SPA ..> BACKEND : utilise l'API REST
+
+SECURITY ..> IDENTITY : informations utilisateur et rôles
+REQUEST ..> IDENTITY : utilisateurs liés aux demandes
+REQUEST ..> AI_CONTRACT : utilise l'assistance IA
+AI ..|> AI_CONTRACT : réalise
+
+REQUEST ..> POSTGRES : données des demandes
+IDENTITY ..> POSTGRES : utilisateurs et rôles
+
+@enduml
