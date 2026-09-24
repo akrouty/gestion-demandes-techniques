@@ -2,8 +2,9 @@
 
 ' Statut : DRAFT
 ' Niveau : conception technique préliminaire
+' Validation : non validable à cette étape ; reconstruction après les conceptions backend, persistance, API REST et sécurité
 ' Objectif : représenter les responsabilités backend déjà décidées sans figer les classes d'implémentation
-title Diagramme de classes de conception backend - V1\nDRAFT\nNiveau : conception technique préliminaire
+title Diagramme de classes de conception backend - V1\nDRAFT - préliminaire, non validable à cette étape
 
 top to bottom direction
 skinparam monochrome true

@@ -15,7 +15,7 @@ Conception technique en cours.
 - Conventions de conception technique : DRAFT.
 - ADR-001 architecture applicative V1 : DRAFT.
 - Diagramme de composants V1 : DRAFT (essai non validé).
-- Diagramme de classes de conception backend V1 : DRAFT (essai non validé).
+- Diagramme de classes de conception backend V1 : DRAFT (préliminaire, non validé).
 
 ## Décisions d'architecture retenues
 
