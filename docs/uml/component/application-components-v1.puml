@@ -1,38 +1,45 @@
 @startuml
 
-' Statut : DRAFT
+' Statut : VALIDATED
 ' Niveau : conception logique
-' Objectif : représenter l'architecture logique décidée de l'application
-title Diagramme de composants applicatifs - V1\nDRAFT\nNiveau : conception logique
+' Type de vue : architecture logique limitée
+' Objectif : montrer les composants logiques décidés et leurs dépendances importantes
+title Diagramme de composants applicatifs - V1\nVALIDATED\nVue d'architecture logique limitée
 
-top to bottom direction
+left to right direction
 skinparam monochrome true
 skinparam shadowing false
 skinparam backgroundColor white
 skinparam componentStyle uml2
-skinparam linetype polyline
-skinparam nodesep 45
-skinparam ranksep 55
+skinparam linetype ortho
+skinparam nodesep 50
+skinparam ranksep 65
 
 rectangle "Système de gestion des demandes techniques" as SYSTEM {
   component "Angular SPA" as SPA
 
-  component "Backend Spring Boot\n« monolithe modulaire »" as BACKEND {
-    component "Request" as REQUEST
-    component "Identity /\nAdministration" as IDENTITY
-    component "Security" as SECURITY
+  rectangle "Backend Spring Boot — monolithe modulaire\n« frontière logique »" as BACKEND {
+    together {
+      component "Security" as SECURITY
+      component "Request" as REQUEST
+      component "Identity / Administration" as IDENTITY
+    }
+    interface "Contrat d'analyse IA" as AI_CONTRACT
     component "AI" as AI
-    interface "Contrat abstrait\nd'analyse IA" as AI_CONTRACT
   }
 
-  database "PostgreSQL" as POSTGRES
+  database "PostgreSQL\n« SGBD / système de persistance »" as POSTGRES
 }
 
-SPA ..> BACKEND : utilise l'API REST
+SPA -[hidden]right- SECURITY
+BACKEND -[hidden]down- POSTGRES
 
-SECURITY ..> IDENTITY : informations utilisateur et rôles
-REQUEST ..> IDENTITY : utilisateurs liés aux demandes
-REQUEST ..> AI_CONTRACT : utilise l'assistance IA
+SPA ..> REQUEST : fonctions métier
+SPA ..> IDENTITY : administration
+
+SECURITY ..> IDENTITY : identités et rôles
+REQUEST ..> IDENTITY : utilisateurs liés
+REQUEST ..> AI_CONTRACT : assistance IA
 AI ..|> AI_CONTRACT : réalise
 
 REQUEST ..> POSTGRES : données des demandes
