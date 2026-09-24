@@ -14,8 +14,8 @@ Conception technique en cours.
 - Diagramme de classes métier : validé.
 - Conventions de conception technique : DRAFT.
 - ADR-001 architecture applicative V1 : DRAFT.
-- Diagramme de composants V1 : DRAFT (essai non validé).
-- Diagramme de classes de conception backend V1 : DRAFT (préliminaire, non validé).
+- Diagramme de composants V1 : DRAFT (à reconstruire selon les conventions UML renforcées).
+- Diagramme de classes de conception backend V1 : DRAFT (préliminaire, non validable tant que les conceptions backend, persistance, API REST et sécurité ne sont pas suffisamment définies).
 
 ## Décisions d'architecture retenues
 

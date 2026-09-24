@@ -124,8 +124,8 @@ Le port IA protège le métier d'un choix prématuré, mais l'adaptateur ne pour
 
 ## 12. Conséquences
 
-- La conception détaillée du backend, de la persistance, de l'API et de la sécurité doit être réalisée et validée avant le début de l'implémentation.
-- La couche application orchestre les cas d'utilisation ; les contrôles métier sont appliqués côté backend ; l'emplacement détaillé des invariants entre services applicatifs et modèle métier sera précisé pendant la conception backend.
+- L'architecture générale permet de poursuivre la conception détaillée ; la conception du backend, de la persistance, de l'API et de la sécurité doit encore être définie et validée avant l'implémentation.
+- La couche application orchestre les cas d'utilisation ; les contrôles métier sont appliqués côté backend ; la répartition précise des invariants entre services applicatifs et modèle métier sera définie pendant la conception backend.
 - Les contrats REST utilisent des DTO et des mappers distincts des entités.
 - Les modules `request` et `identity / administration` persistent leurs données dans PostgreSQL.
 - La sécurité combine RBAC et contrôles métier contextuels.
