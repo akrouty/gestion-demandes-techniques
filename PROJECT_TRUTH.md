@@ -8,7 +8,7 @@ Analyse fonctionnelle et conception UML.
 
 - Périmètre fonctionnel V1 : validé.
 - Diagramme Use Case global : validé.
-- Diagramme d'activité du cycle de vie : validé.
+- Diagramme d'activité du cycle de vie : DRAFT (revalidation UML en cours).
 - Fiches détaillées des cas d'utilisation : DRAFT.
 - Diagrammes de séquence : DRAFT.
 - Diagramme de classes métier : DRAFT.

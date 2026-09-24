@@ -7,20 +7,32 @@
 
 title Cycle de vie d'une demande - V1\nVALIDATED
 
+skinparam monochrome true
 skinparam shadowing false
+skinparam backgroundColor white
+skinparam activity {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+  DiamondBackgroundColor white
+  DiamondBorderColor black
+  ArrowColor black
+  StartColor black
+  EndColor black
+}
 
 |Responsable technique|
 start
 :Renseigner les informations\nde la demande;
-if (Utiliser l'IA ?) then (Oui)
+if (Utiliser l'IA ?) then (~[Utilisation IA demandée~])
   :Déclencher l'analyse IA;
   |Système|
-  if (Analyse IA réussie ?) then (Oui)
+  if (Analyse IA réussie ?) then (~[Analyse réussie~])
     :Proposer une catégorie\net une priorité;
-  else (Non)
+  else (~[Analyse échouée ou indisponible~])
   endif
   |Responsable technique|
-else (Non)
+else (~[else~])
 endif
 :Définir ou valider la catégorie\net la priorité;
 :Enregistrer la demande;
@@ -29,79 +41,65 @@ endif
 :Définir le statut\n**NOUVELLE**;
 
 |Responsable technique|
-
-if (Annuler la demande ?) then (Oui)
+if (Annulation demandée ?) then (~[Annulation demandée~])
   :Renseigner le motif d'annulation;
   |Système|
   :Définir le statut\n**ANNULEE**;
   stop
-else (Non)
+else (~[else~])
   |Responsable technique|
   :Affecter la demande\nà un Agent technique;
   |Système|
   :Définir le statut\n**ASSIGNEE**;
 endif
 
-|Responsable technique|
-if (Annuler la demande ?) then (Oui)
-  :Renseigner le motif d'annulation;
-  |Système|
-  :Définir le statut\n**ANNULEE**;
-  stop
-else (Non)
-  |Agent technique|
-  :Commencer le traitement;
-  |Système|
-  :Définir le statut\n**EN_COURS**;
-endif
-
 repeat
   |Responsable technique|
-  if (Réaffecter la demande ?) then (Oui)
-    :Réaffecter la demande\nà un autre Agent technique;
-    |Système|
-    :Définir le statut\n**ASSIGNEE**;
-
-    |Responsable technique|
-    if (Annuler la demande ?) then (Oui)
-      :Renseigner le motif d'annulation;
-      |Système|
-      :Définir le statut\n**ANNULEE**;
-      stop
-    else (Non)
-      |Agent technique|
-      :Commencer le traitement;
-      |Système|
-      :Définir le statut\n**EN_COURS**;
-    endif
-  else (Non)
-  endif
-
-  |Responsable technique|
-  if (Annuler la demande ?) then (Oui)
+  if (Annulation demandée ?) then (~[Annulation demandée~])
     :Renseigner le motif d'annulation;
     |Système|
     :Définir le statut\n**ANNULEE**;
     stop
-  else (Non)
-    |Agent technique|
-    :Poursuivre ou reprendre le traitement;
-    :Renseigner la description\ndu traitement et la solution;
-    :Déclarer la demande résolue;
-    |Système|
-    :Définir le statut\n**RESOLUE**;
+  else (~[else~])
   endif
 
   |Responsable technique|
-  :Examiner la demande résolue;
+  if (Réaffectation demandée ?) then (~[Réaffectation demandée~])
+    :Réaffecter la demande\nà un autre Agent technique;
+    |Système|
+    if (Statut avant réaffectation ?) then (~[ASSIGNEE~])
+      :Conserver le statut\n**ASSIGNEE**;
+    else (~[EN_COURS~])
+      :Définir le statut\n**ASSIGNEE**;
+    endif
+  else (~[else~])
+    |Système|
+    if (Statut de la demande ?) then (~[ASSIGNEE~])
+      |Agent technique|
+      :Commencer le traitement;
+      |Système|
+      :Définir le statut\n**EN_COURS**;
+    else (~[EN_COURS~])
+      |Agent technique|
+      :Poursuivre ou reprendre le traitement;
+      :Renseigner la description\ndu traitement et la solution;
+      :Déclarer la demande résolue;
+      |Système|
+      :Définir le statut\n**RESOLUE**;
 
-  |Système|
-  backward :Définir le statut\n**EN_COURS**;
-  |Responsable technique|
-repeat while (Résolution acceptée ?) is (Non) not (Oui)
-
-|Système|
-:Définir le statut\n**CLOTUREE**;
+      |Responsable technique|
+      :Examiner la demande résolue;
+      if (Résolution acceptée ?) then (~[Résolution acceptée~])
+        |Système|
+        :Définir le statut\n**CLOTUREE**;
+        stop
+      else (~[Résolution refusée~])
+        |Système|
+        :Définir le statut\n**EN_COURS**;
+      endif
+    endif
+  endif
+repeat while (Demande active ?) is (~[ASSIGNEE ou EN_COURS~]) not (~[else~])
 stop
 
 @enduml
