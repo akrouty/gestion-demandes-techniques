@@ -1,27 +1,66 @@
 @startuml
 
-' Statut : DRAFT
-title Enregistrer et qualifier une demande - V1\nDRAFT
+' Statut : VALIDATED
+title Enregistrer et qualifier une demande - V1\nVALIDATED
+
+hide footbox
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam sequence {
+  ArrowColor black
+  ActorBorderColor black
+  ActorBackgroundColor white
+  ActorFontColor black
+  ParticipantBorderColor black
+  ParticipantBackgroundColor white
+  ParticipantFontColor black
+  LifeLineBorderColor black
+  LifeLineBackgroundColor white
+  GroupBorderColor black
+  GroupHeaderFontColor black
+  GroupBodyBackgroundColor white
+}
 
 actor "Responsable technique" as RT
 participant "Système de gestion\ndes demandes techniques" as SYSTEM
 
 RT -> SYSTEM : Renseigner les informations de la demande
+activate SYSTEM
+deactivate SYSTEM
+
 RT -> SYSTEM : Rechercher le client
+activate SYSTEM
 
 alt Client existant
   SYSTEM --> RT : Présenter le client trouvé
+  deactivate SYSTEM
   RT -> SYSTEM : Sélectionner le client
+  activate SYSTEM
+  SYSTEM --> RT : Client sélectionné
+  deactivate SYSTEM
 else Client non enregistré
+  SYSTEM --> RT : Aucun client trouvé
+  deactivate SYSTEM
   RT -> SYSTEM : Renseigner les informations minimales du client
-  SYSTEM -> SYSTEM : Conserver le nouveau client
+  activate SYSTEM
+  SYSTEM --> RT : Nouveau client conservé
+  deactivate SYSTEM
 end
 
 RT -> SYSTEM : Définir ou valider la catégorie
+activate SYSTEM
+SYSTEM --> RT : Catégorie retenue
+deactivate SYSTEM
+
 RT -> SYSTEM : Définir ou valider la priorité
+activate SYSTEM
+SYSTEM --> RT : Priorité retenue
+deactivate SYSTEM
+
 RT -> SYSTEM : Enregistrer la demande
-SYSTEM -> SYSTEM : Conserver la demande
-SYSTEM -> SYSTEM : Définir le statut NOUVELLE
-SYSTEM --> RT : Demande enregistrée
+activate SYSTEM
+SYSTEM --> RT : Demande enregistrée ; statut NOUVELLE
+deactivate SYSTEM
 
 @enduml

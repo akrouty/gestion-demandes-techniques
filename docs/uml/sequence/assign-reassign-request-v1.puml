@@ -1,7 +1,26 @@
 @startuml
 
-' Statut : DRAFT
-title Affecter et réaffecter une demande - V1\nDRAFT
+' Statut : VALIDATED
+title Affecter et réaffecter une demande - V1\nVALIDATED
+
+hide footbox
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam sequence {
+  ArrowColor black
+  ActorBorderColor black
+  ActorBackgroundColor white
+  ActorFontColor black
+  ParticipantBorderColor black
+  ParticipantBackgroundColor white
+  ParticipantFontColor black
+  LifeLineBorderColor black
+  LifeLineBackgroundColor white
+  GroupBorderColor black
+  GroupHeaderFontColor black
+  GroupBodyBackgroundColor white
+}
 
 actor "Responsable technique" as RT
 participant "Système de gestion\ndes demandes techniques" as SYSTEM
@@ -9,21 +28,32 @@ actor "Agent technique" as AGENT
 actor "Nouvel Agent technique" as NEW_AGENT
 
 RT -> SYSTEM : Affecter la demande à l'Agent technique
-SYSTEM -> SYSTEM : Conserver l'affectation
-SYSTEM -> SYSTEM : Définir le statut ASSIGNEE
+activate SYSTEM
+SYSTEM --> RT : Demande affectée ; statut ASSIGNEE
+deactivate SYSTEM
 
-alt Réaffectation depuis ASSIGNEE
-  RT -> SYSTEM : Réaffecter la demande au nouvel Agent technique
-  SYSTEM -> SYSTEM : Remplacer l'Agent affecté
-  SYSTEM -> SYSTEM : Conserver le statut ASSIGNEE
-else Réaffectation depuis EN_COURS
+alt L'Agent initial commence le traitement
   AGENT -> SYSTEM : Commencer le traitement
-  SYSTEM -> SYSTEM : Définir le statut EN_COURS
+  activate SYSTEM
+  SYSTEM --> AGENT : Traitement commencé ; statut EN_COURS
+  deactivate SYSTEM
+
+  opt Réaffectation pendant EN_COURS
+    RT -> SYSTEM : Réaffecter la demande au nouvel Agent technique
+    activate SYSTEM
+    SYSTEM --> RT : Agent remplacé ; statut ASSIGNEE
+    deactivate SYSTEM
+
+    NEW_AGENT -> SYSTEM : Commencer le traitement
+    activate SYSTEM
+    SYSTEM --> NEW_AGENT : Traitement commencé ; statut EN_COURS
+    deactivate SYSTEM
+  end
+else Réaffectation pendant ASSIGNEE
   RT -> SYSTEM : Réaffecter la demande au nouvel Agent technique
-  SYSTEM -> SYSTEM : Remplacer l'Agent affecté
-  SYSTEM -> SYSTEM : Définir le statut ASSIGNEE
-  NEW_AGENT -> SYSTEM : Commencer le traitement
-  SYSTEM -> SYSTEM : Définir le statut EN_COURS
+  activate SYSTEM
+  SYSTEM --> RT : Agent remplacé ; statut maintenu ASSIGNEE
+  deactivate SYSTEM
 end
 
 @enduml

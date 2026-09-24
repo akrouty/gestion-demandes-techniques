@@ -1,24 +1,54 @@
 @startuml
 
-' Statut : DRAFT
-title Analyser une demande avec l'IA - V1\nDRAFT
+' Statut : VALIDATED
+title Analyser une demande avec l'IA - V1\nVALIDATED
+
+hide footbox
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam sequence {
+  ArrowColor black
+  ActorBorderColor black
+  ActorBackgroundColor white
+  ActorFontColor black
+  ParticipantBorderColor black
+  ParticipantBackgroundColor white
+  ParticipantFontColor black
+  LifeLineBorderColor black
+  LifeLineBackgroundColor white
+  GroupBorderColor black
+  GroupHeaderFontColor black
+  GroupBodyBackgroundColor white
+}
 
 actor "Responsable technique" as RT
 participant "Système de gestion\ndes demandes techniques" as SYSTEM
 
 RT -> SYSTEM : Demander « Analyser avec l'IA »
-SYSTEM -> SYSTEM : Analyser la demande
+activate SYSTEM
 
 alt Analyse réussie
-  SYSTEM --> RT : Proposer une catégorie et une priorité
+  SYSTEM --> RT : Catégorie et priorité proposées
+  deactivate SYSTEM
   alt Propositions validées
     RT -> SYSTEM : Valider la catégorie et la priorité
+    activate SYSTEM
+    SYSTEM --> RT : Catégorie et priorité enregistrées
+    deactivate SYSTEM
   else Propositions modifiées
     RT -> SYSTEM : Modifier puis valider la catégorie et la priorité
+    activate SYSTEM
+    SYSTEM --> RT : Catégorie et priorité enregistrées
+    deactivate SYSTEM
   end
 else Analyse échouée ou indisponible
-  SYSTEM --> RT : Permettre la qualification manuelle
+  SYSTEM --> RT : Analyse indisponible ; qualification manuelle possible
+  deactivate SYSTEM
   RT -> SYSTEM : Définir et valider la catégorie et la priorité
+  activate SYSTEM
+  SYSTEM --> RT : Catégorie et priorité enregistrées
+  deactivate SYSTEM
 end
 
 @enduml

@@ -1,22 +1,45 @@
 @startuml
 
-' Statut : DRAFT
-title Examiner une demande résolue - V1\nDRAFT
+' Statut : VALIDATED
+title Examiner une demande résolue - V1\nVALIDATED
+
+hide footbox
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam sequence {
+  ArrowColor black
+  ActorBorderColor black
+  ActorBackgroundColor white
+  ActorFontColor black
+  ParticipantBorderColor black
+  ParticipantBackgroundColor white
+  ParticipantFontColor black
+  LifeLineBorderColor black
+  LifeLineBackgroundColor white
+  GroupBorderColor black
+  GroupHeaderFontColor black
+  GroupBodyBackgroundColor white
+}
 
 actor "Responsable technique" as RT
 participant "Système de gestion\ndes demandes techniques" as SYSTEM
 
 RT -> SYSTEM : Examiner la demande RESOLUE
+activate SYSTEM
 SYSTEM --> RT : Présenter la demande et sa solution
+deactivate SYSTEM
 
 alt Résolution acceptée
   RT -> SYSTEM : Accepter la résolution
-  SYSTEM -> SYSTEM : Définir le statut CLOTUREE
-  SYSTEM --> RT : Demande clôturée
+  activate SYSTEM
+  SYSTEM --> RT : Demande clôturée ; statut CLOTUREE
+  deactivate SYSTEM
 else Résolution refusée
   RT -> SYSTEM : Refuser la résolution
-  SYSTEM -> SYSTEM : Définir le statut EN_COURS
-  SYSTEM --> RT : Demande remise en traitement
+  activate SYSTEM
+  SYSTEM --> RT : Demande remise en traitement ; statut EN_COURS
+  deactivate SYSTEM
 end
 
 @enduml

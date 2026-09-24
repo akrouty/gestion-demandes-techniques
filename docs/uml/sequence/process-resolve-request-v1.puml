@@ -1,32 +1,71 @@
 @startuml
 
-' Statut : DRAFT
-title Traiter et résoudre une demande - V1\nDRAFT
+' Statut : VALIDATED
+title Traiter et résoudre une demande - V1\nVALIDATED
+
+hide footbox
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam sequence {
+  ArrowColor black
+  ActorBorderColor black
+  ActorBackgroundColor white
+  ActorFontColor black
+  ParticipantBorderColor black
+  ParticipantBackgroundColor white
+  ParticipantFontColor black
+  LifeLineBorderColor black
+  LifeLineBackgroundColor white
+  GroupBorderColor black
+  GroupHeaderFontColor black
+  GroupBodyBackgroundColor white
+}
 
 actor "Agent technique" as AGENT
 participant "Système de gestion\ndes demandes techniques" as SYSTEM
 
 AGENT -> SYSTEM : Consulter ses demandes affectées
+activate SYSTEM
 SYSTEM --> AGENT : Présenter les demandes affectées
+deactivate SYSTEM
+
 AGENT -> SYSTEM : Consulter la demande
+activate SYSTEM
+SYSTEM --> AGENT : Présenter la demande et son statut
+deactivate SYSTEM
 
 alt Demande ASSIGNEE
   AGENT -> SYSTEM : Commencer le traitement
-  SYSTEM -> SYSTEM : Définir le statut EN_COURS
-else Demande déjà EN_COURS
+  activate SYSTEM
+  SYSTEM --> AGENT : Traitement commencé ; statut EN_COURS
+  deactivate SYSTEM
+else Demande EN_COURS
   AGENT -> SYSTEM : Poursuivre ou reprendre le traitement
+  activate SYSTEM
+  SYSTEM --> AGENT : Traitement repris ; statut EN_COURS
+  deactivate SYSTEM
 end
 
 AGENT -> SYSTEM : Renseigner la description du traitement
+activate SYSTEM
+SYSTEM --> AGENT : Description du traitement enregistrée
+deactivate SYSTEM
+
 AGENT -> SYSTEM : Renseigner la solution
+activate SYSTEM
+SYSTEM --> AGENT : Solution enregistrée
+deactivate SYSTEM
+
 AGENT -> SYSTEM : Déclarer la demande résolue
+activate SYSTEM
 
 alt Solution renseignée
-  SYSTEM -> SYSTEM : Définir le statut RESOLUE
-  SYSTEM --> AGENT : Demande déclarée résolue
+  SYSTEM --> AGENT : Demande déclarée résolue ; statut RESOLUE
+  deactivate SYSTEM
 else Solution absente
-  SYSTEM --> AGENT : Refuser la déclaration de résolution
-  SYSTEM -> SYSTEM : Conserver le statut EN_COURS
+  SYSTEM --> AGENT : Résolution refusée ; statut maintenu EN_COURS
+  deactivate SYSTEM
 end
 
 @enduml
