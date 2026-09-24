@@ -2,11 +2,10 @@
 
 ' ============================================================
 ' Diagramme de cas d'utilisation global - V1
-' Statut : DRAFT
-' Ne pas considérer cette version comme finale avant validation.
+' Statut : VALIDATED
 ' ============================================================
 
-title Diagramme de cas d'utilisation global - V1\nDRAFT
+title Diagramme de cas d'utilisation global - V1\nVALIDATED
 
 left to right direction
 skinparam linetype polyline

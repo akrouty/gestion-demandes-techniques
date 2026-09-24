@@ -2,16 +2,16 @@
 
 ## Phase actuelle
 
-Analyse fonctionnelle et conception UML.
+Analyse fonctionnelle terminée — transition vers la conception technique.
 
 ## État des livrables
 
 - Périmètre fonctionnel V1 : validé.
 - Diagramme Use Case global : validé.
-- Diagramme d'activité du cycle de vie : DRAFT (revalidation UML en cours).
+- Diagramme d'activité du cycle de vie : validé.
 - Fiches détaillées des cas d'utilisation : DRAFT.
-- Diagrammes de séquence : DRAFT.
-- Diagramme de classes métier : DRAFT.
+- Diagrammes de séquence : validés.
+- Diagramme de classes métier : validé.
 
 ## État de l'implémentation
 
