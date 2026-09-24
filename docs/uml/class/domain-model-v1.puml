@@ -1,7 +1,7 @@
 @startuml
 
-' Statut : DRAFT
-title Diagramme de classes métier - V1\nDRAFT
+' Statut : VALIDATED
+title Diagramme de classes métier - V1\nVALIDATED
 
 hide methods
 skinparam classAttributeIconSize 0
@@ -83,7 +83,7 @@ Client "1" -- "0..*" DemandeTechnique : concerne
 Utilisateur "1" -- "0..*" DemandeTechnique : créée par\n{créateur avec rôle RESPONSABLE_TECHNIQUE}
 Utilisateur "0..1" -- "0..*" DemandeTechnique : agent affecté\n{agent avec rôle AGENT_TECHNIQUE}
 DemandeTechnique "1" *-- "0..*" HistoriqueDemande : historique
-Utilisateur "0..1" -- "0..*" HistoriqueDemande : effectué par
+Utilisateur "1" -- "0..*" HistoriqueDemande : effectué par
 
 Utilisateur ..> Role : utilise
 DemandeTechnique ..> Categorie : utilise
