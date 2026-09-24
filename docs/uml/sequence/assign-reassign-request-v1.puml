@@ -12,10 +12,13 @@ RT -> SYSTEM : Affecter la demande à l'Agent technique
 SYSTEM -> SYSTEM : Conserver l'affectation
 SYSTEM -> SYSTEM : Définir le statut ASSIGNEE
 
-AGENT -> SYSTEM : Commencer le traitement
-SYSTEM -> SYSTEM : Définir le statut EN_COURS
-
-opt Réaffectation pendant EN_COURS
+alt Réaffectation depuis ASSIGNEE
+  RT -> SYSTEM : Réaffecter la demande au nouvel Agent technique
+  SYSTEM -> SYSTEM : Remplacer l'Agent affecté
+  SYSTEM -> SYSTEM : Conserver le statut ASSIGNEE
+else Réaffectation depuis EN_COURS
+  AGENT -> SYSTEM : Commencer le traitement
+  SYSTEM -> SYSTEM : Définir le statut EN_COURS
   RT -> SYSTEM : Réaffecter la demande au nouvel Agent technique
   SYSTEM -> SYSTEM : Remplacer l'Agent affecté
   SYSTEM -> SYSTEM : Définir le statut ASSIGNEE

@@ -7,10 +7,11 @@ actor "Responsable technique" as RT
 participant "Système de gestion\ndes demandes techniques" as SYSTEM
 
 RT -> SYSTEM : Renseigner les informations de la demande
-RT -> SYSTEM : Rechercher et sélectionner un client existant
+RT -> SYSTEM : Rechercher le client
 
 alt Client existant
-  SYSTEM --> RT : Client sélectionné
+  SYSTEM --> RT : Présenter le client trouvé
+  RT -> SYSTEM : Sélectionner le client
 else Client non enregistré
   RT -> SYSTEM : Renseigner les informations minimales du client
   SYSTEM -> SYSTEM : Conserver le nouveau client

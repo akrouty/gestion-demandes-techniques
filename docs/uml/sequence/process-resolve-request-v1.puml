@@ -20,7 +20,13 @@ end
 AGENT -> SYSTEM : Renseigner la description du traitement
 AGENT -> SYSTEM : Renseigner la solution
 AGENT -> SYSTEM : Déclarer la demande résolue
-SYSTEM -> SYSTEM : Définir le statut RESOLUE
-SYSTEM --> AGENT : Demande déclarée résolue
+
+alt Solution renseignée
+  SYSTEM -> SYSTEM : Définir le statut RESOLUE
+  SYSTEM --> AGENT : Demande déclarée résolue
+else Solution absente
+  SYSTEM --> AGENT : Refuser la déclaration de résolution
+  SYSTEM -> SYSTEM : Conserver le statut EN_COURS
+end
 
 @enduml

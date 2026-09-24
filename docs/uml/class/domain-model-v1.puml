@@ -1,16 +1,51 @@
 @startuml
 
 ' Statut : DRAFT
-title Modèle conceptuel métier - V1\nDRAFT
+title Diagramme de classes métier - V1\nDRAFT
 
 hide methods
 skinparam classAttributeIconSize 0
 
-class Utilisateur
-class Client
-class DemandeTechnique
-class HistoriqueDemande
-class AnalyseIA
+class Utilisateur {
+  id
+  nom : String
+  email : String
+  actif : Boolean
+  roles : Role [0..*]
+}
+
+class Client {
+  id
+  nom : String
+  email : String
+  telephone : String
+}
+
+class DemandeTechnique {
+  id
+  reference : String
+  titre : String
+  description : String
+  categorie : Categorie
+  priorite : Priorite
+  statut : StatutDemande
+  descriptionTraitement : String [0..1]
+  solution : String [0..1]
+  motifAnnulation : String [0..1]
+  dateCreation : DateTime
+  dateModification : DateTime
+  dateResolution : DateTime [0..1]
+  dateCloture : DateTime [0..1]
+  dateAnnulation : DateTime [0..1]
+}
+
+class HistoriqueDemande {
+  id
+  dateEvenement : DateTime
+  typeEvenement : String
+  ancienneValeur : String [0..1]
+  nouvelleValeur : String [0..1]
+}
 
 enum Role {
   RESPONSABLE_TECHNIQUE
@@ -44,28 +79,15 @@ enum Categorie {
   Autre
 }
 
-Utilisateur "*" -- "*" Role : possède
-
 Client "1" -- "0..*" DemandeTechnique : concerne
-Utilisateur "1" -- "0..*" DemandeTechnique : crée
-Utilisateur "0..1" -- "0..*" DemandeTechnique : est affecté à
+Utilisateur "1" -- "0..*" DemandeTechnique : créée par\n{créateur avec rôle RESPONSABLE_TECHNIQUE}
+Utilisateur "0..1" -- "0..*" DemandeTechnique : agent affecté\n{agent avec rôle AGENT_TECHNIQUE}
+DemandeTechnique "1" *-- "0..*" HistoriqueDemande : historique
+Utilisateur "0..1" -- "0..*" HistoriqueDemande : effectué par
 
-Categorie "1" -- "0..*" DemandeTechnique : catégorise
-Priorite "1" -- "0..*" DemandeTechnique : priorise
-StatutDemande "1" -- "0..*" DemandeTechnique : décrit l'état
-
-DemandeTechnique "1" -- "0..*" HistoriqueDemande : possède
-DemandeTechnique -- AnalyseIA : peut faire l'objet de
-AnalyseIA --> Categorie : propose
-AnalyseIA --> Priorite : propose
-
-note "Le créateur possède le rôle\nRESPONSABLE_TECHNIQUE." as CreatorRule
-CreatorRule .. DemandeTechnique
-
-note "L'utilisateur affecté, s'il existe, possède le rôle\nAGENT_TECHNIQUE. Une demande a au maximum\nun Agent technique affecté à un instant donné." as AssignmentRule
-AssignmentRule .. DemandeTechnique
-
-note "Une proposition IA ne modifie jamais seule\nla catégorie ou la priorité de la demande." as AiRule
-AiRule .. AnalyseIA
+Utilisateur ..> Role : utilise
+DemandeTechnique ..> Categorie : utilise
+DemandeTechnique ..> Priorite : utilise
+DemandeTechnique ..> StatutDemande : utilise
 
 @enduml
