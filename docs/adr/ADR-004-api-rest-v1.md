@@ -2,7 +2,7 @@
 
 ## Statut
 
-**DRAFT**
+**VALIDATED**
 
 ## 1. Contexte
 

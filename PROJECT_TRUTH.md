@@ -16,8 +16,10 @@ Conception technique en cours.
 - ADR-001 architecture applicative V1 : DRAFT.
 - ADR-002 architecture backend V1 : validé.
 - ADR-003 persistance V1 : validé.
-- ADR-004 API REST V1 : DRAFT.
-- Contrat API REST V1 : DRAFT.
+- ADR-004 API REST V1 : validé.
+- Contrat API REST V1 : validé.
+- ADR-005 sécurité V1 : DRAFT.
+- Conception sécurité V1 : DRAFT.
 - Diagramme de composants V1 : validé.
 - Diagramme de classes de conception backend V1 : DRAFT (préliminaire, non validable tant que les conceptions backend, persistance, API REST et sécurité ne sont pas suffisamment définies).
 
@@ -38,11 +40,12 @@ Conception technique en cours.
 - Les associations sont principalement `LAZY`, les cascades sont minimales et l'historique est fonctionnellement immuable.
 - Les modifications métier et leur historique sont atomiques ; les instants utilisent `Instant` et `timestamptz`.
 - Flyway gère les migrations SQL versionnées ; aucun soft-delete n'est ajouté à `DemandeTechnique`.
-- API REST V1 : conception en cours / formalisation DRAFT.
+- API REST V1 : validée et formalisée dans ADR-004 et API-CONTRACT-V1.
+- Sécurité détaillée : conception DRAFT.
 - Sécurité : Spring Security, JWT, RBAC et contrôles métier complémentaires dans la couche application/service.
 - IA : frontière architecturale définie par un port abstrait réalisé par un adaptateur ; fonctionnement non bloquant et validation humaine obligatoire.
 
-Ces décisions portent sur l'architecture générale, l'architecture backend et la persistance. Les classes techniques exactes et leurs dépendances détaillées ne sont pas encore décidées.
+Ces décisions portent sur l'architecture générale, l'architecture backend, la persistance et l'API REST. Les classes techniques exactes et leurs dépendances détaillées ne sont pas encore décidées.
 
 ## État de l'implémentation
 
