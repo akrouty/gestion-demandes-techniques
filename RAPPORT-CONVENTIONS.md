@@ -4,7 +4,7 @@
 
 ## 1. Objectif
 
-Référence obligatoire avant toute création ou modification du rapport : structure, rédaction, LaTeX, figures, UML, architecture, références, traçabilité et validation progressive. Cette mission prépare seulement le squelette ; aucune rédaction détaillée n'est autorisée avant sa revue humaine.
+Référence obligatoire avant toute création ou modification du rapport : structure, rédaction, LaTeX, figures, UML, architecture, références, traçabilité et validation progressive. Le rapport évolue par étapes : phase réellement validée → rédaction ou mise à jour correspondante → compilation → revue humaine.
 
 ## 2. Hiérarchie des sources de vérité
 
@@ -80,7 +80,7 @@ Figures et tableaux : numérotation continue indépendante des chapitres, légen
 
 ## 12. Statuts éditoriaux
 
-- `RÉDIGER MAINTENANT` : sources suffisamment validées ; ici, autorisation de rédaction seulement après validation humaine du squelette.
+- `RÉDIGER MAINTENANT` : sources suffisamment validées pour rédiger la section correspondante, puis la compiler et la soumettre à revue humaine.
 - `COMPLÉTER PLUS TARD` : structure préparée, informations encore manquantes.
 - `ATTENDRE` : dépend d'une implémentation, de tests, de mesures ou de décisions absentes.
 
