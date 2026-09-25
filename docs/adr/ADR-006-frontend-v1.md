@@ -2,13 +2,13 @@
 
 ## Statut
 
-**DRAFT** — proposition soumise à validation humaine, sans implémentation.
+**VALIDATED** — validation humaine enregistrée, sans implémentation.
 
 ## 1. Contexte
 
 La SPA Angular doit permettre aux utilisateurs internes de gérer les demandes et aux Administrateurs de gérer les comptes. Le périmètre fonctionnel, les ADR-002 à ADR-005, le contrat API et la sécurité sont validés. Le frontend, le backend, la base et la sécurité JWT/RBAC ne sont pas implémentés.
 
-Cet ADR applique, dans leur ordre de priorité, le périmètre fonctionnel, `PROJECT_TRUTH.md`, les conventions UML et techniques, les ADR validés, `API-CONTRACT-V1.md`, `SECURITY-DESIGN-V1.md` et les UML validés applicables. Le détail opérationnel figure dans [FRONTEND-DESIGN-V1](../frontend/FRONTEND-DESIGN-V1.md). Les orientations nouvelles ci-dessous restent proposées jusqu'à validation humaine ; les décisions de sécurité existantes restent validées.
+Cet ADR applique, dans leur ordre de priorité, le périmètre fonctionnel, `PROJECT_TRUTH.md`, les conventions UML et techniques, les ADR validés, `API-CONTRACT-V1.md`, `SECURITY-DESIGN-V1.md` et les UML validés applicables. Le détail opérationnel figure dans [FRONTEND-DESIGN-V1](../frontend/FRONTEND-DESIGN-V1.md). Les orientations ci-dessous sont validées humainement ; les décisions de sécurité existantes restent validées.
 
 ## 2. Besoin et contraintes
 
@@ -21,14 +21,14 @@ Les routes, DTO et opérations métier suivent le contrat validé. Angular prés
 | Option | Intérêt | Compromis et appréciation V1 |
 |---|---|---|
 | A — classement par type technique (`components`, `services`, `models`) | Repérage initial simple par nature de fichier. | Disperse un parcours entre plusieurs dossiers lorsque demandes, auth et administration grandissent ; rend leur périmètre moins lisible. |
-| B — organisation feature-based avec `core`, `shared`, `features` | Regroupe pages, communication API et état local d'un même domaine fonctionnel. | Exige des frontières explicites pour éviter un `core` ou `shared` fourre-tout ; orientation proposée. |
-| C — Clean Architecture frontend complète | Sépare systématiquement domaine, cas d'utilisation, repositories et adaptateurs. | Ajoute des couches et transformations sans besoin démontré pour une SPA cliente de cette API ; non retenue pour la V1 proposée. |
+| B — organisation feature-based avec `core`, `shared`, `features` | Regroupe pages, communication API et état local d'un même domaine fonctionnel. | Exige des frontières explicites pour éviter un `core` ou `shared` fourre-tout ; orientation retenue. |
+| C — Clean Architecture frontend complète | Sépare systématiquement domaine, cas d'utilisation, repositories et adaptateurs. | Ajoute des couches et transformations sans besoin démontré pour une SPA cliente de cette API ; non retenue pour la V1. |
 
 NgRx/Redux, repositories frontend, façades systématiques, CQRS, MVVM comme architecture officielle et ViewModels systématiques ne répondent pas à un besoin proportionné actuellement. Ils ne sont pas rejetés en général ; leur introduction ultérieure exigerait un besoin réel et une décision spécifique.
 
 ## 4. Décision
 
-Proposer une seule SPA Angular organisée par feature, avec services API simples et état principalement local. Utiliser Reactive Forms pour les formulaires significatifs. Centraliser uniquement la session et les mécanismes transversaux nécessaires d'authentification/transport.
+Retenir une seule SPA Angular organisée par feature, avec services API simples et état principalement local. Utiliser Reactive Forms pour les formulaires significatifs. Centraliser uniquement la session et les mécanismes transversaux nécessaires d'authentification/transport.
 
 Cette organisation rapproche l'interface de ses parcours sans recopier les modules internes du backend. Aucun code, dépendance, arborescence exhaustive ou diagramme supplémentaire n'est créé par cette conception.
 
@@ -108,4 +108,4 @@ Prévoir clavier, focus cohérent et erreurs lisibles ; ne pas communiquer uniqu
 
 Version exacte Angular à choisir lors de l'initialisation selon la version stable/LTS appropriée et l'environnement ; organisation standalone exacte, syntaxe du router, Signals et forme des interceptors restent ouverts. Bibliothèque UI (Material, Bootstrap, Tailwind, PrimeNG ou autre), CSS, design system, fichiers/classes exacts et stratégie complète de tests sont différés.
 
-Déploiement, serveur web, Docker, CI/CD, SSR, PWA et internationalisation sont hors décision. NgRx, cache avancé et websocket ne sont pas introduits pour la V1 proposée. `/me` et refresh token restent exclus par le cadre validé ; les évoquer comme évolution ne les autorise pas. Les précisions HTTP non fixées par le contrat (base des pages, sérialisation exacte du tri, limites) devront être clarifiées avant implémentation, sans choix implicite ici.
+Déploiement, serveur web, Docker, CI/CD, SSR, PWA et internationalisation sont hors décision. NgRx, cache avancé et websocket ne sont pas introduits pour la V1. `/me` et refresh token restent exclus par le cadre validé ; les évoquer comme évolution ne les autorise pas. Les précisions HTTP non fixées par le contrat (base des pages, sérialisation exacte du tri, limites) devront être clarifiées avant implémentation, sans choix implicite ici.

@@ -20,8 +20,8 @@ Conception technique en cours.
 - Contrat API REST V1 : validé.
 - ADR-005 sécurité V1 : validé.
 - Conception sécurité V1 : validée.
-- ADR-006 architecture frontend V1 : DRAFT.
-- Conception frontend V1 : DRAFT.
+- ADR-006 architecture frontend V1 : validé.
+- Conception frontend V1 : validée.
 - Diagramme de composants V1 : validé.
 - Diagramme de classes de conception backend V1 : DRAFT (préliminaire, non validable tant que les conceptions backend, persistance, API REST et sécurité ne sont pas suffisamment définies).
 
@@ -51,11 +51,11 @@ Conception technique en cours.
 - Autorisation : RBAC complété par les contrôles métier contextuels.
 - IA : frontière architecturale définie par un port abstrait réalisé par un adaptateur ; fonctionnement non bloquant et validation humaine obligatoire.
 
-Ces décisions portent sur l'architecture générale, l'architecture backend, la persistance, l'API REST et la sécurité. Les classes techniques exactes et leurs dépendances détaillées ne sont pas encore décidées.
+Ces décisions portent sur l'architecture générale, l'architecture backend, la persistance, l'API REST, la sécurité et le frontend. Les classes techniques exactes et leurs dépendances détaillées ne sont pas encore décidées.
 
-## Conception frontend proposée — DRAFT
+## Conception frontend validée
 
-ADR-006 et FRONTEND-DESIGN-V1 proposent une organisation Angular SPA feature-based avec responsabilités `core`, `shared` et `features` (authentification, demandes, administration). Ces orientations attendent une validation humaine et ne constituent pas une implémentation ni de nouvelles décisions validées.
+ADR-006 et FRONTEND-DESIGN-V1 retiennent une organisation Angular SPA feature-based avec responsabilités `core`, `shared` et `features` (authentification, demandes, administration). Ces décisions sont validées humainement et ne constituent pas une implémentation.
 
 - Session : JWT, expiration et utilisateur courant conservés uniquement en mémoire, conformément à la sécurité validée ; snapshot de rôles réservé à l'UX.
 - Guards comme aides à la navigation, interceptor pour le transport du token et la fin de session ; backend autoritatif pour RBAC et contrôles contextuels.

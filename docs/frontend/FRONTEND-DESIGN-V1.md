@@ -2,11 +2,11 @@
 
 ## Statut
 
-**DRAFT** — à valider humainement avant implémentation.
+**VALIDATED** — validation humaine enregistrée, sans implémentation.
 
 ## 1. Portée et références
 
-Ce document guide l'implémentation future de la SPA Angular interne ; aucun frontend, backend, base de données ou mécanisme JWT/RBAC n'est présenté comme implémenté. Il détaille les propositions de [ADR-006](../adr/ADR-006-frontend-v1.md).
+Ce document guide l'implémentation future de la SPA Angular interne ; aucun frontend, backend, base de données ou mécanisme JWT/RBAC n'est présenté comme implémenté. Il détaille les décisions validées de [ADR-006](../adr/ADR-006-frontend-v1.md).
 
 Sources consultées par priorité : [périmètre fonctionnel](../requirements/functional-scope.md), [PROJECT_TRUTH](../../PROJECT_TRUTH.md), [conventions UML](../uml/UML-CONVENTIONS.md), [conventions techniques](../architecture/TECHNICAL-CONVENTIONS.md), ADR-002/003/004/005 validés, [contrat API](../api/API-CONTRACT-V1.md), [sécurité](../security/SECURITY-DESIGN-V1.md), diagramme de composants, cycle de vie et séquences validés applicables. Le contrat précise les échanges HTTP ; les séquences fonctionnelles ne créent pas d'opération HTTP supplémentaire.
 
@@ -301,7 +301,7 @@ Labels réels, ordre clavier logique, boutons nommés par leur action, erreurs p
 
 Chaque action de la section 12 correspond au contrat existant ; aucune API métier nouvelle. Les séquences fonctionnelles sont traduites avec les opérations précises du contrat : le nouveau Client est persisté avec la demande et les suggestions IA ne sont enregistrées qu'à travers les valeurs finales soumises. Leurs échanges fonctionnels ne justifient pas des endpoints autonomes.
 
-JWT uniquement mémoire ; snapshot uniquement UX ; rôles et actif autoritatifs relus backend ; guards sans autorisation contextuelle ; statuts changés uniquement sur réponse serveur. Les contrats et UML VALIDATED ne sont pas modifiés. Aucun code Angular ni choix d'API Angular dépendant d'une version n'est inclus. Les deux documents frontend restent DRAFT.
+JWT uniquement mémoire ; snapshot uniquement UX ; rôles et actif autoritatifs relus backend ; guards sans autorisation contextuelle ; statuts changés uniquement sur réponse serveur. Les contrats et UML VALIDATED ne sont pas modifiés. Aucun code Angular ni choix d'API Angular dépendant d'une version n'est inclus. Les deux documents frontend sont VALIDATED.
 
 ## 28. Décisions différées
 
