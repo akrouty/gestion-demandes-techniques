@@ -54,7 +54,7 @@ Dans le tableau, `RT` désigne `RESPONSABLE_TECHNIQUE`, `AT` désigne `AGENT_TEC
 | `PUT /utilisateurs/{id}` | ADM | Modifie les informations générales ; l'activation et les rôles utilisent leurs opérations dédiées. | `ModificationUtilisateurRequest` | `UtilisateurDetailResponse` | `200` |
 | `POST /utilisateurs/{id}/activation` | ADM | Active le compte ciblé. | — | `UtilisateurDetailResponse` | `200` |
 | `POST /utilisateurs/{id}/desactivation` | ADM | Désactive le compte ciblé. | — | `UtilisateurDetailResponse` | `200` |
-| `PUT /utilisateurs/{id}/roles-metier` | ADM | Remplace l'ensemble des rôles métier. `ADMINISTRATEUR` est refusé. | `RolesMetierRequest` | `UtilisateurDetailResponse` | `200` |
+| `PUT /utilisateurs/{id}/roles-metier` | ADM | Remplace uniquement l'ensemble des rôles métier `RESPONSABLE_TECHNIQUE` et `AGENT_TECHNIQUE`. Un éventuel rôle `ADMINISTRATEUR` existant est conservé intact : cette opération ne peut ni l'attribuer ni le retirer. | `RolesMetierRequest` | `UtilisateurDetailResponse` | `200` |
 
 Il n'existe en V1 aucun endpoint générique de modification de statut, aucun CRUD autonome de clients ou d'historique et aucun endpoint de suppression d'utilisateur.
 
@@ -94,10 +94,10 @@ Exactement un des champs `clientId` ou `nouveauClient` doit être fourni. Le DTO
 
 | Champ | Règle |
 |---|---|
-| `descriptionTraitement` | Optionnel. |
-| `solution` | Optionnel. |
+| `descriptionTraitement` | Optionnel ; champ absent : valeur existante inchangée ; champ fourni : nouvelle valeur obligatoire et non vide. |
+| `solution` | Optionnel ; champ absent : valeur existante inchangée ; champ fourni : nouvelle valeur obligatoire et non vide. |
 
-Au moins un des deux champs doit être fourni. Aucun champ de statut n'est accepté.
+Au moins un des deux champs doit être fourni. Aucun champ de statut n'est accepté et aucune longueur maximale arbitraire n'est définie.
 
 #### `AnnulationDemandeRequest`
 
@@ -159,11 +159,11 @@ L'historique complet n'est pas inclus automatiquement.
 
 #### `NouveauClientRequest`
 
-- `nom` ;
-- `email` ;
-- `telephone`.
+- `nom` : obligatoire, non vide ;
+- `email` : obligatoire, syntaxiquement valide ;
+- `telephone` : obligatoire, non vide.
 
-Ces champs correspondent aux informations minimales du Client validées pour la V1.
+Ces champs correspondent aux informations minimales du Client validées pour la V1. Aucune longueur maximale arbitraire ni aucun format téléphonique national particulier n'est imposé. Conformément à ADR-003, l'adresse email d'un Client n'est pas unique.
 
 #### `ClientSummaryResponse`
 
@@ -194,7 +194,7 @@ L'état actif et les rôles sont modifiés par leurs opérations dédiées.
 
 - `rolesMetier` : ensemble des rôles métier souhaités parmi `RESPONSABLE_TECHNIQUE` et `AGENT_TECHNIQUE`.
 
-Toute présence de `ADMINISTRATEUR` rend la requête invalide.
+Cette requête remplace uniquement l'ensemble des rôles métier de l'utilisateur. Si l'utilisateur possède déjà `ADMINISTRATEUR`, ce rôle est conservé intact. L'opération ne peut ni attribuer ni retirer `ADMINISTRATEUR`, et toute présence de cette valeur dans `rolesMetier` rend la requête invalide.
 
 #### `UtilisateurSummaryResponse`
 
@@ -249,7 +249,7 @@ Les codes persistants et échangés sont :
 
 `RESPONSABLE_TECHNIQUE`, `AGENT_TECHNIQUE`, `ADMINISTRATEUR`.
 
-L'opération `/roles-metier` accepte uniquement les deux rôles métier.
+L'opération `/roles-metier` accepte uniquement les deux rôles métier. Elle préserve tout rôle `ADMINISTRATEUR` déjà présent sans permettre de l'attribuer ou de le retirer.
 
 ## 6. Validation
 
@@ -262,7 +262,8 @@ Règles transverses :
 
 - les chaînes déclarées non vides ne peuvent pas contenir uniquement des espaces ;
 - `CreationDemandeRequest` fournit exactement `clientId` ou `nouveauClient` ;
-- `TraitementDemandeRequest` fournit au moins un champ ;
+- `NouveauClientRequest` fournit un nom non vide, un email syntaxiquement valide et un téléphone non vide, sans exiger l'unicité de l'email Client ni un format téléphonique national particulier ;
+- `TraitementDemandeRequest` fournit au moins un champ ; chaque champ absent reste inchangé et chaque champ fourni doit être non vide ;
 - `AffectationDemandeRequest.agentId` désigne un compte actif ayant le rôle AT ;
 - l'email utilisateur est syntaxiquement valide, unique et normalisé conformément à ADR-003 ;
 - le motif d'annulation est obligatoire et non vide ;
@@ -352,7 +353,7 @@ Le tri par défaut est `dateCreation` décroissante. Les filtres sont appliqués
 | Annuler une demande | Oui | Non | Non | État autorisé et motif présent. |
 | Rechercher un client | Oui | Non | Non | Sélection pendant l'enregistrement. |
 | Lister les Agents affectables | Oui | Non | Non | Résultat limité aux comptes actifs avec rôle AT. |
-| Gérer les utilisateurs et rôles métier | Non | Non | Oui | `ADMINISTRATEUR` ne peut pas être attribué par `/roles-metier`. |
+| Gérer les utilisateurs et rôles métier | Non | Non | Oui | `/roles-metier` remplace uniquement RT et AT ; un rôle ADM existant reste intact et ne peut être ni attribué ni retiré par cette opération. |
 
 Un utilisateur cumulant plusieurs rôles cumule leurs permissions. Le rôle `ADMINISTRATEUR` seul ne donne aucun accès métier aux demandes.
 
