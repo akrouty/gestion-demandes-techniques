@@ -15,7 +15,7 @@ Conception technique en cours.
 - Conventions de conception technique : DRAFT.
 - ADR-001 architecture applicative V1 : DRAFT.
 - ADR-002 architecture backend V1 : validé.
-- ADR-003 persistance V1 : DRAFT.
+- ADR-003 persistance V1 : validé.
 - Diagramme de composants V1 : validé.
 - Diagramme de classes de conception backend V1 : DRAFT (préliminaire, non validable tant que les conceptions backend, persistance, API REST et sécurité ne sont pas suffisamment définies).
 
@@ -29,7 +29,7 @@ Conception technique en cours.
 - Une modification métier et son historisation associée sont atomiques.
 - Le cycle de vie utilise un enum de statut, des opérations métier explicites et des validations explicites, sans State Pattern.
 - Persistance : PostgreSQL avec JPA/Hibernate et Spring Data JPA ; DTO séparés des entités JPA.
-- Persistance V1 : décisions conceptuelles validées ; formalisation ADR-003 en cours.
+- Persistance V1 : validée et formalisée dans ADR-003.
 - Entités persistées : `Utilisateur`, `Client`, `DemandeTechnique` et `HistoriqueDemande`, avec identifiants `Long` générés par séquences PostgreSQL.
 - Les enums utilisent des codes textuels stables ; les rôles restent une collection d'enums.
 - La référence métier d'une demande est obligatoire, unique, générée côté serveur et immuable ; l'email utilisateur est unique et normalisé.
