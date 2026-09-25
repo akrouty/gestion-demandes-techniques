@@ -116,7 +116,7 @@ L'algorithme indiqué dans le token n'est jamais accepté comme choix dynamique.
 - aucune conservation en clair ou sous chiffrement réversible ;
 - aucun mot de passe dans les logs, réponses ou JWT ;
 - hachage et vérification via Spring Security `PasswordEncoder` ;
-- BCrypt recommandé pour la V1 ;
+- BCrypt retenu pour la V1 ;
 - facteur de coût déterminé par mesure sur l'environnement cible avant implémentation, sans valeur arbitraire dans la documentation.
 
 Argon2 reste une alternative si un besoin concret justifie ses paramètres et sa complexité supplémentaires.

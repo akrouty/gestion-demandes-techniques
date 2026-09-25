@@ -100,10 +100,11 @@ Cette décision permet de poursuivre la conception de la sécurité et du fronte
 
 ## 13. Décisions différées
 
+Les décisions d'authentification sont définies dans ADR-005 et `SECURITY-DESIGN-V1.md` : connexion par `POST /api/v1/auth/login`, sans refresh token ni endpoint backend de logout en V1.
+
 Restent à définir :
 
-- les endpoints de connexion, déconnexion et renouvellement éventuel ;
-- la durée, la rotation, la révocation et le stockage des jetons ;
+- la durée exacte du JWT ;
 - les limites exactes de longueur et de pagination ;
 - le format exact de la référence métier ;
 - le fournisseur, le modèle et le protocole d'intégration IA ;

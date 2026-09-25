@@ -20,7 +20,7 @@ Principes obligatoires :
 - les permissions d'un utilisateur multi-rôles sont l'union de ses rôles ;
 - les contrôles contextuels s'ajoutent toujours au contrôle du rôle.
 
-Tous les endpoints décrits sont protégés. Ils utilisent l'identité authentifiée fournie par la sécurité, dont le mécanisme sera défini dans ADR-005.
+Tous les endpoints décrits sont protégés. Ils utilisent l'identité authentifiée fournie par la sécurité, dont le mécanisme est défini dans ADR-005 et `SECURITY-DESIGN-V1.md`.
 
 ## 2. Base path
 
@@ -366,10 +366,11 @@ Il n'existe aucun endpoint CRUD autonome d'historique en V1.
 
 ## 12. Décisions différées
 
+Les décisions d'authentification sont définies dans ADR-005 et `SECURITY-DESIGN-V1.md`.
+
 Ne sont pas définis par ce contrat :
 
-- endpoint exact de connexion, déconnexion ou renouvellement ;
-- durée, rotation, révocation, blacklist ou stockage des JWT ;
+- durée exacte du JWT ;
 - règles exactes de longueur et de complexité du mot de passe initial ;
 - format exact de la référence de demande ;
 - longueurs maximales des champs et limites maximales de pagination ;

@@ -41,7 +41,7 @@ L'API est stateless : aucune `HttpSession` ne sert de mécanisme d'authentificat
 
 Un mot de passe n'est jamais stocké en clair, chiffré de manière réversible, journalisé ou retourné par l'API. La vérification utilise `PasswordEncoder`.
 
-BCrypt est recommandé pour la V1, car il est directement pris en charge par Spring Security et répond au besoin sans dépendance ni mécanisme supplémentaire. Son facteur de coût n'est pas fixé dans la documentation : il devra être mesuré sur l'environnement cible avant l'implémentation afin d'obtenir un coût de vérification raisonnable.
+BCrypt est retenu pour la V1, car il est directement pris en charge par Spring Security et répond au besoin sans dépendance ni mécanisme supplémentaire. Son facteur de coût n'est pas fixé dans la documentation : il devra être mesuré sur l'environnement cible avant l'implémentation afin d'obtenir un coût de vérification raisonnable.
 
 Argon2 offre des propriétés de résistance mémoire intéressantes, mais ajoute des paramètres et une complexité qui ne répondent pas actuellement à un besoin identifié. Il reste une alternative future si les contraintes de sécurité évoluent.
 
