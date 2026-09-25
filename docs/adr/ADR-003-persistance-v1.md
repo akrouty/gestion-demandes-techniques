@@ -8,7 +8,7 @@
 
 L'architecture V1 retient PostgreSQL, JPA/Hibernate et Spring Data JPA. Le modèle métier validé définit les entités et leurs relations, tandis qu'ADR-002 confie les transactions à la responsabilité `application` et les invariants intrinsèques au domaine.
 
-Le présent ADR formalise les décisions conceptuelles de persistance déjà validées. Sa rédaction reste `DRAFT` jusqu'à sa relecture. Il ne crée aucun schéma, mapping JPA, repository ou contrat API.
+Le présent ADR formalise les décisions conceptuelles de persistance déjà validées. Il ne crée aucun schéma, mapping JPA, repository ou contrat API.
 
 ## 2. Besoin et contraintes
 
