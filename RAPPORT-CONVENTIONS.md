@@ -76,7 +76,7 @@ Figures et tableaux : numérotation continue indépendante des chapitres, légen
 
 ### Organisation technique
 
-`main.tex` assemble uniquement le document. Séparer configuration, métadonnées, chapitres, bibliographie, figures et annexes. UTF-8, chemins relatifs, labels explicites et références croisées LaTeX : ne jamais saisir manuellement les numéros de figures ou de sections. Packages limités aux besoins réels, structure simple, aucune police propriétaire versionnée. XeLaTeX recommandé ; Times New Roman si disponible, sinon TeX Gyre Termes pour la compilation avec avertissement explicite : ce remplacement ne certifie pas la police EPI exacte.
+`main.tex` assemble uniquement le document. Séparer configuration, métadonnées, chapitres, bibliographie, figures et annexes. UTF-8, chemins relatifs, labels explicites et références croisées LaTeX : ne jamais saisir manuellement les numéros de figures ou de sections. Packages limités aux besoins réels, structure simple, aucune police propriétaire versionnée. Moteur officiel : pdfLaTeX. Police libre de style Times via `fontenc` (T1), `newtxtext` et `newtxmath`, sans dépendance à une police système spécifique. Compilation reproductible via LaTeX Workshop / `latexmk -pdf` ; aucune police propriétaire versionnée.
 
 ## 12. Statuts éditoriaux
 

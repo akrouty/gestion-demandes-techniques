@@ -6,19 +6,17 @@ Lire obligatoirement [RAPPORT-CONVENTIONS.md](../RAPPORT-CONVENTIONS.md) et `../
 
 ## Compilation
 
-Prérequis : XeLaTeX, Biber et les packages déclarés dans `config/preamble.tex` (fontspec, babel français, geometry, setspace, fancyhdr, titlesec, graphicx, caption, csquotes, biblatex, hyperref). Aucune distribution ni police propriétaire n'est fournie. Times New Roman est sélectionnée lorsqu'elle est disponible ; sinon TeX Gyre Termes permet de compiler avec un avertissement explicite, sans prétendre utiliser la police EPI exacte.
+Moteur officiel : **pdfLaTeX**. Compilation recommandée depuis LaTeX Workshop avec sa recette normale `latexmk -pdf`. Aucune configuration VS Code spécifique n'est nécessaire.
+
+Prérequis : pdfLaTeX, latexmk, Biber et les packages du préambule. La police libre de style Times est fournie par `newtxtext` et `newtxmath`, avec l'encodage T1 (`fontenc`). Aucune installation locale de Times New Roman ni police Windows n'est requise. XeLaTeX et LuaLaTeX ne sont pas nécessaires. Les sources restent en UTF-8, pris en charge nativement par LaTeX moderne ; le français utilise `babel`.
 
 Depuis `report/`, dans PowerShell :
 
 ```powershell
-New-Item -ItemType Directory -Force .build
-xelatex -interaction=nonstopmode -halt-on-error '-output-directory=.build' main.tex
-biber --input-directory .build --output-directory .build main
-xelatex -interaction=nonstopmode -halt-on-error '-output-directory=.build' main.tex
-xelatex -interaction=nonstopmode -halt-on-error '-output-directory=.build' main.tex
+latexmk -pdf -interaction=nonstopmode -file-line-error main.tex
 ```
 
-Le PDF est `.build/main.pdf`. Ne pas versionner les produits de compilation. Une bibliographie vide peut produire les avertissements « Empty bibliography » et « does not contain any citations » : ils sont attendus tant qu'aucune source n'a été citée. Ne jamais ajouter une fausse entrée pour les supprimer. Refaire la compilation jusqu'à stabilisation du sommaire et des références croisées.
+Le PDF est `main.pdf`. Pour isoler les fichiers générés, ajouter `-outdir=.build/pdflatex` à la commande ; le PDF sera alors `.build/pdflatex/main.pdf`. Ne pas versionner les produits de compilation. Latexmk pilote les passes pdfLaTeX et Biber nécessaires. Une bibliographie vide peut produire les avertissements « Empty bibliography » et « does not contain any citations » : ils sont attendus tant qu'aucune source n'a été citée. Ne jamais ajouter une fausse entrée pour les supprimer.
 
 ## Organisation
 
