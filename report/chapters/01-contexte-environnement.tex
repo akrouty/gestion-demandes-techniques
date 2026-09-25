@@ -5,31 +5,56 @@
 \clearpage
 
 % STATUT : COMPLÉTER PLUS TARD
-% SOURCE : PROJECT_TRUTH.md
-% RAISON : Informations professionnelles ou historique à documenter.
+% TODO : informations officielles sur l'organisme d'accueil à fournir.
 \section{Présentation de l'organisme d'accueil}
 \label{sec:01-contexte-environnement-1}
 
 % STATUT : COMPLÉTER PLUS TARD
-% SOURCE : PROJECT_TRUTH.md
-% RAISON : Informations professionnelles ou historique à documenter.
+% TODO : équipe, département, organigramme, encadrement et organisation à documenter.
 \section{Organisation et environnement de travail}
 \label{sec:01-contexte-environnement-2}
 
-% STATUT : COMPLÉTER PLUS TARD
-% SOURCE : PROJECT_TRUTH.md
-% RAISON : Informations professionnelles ou historique à documenter.
+% STATUT : COMPLÉTER PLUS TARD — rédaction partielle, en attente de revue humaine.
+% SOURCE : docs/requirements/functional-scope.md, sections 1 à 6 et 9.
+% Aucun diagnostic de l'existant ni contexte professionnel non documenté.
 \section{Contexte et problématique du projet}
 \label{sec:01-contexte-environnement-3}
 
-% STATUT : RÉDIGER MAINTENANT
-% SOURCE : docs/requirements/functional-scope.md
-% RAISON : Périmètre validé ; rédaction après revue du squelette.
+Le projet porte sur la gestion interne des demandes techniques reçues des clients. Le besoin fonctionnel couvre leur enregistrement, leur qualification, leur affectation à un Agent technique et le suivi de leur traitement jusqu'à leur clôture ou leur annulation. Chaque demande doit être associée à un client, une catégorie, une priorité et un statut.
+
+La problématique de conception consiste à organiser ce cycle en définissant les responsabilités de chaque rôle et les conditions de passage entre les étapes. Il s'agit notamment de distinguer la déclaration de résolution par l'Agent technique de son acceptation par le Responsable technique, tout en prévoyant l'historisation des changements importants. L'assistance IA envisagée doit s'inscrire dans ce fonctionnement sans se substituer à la décision humaine.
+
+% STATUT : RÉDIGER MAINTENANT — première rédaction, en attente de revue humaine.
+% SOURCE : docs/requirements/functional-scope.md, sections 1 à 10.
 \section{Objectifs et périmètre de la V1}
 \label{sec:01-contexte-environnement-4}
 
-% STATUT : COMPLÉTER PLUS TARD
-% SOURCE : PROJECT_TRUTH.md
-% RAISON : Informations professionnelles ou historique à documenter.
+La première version vise à réunir les fonctions nécessaires à la qualification, au traitement et au suivi des demandes techniques dans une application réservée aux utilisateurs internes. Son périmètre fonctionnel est validé et gelé. Les fonctions décrites ci-dessous constituent les exigences de cette version ; elles ne sont pas encore implémentées.
+
+\paragraph{Rôles et responsabilités.}
+Trois rôles applicatifs sont retenus. Le \textbf{Responsable technique} enregistre et qualifie les demandes, organise leur affectation et suit leur avancement. Il examine les résolutions proposées et décide de la clôture ou de la reprise du traitement. L'\textbf{Agent technique} consulte ses demandes affectées, réalise leur traitement, renseigne une solution et déclare leur résolution. L'\textbf{Administrateur} gère les comptes internes et l'attribution des rôles métier autorisés. Ce rôle ne donne pas automatiquement accès aux fonctions métier. Une même personne peut cumuler plusieurs rôles.
+
+Le Client est une entité métier associée aux demandes, sans compte ni accès à l'application. Le périmètre prévoit la sélection d'un client existant ou la saisie de ses informations minimales pendant l'enregistrement d'une demande.
+
+\paragraph{Cycle de gestion.}
+La qualification repose sur une catégorie issue de la liste prédéfinie de la V1 et sur une priorité évaluée selon le contexte. Une demande nouvelle peut ensuite être affectée, puis prise en charge par l'Agent technique. Celui-ci renseigne le traitement et la solution avant de déclarer la demande résolue. Le Responsable technique peut accepter cette résolution et clôturer la demande, ou la refuser pour reprendre le traitement. L'annulation est prévue aux étapes autorisées, avec un motif obligatoire. La demande est conservée et les changements importants doivent être historisés.
+
+\paragraph{Assistance IA.}
+La V1 prévoit une assistance déclenchée explicitement par le Responsable technique pour proposer uniquement une catégorie et une priorité. Le Responsable technique reste responsable de la décision finale : il valide ou modifie les suggestions. Le besoin prévoit également de maintenir la gestion manuelle lorsque l'IA est indisponible ou échoue. Ces exigences fonctionnelles ne constituent pas une implémentation du module IA.
+
+\paragraph{Hors périmètre.}
+La V1 exclut le portail et le compte Client, ainsi qu'un module autonome de gestion des clients. Elle ne prévoit ni sous-catégories, ni statut d'attente, ni système de notes ou commentaires, ni suppression fonctionnelle d'une demande. L'attribution du rôle Administrateur depuis l'interface est également exclue. Enfin, l'IA ne doit ni décider d'une catégorie ou d'une priorité sans validation humaine, ni produire un résumé automatique, ni affecter automatiquement les demandes.
+
+% STATUT : COMPLÉTER PLUS TARD — état actuel rédigé, en attente de revue humaine.
+% SOURCES : PROJECT_TRUTH.md ; functional-scope.md ; statuts des huit .puml
+% de docs/uml/ ; use-case-specifications.md (DRAFT) ; inspection des dossiers
+% docs/adr/, backend/, frontend/ et docs/testing/ (uniquement .gitkeep).
+% Le README principal contient encore une mention obsolète d'absence d'UML.
 \section{Démarche et travaux réalisés}
 \label{sec:01-contexte-environnement-5}
+
+La progression du projet part de la définition du besoin et de l'analyse fonctionnelle, puis de leur modélisation. La conception technique, l'implémentation, les tests et la validation de l'application constituent les étapes suivantes. À ce stade, la référence du projet situe les travaux à la transition entre l'analyse fonctionnelle terminée et la conception technique.
+
+\textbf{Travaux réalisés.} Le périmètre V1 est validé. Le diagramme global de cas d'utilisation, le diagramme d'activité du cycle de vie, le modèle de classes métier et les cinq diagrammes de séquence métier portent le statut validé. Ils formalisent les responsabilités et les comportements attendus du système. Les fiches détaillées des cas d'utilisation sont présentes, mais restent à l'état de brouillon et ne sont pas considérées comme validées.
+
+\textbf{Travaux restant à réaliser.} Aucun ADR n'est présent dans la version du projet examinée. Le backend et le frontend ne sont pas commencés ; la base de données et la sécurité JWT/RBAC ne sont pas implémentées. Le module IA reste prévu et son architecture n'est pas encore décidée. Les dossiers applicatifs et de tests ne contiennent que des fichiers de maintien d'arborescence : aucun résultat de test d'implémentation n'est disponible. La validation de l'analyse et des modèles ne vaut donc pas validation d'une application opérationnelle.
