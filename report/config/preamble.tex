@@ -1,0 +1,15 @@
+\usepackage{fontspec}
+\IfFontExistsTF{Times New Roman}{\setmainfont{Times New Roman}}{%
+  \setmainfont{TeX Gyre Termes}
+  \PackageWarningNoLine{report}{Times New Roman absent: TeX Gyre Termes fallback}}
+\usepackage[french]{babel}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{csquotes}
+\usepackage[backend=biber,style=authoryear,sorting=nyt]{biblatex}
+\addbibresource{bibliography/references.bib}
+\usepackage[hidelinks]{hyperref}
