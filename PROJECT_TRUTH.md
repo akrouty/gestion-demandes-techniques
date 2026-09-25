@@ -20,6 +20,8 @@ Conception technique en cours.
 - Contrat API REST V1 : validé.
 - ADR-005 sécurité V1 : validé.
 - Conception sécurité V1 : validée.
+- ADR-006 architecture frontend V1 : DRAFT.
+- Conception frontend V1 : DRAFT.
 - Diagramme de composants V1 : validé.
 - Diagramme de classes de conception backend V1 : DRAFT (préliminaire, non validable tant que les conceptions backend, persistance, API REST et sécurité ne sont pas suffisamment définies).
 
@@ -50,6 +52,15 @@ Conception technique en cours.
 - IA : frontière architecturale définie par un port abstrait réalisé par un adaptateur ; fonctionnement non bloquant et validation humaine obligatoire.
 
 Ces décisions portent sur l'architecture générale, l'architecture backend, la persistance, l'API REST et la sécurité. Les classes techniques exactes et leurs dépendances détaillées ne sont pas encore décidées.
+
+## Conception frontend proposée — DRAFT
+
+ADR-006 et FRONTEND-DESIGN-V1 proposent une organisation Angular SPA feature-based avec responsabilités `core`, `shared` et `features` (authentification, demandes, administration). Ces orientations attendent une validation humaine et ne constituent pas une implémentation ni de nouvelles décisions validées.
+
+- Session : JWT, expiration et utilisateur courant conservés uniquement en mémoire, conformément à la sécurité validée ; snapshot de rôles réservé à l'UX.
+- Guards comme aides à la navigation, interceptor pour le transport du token et la fin de session ; backend autoritatif pour RBAC et contrôles contextuels.
+- État principalement local, services API par feature, Reactive Forms et détail de demande centralisant les actions ; navigation par union des rôles.
+- Bibliothèque UI, framework CSS, version exacte Angular et détails d'implémentation différés ; aucun NgRx/Redux ou endpoint supplémentaire introduit.
 
 ## État de l'implémentation
 
