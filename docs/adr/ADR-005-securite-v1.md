@@ -31,7 +31,9 @@ La V1 retient l'opération suivante :
 POST /api/v1/auth/login
 ```
 
-Elle reçoit `email` et `password`. Le backend normalise l'email conformément à ADR-003, recherche l'utilisateur, vérifie que le compte existe et est actif, puis vérifie le mot de passe au moyen de Spring Security `PasswordEncoder`. Une authentification réussie produit un JWT d'accès.
+Elle reçoit `email` et `password`. Le backend normalise l'email conformément à ADR-003, recherche l'utilisateur, vérifie que le compte existe et est actif, puis vérifie le mot de passe au moyen de Spring Security `PasswordEncoder`. Une authentification réussie retourne le JWT d'accès (`accessToken`), son type (`tokenType` : `Bearer`), son instant d'expiration (`expiresAt`, instant ISO-8601 correspondant à `exp`) et un snapshot minimal `user` destiné uniquement à l'UX cliente (`id`, `nom`, `email`, `roles`), conformément à `API-CONTRACT-V1.md`.
+
+Ce snapshot représente l'utilisateur authentifié au moment du login et n'est jamais utilisé comme source d'autorisation. L'existence du compte, son état actif et ses rôles actuels sont toujours relus depuis `identity / administration` lors de chaque requête protégée ; le backend applique le RBAC puis les contrôles métier contextuels. Les rôles du snapshot ne deviennent pas des claims JWT obligatoires.
 
 Un échec retourne un message générique identique pour un utilisateur inconnu, un mot de passe incorrect ou un compte inactif. L'API ne révèle ni l'existence ni l'état d'un compte.
 

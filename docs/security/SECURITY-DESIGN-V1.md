@@ -33,7 +33,11 @@ Flux :
 6. en cas de succès, émettre un JWT d'accès de durée limitée ;
 7. en cas d'échec, retourner une erreur générique sans distinguer utilisateur inconnu, compte inactif ou mot de passe incorrect.
 
-Réponse conceptuelle en cas de succès : le token d'accès, son type `Bearer` et les informations temporelles nécessaires au client. Aucun mot de passe, rôle complet inutile ou détail interne n'est retourné.
+Le login est accessible sans JWT. La réponse conceptuelle réussie (`LoginResponse` dans `API-CONTRACT-V1.md`) contient `accessToken` (JWT d'accès), `tokenType` (`Bearer`), `expiresAt` (instant d'expiration ISO-8601 correspondant au claim `exp`) et `user` (snapshot minimal avec `id`, `nom`, `email`, `roles`). Aucun mot de passe ni détail interne n'est retourné.
+
+Le snapshot est produit à partir de l'utilisateur authentifié au moment du login. Ses rôles peuvent être multiples, parmi `RESPONSABLE_TECHNIQUE`, `AGENT_TECHNIQUE` et `ADMINISTRATEUR`. Angular peut l'utiliser uniquement pour adapter son UX : menus, navigation initiale, guards frontend et actions visibles. Il ne constitue jamais une source d'autorisation ni l'autorité RBAC ; les rôles ne deviennent pas des claims JWT obligatoires.
+
+Spring Boot reste l'unique autorité : à chaque requête protégée, il relit depuis `identity / administration` l'existence du compte, son état actif et ses rôles actuels, puis applique le RBAC et les contrôles métier contextuels. Un retrait de rôle après le login peut rendre le snapshot Angular ancien, mais l'action devenue interdite est refusée dès la requête suivante. Les réponses `401` et `403` du backend font autorité. Aucun endpoint `/me` ou `/auth/me` n'est introduit.
 
 ## 3. Flux d'une requête protégée
 

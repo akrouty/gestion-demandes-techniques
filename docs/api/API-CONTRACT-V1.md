@@ -20,7 +20,7 @@ Principes obligatoires :
 - les permissions d'un utilisateur multi-rôles sont l'union de ses rôles ;
 - les contrôles contextuels s'ajoutent toujours au contrôle du rôle.
 
-Tous les endpoints décrits sont protégés. Ils utilisent l'identité authentifiée fournie par la sécurité, dont le mécanisme est défini dans ADR-005 et `SECURITY-DESIGN-V1.md`.
+`POST /api/v1/auth/login` est public, accessible sans JWT. Les autres endpoints métier décrits sont protégés et utilisent l'identité authentifiée fournie par la sécurité, dont le mécanisme est défini dans ADR-005 et `SECURITY-DESIGN-V1.md`.
 
 ## 2. Base path
 
@@ -34,6 +34,7 @@ Dans le tableau, `RT` désigne `RESPONSABLE_TECHNIQUE`, `AT` désigne `AGENT_TEC
 
 | Méthode et route | Rôle requis | Contrôle contextuel et résultat métier | Entrée | Sortie | Succès |
 |---|---|---|---|---|---|
+| `POST /auth/login` | Aucun ; accessible sans JWT | Authentifie un compte existant et actif selon ADR-005. | `LoginRequest` | `LoginResponse` | `200` |
 | `POST /demandes` | RT | Le serveur prend l'utilisateur connecté comme créateur, génère la référence, impose `NOUVELLE`, conserve éventuellement le nouveau client et historise la création. | `CreationDemandeRequest` | `DemandeDetailResponse` et en-tête `Location: /api/v1/demandes/{reference}` | `201` |
 | `GET /demandes` | RT ou AT | RT voit toutes les demandes. AT voit uniquement celles qui lui sont affectées. Les filtres ne peuvent pas élargir ce périmètre. ADM seul n'a aucun accès. | Paramètres de pagination, tri et filtres | Page de `DemandeSummaryResponse` | `200` |
 | `GET /demandes/{reference}` | RT ou AT | RT peut consulter toute demande. AT peut consulter uniquement une demande qui lui est affectée. L'historique complet n'est pas inclus. | — | `DemandeDetailResponse` | `200` |
@@ -224,6 +225,37 @@ Aucun credential ni détail de sécurité n'est exposé.
 
 Seuls les utilisateurs actifs ayant le rôle `AGENT_TECHNIQUE` figurent dans cette réponse.
 
+### 4.4 Authentification
+
+#### `LoginRequest`
+
+- `email` : obligatoire, normalisé selon ADR-003 ;
+- `password` : obligatoire, uniquement en entrée.
+
+`POST /api/v1/auth/login` vérifie l'existence du compte, son état actif et le mot de passe selon `SECURITY-DESIGN-V1.md`. Un utilisateur inconnu, un compte inactif ou un mot de passe incorrect produit le même échec générique d'authentification (`401`).
+
+#### `LoginResponse`
+
+| Champ | Règle |
+|---|---|
+| `accessToken` | JWT d'accès de durée limitée. |
+| `tokenType` | `Bearer`. |
+| `expiresAt` | Instant d'expiration ISO-8601 correspondant au claim `exp` du JWT ; permet au client de connaître l'expiration du token. |
+| `user` | Snapshot minimal de l'utilisateur authentifié au moment du login, décrit ci-dessous. |
+
+Le bloc `user` contient uniquement :
+
+- `id` : identifiant de l'utilisateur authentifié ;
+- `nom` ;
+- `email` ;
+- `roles` : collection pouvant contenir plusieurs rôles parmi `RESPONSABLE_TECHNIQUE`, `AGENT_TECHNIQUE` et `ADMINISTRATEUR`.
+
+Ce snapshot sert uniquement à l'UX Angular : menus, orientation initiale de la navigation, guards frontend et visibilité des actions. Il n'est jamais une source ni une preuve d'autorisation pour les requêtes ultérieures. Les rôles ne deviennent pas des claims JWT obligatoires.
+
+Spring Boot reste l'unique autorité : le JWT identifie l'utilisateur ; à chaque requête protégée, le backend relit le compte dans `identity / administration`, vérifie qu'il existe et est actif, utilise ses rôles actuels pour appliquer le RBAC, puis applique les contrôles métier contextuels. Si un rôle est retiré après le login, le snapshot peut être ancien, mais le backend refuse dès la requête suivante toute action devenue interdite. Les réponses `401` et `403` du backend font autorité sur l'UX.
+
+Aucun endpoint `/me` ou `/auth/me` n'est ajouté. Le JWT reste uniquement en mémoire côté Angular, sans `localStorage`, `sessionStorage` ni cookie d'authentification. La déconnexion supprime la session et le token en mémoire ; aucun refresh token ni endpoint backend de logout n'est ajouté.
+
 ## 5. Valeurs métier fermées
 
 ### `StatutDemande`
@@ -274,7 +306,7 @@ Règles transverses :
 
 | Code | Utilisation |
 |---|---|
-| `200 OK` | Lecture, modification ou action métier réussie retournant l'état obtenu. |
+| `200 OK` | Login réussi, lecture, modification ou action métier réussie retournant l'état obtenu. |
 | `201 Created` | Création d'une demande ou d'un utilisateur. |
 | `400 Bad Request` | JSON invalide, validation de forme, enum ou paramètre invalide. |
 | `401 Unauthorized` | Authentification absente ou invalide. |
