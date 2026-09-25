@@ -57,6 +57,8 @@ Son format exact sera décidé pendant la conception de la couche application et
 
 `Utilisateur.email` est obligatoire, unique et normalisé avant persistance afin que de simples différences de casse ne produisent pas plusieurs comptes logiquement équivalents. La procédure technique exacte de normalisation reste à définir.
 
+Les credentials d'un `Utilisateur` ne sont jamais persistés en clair. Seul le hash du mot de passe est persisté comme donnée technique de sécurité ; il ne constitue pas un attribut du modèle métier UML.
+
 L'adresse email d'un `Client` n'est pas soumise à une contrainte d'unicité, faute de règle métier validée qui la justifie.
 
 ## 6. Relations et ownership

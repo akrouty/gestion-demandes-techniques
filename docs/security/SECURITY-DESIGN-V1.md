@@ -2,17 +2,17 @@
 
 ## Statut
 
-**DRAFT**
+**VALIDATED**
 
 ## 1. Portée
 
 Ce document décrit la conception de sécurité proposée pour l'API REST V1, sans code ni configuration exécutable. Il applique les rôles et permissions du périmètre fonctionnel ainsi que le contrat API validé.
 
-Les mécanismes restent `DRAFT` jusqu'à validation humaine. Aucune classe Spring Security, clé, valeur de secret ou durée de token n'est définie ici.
+Cette conception est validée. Aucune classe Spring Security, clé, valeur de secret ou durée de token n'est définie ici.
 
 ## 2. Flux de login
 
-Opération proposée :
+Opération retenue :
 
 ```text
 POST /api/v1/auth/login
@@ -193,19 +193,23 @@ La réponse ne révèle pas l'existence d'un utilisateur, la raison cryptographi
 
 Ces tests sont à concevoir et exécuter pendant l'implémentation ; aucun n'est exécuté à cette étape documentaire.
 
-## 16. Point ouvert : initialisation des credentials
+## 16. Initialisation des credentials
 
-La création d'un utilisateur ne définit pas encore comment son premier credential est établi. Les options étudiées sont :
+La V1 retient un mot de passe initial fourni par l'Administrateur dans la requête `POST /api/v1/utilisateurs`. Ce mot de passe est une donnée d'entrée uniquement.
 
-- mot de passe initial fourni par l'Administrateur : simple, mais connu de l'Administrateur et nécessitant un canal de transmission maîtrisé ;
-- mot de passe temporaire généré : nécessite remise sécurisée, expiration et changement obligatoire ;
-- invitation ou activation : meilleure séparation, mais ajoute un flux, un token temporaire et une capacité d'envoi.
+Le backend :
 
-**Recommandation DRAFT :** privilégier pour la V1 le mot de passe initial fourni par l'Administrateur, sous réserve de validation humaine et de la définition ultérieure du contrat d'entrée, des règles de validation et du canal de transmission. `API-CONTRACT-V1.md` et ADR-003 ne sont pas modifiés par cette recommandation.
+- vérifie sa présence et sa validité ;
+- le hache immédiatement avec `PasswordEncoder` ;
+- persiste uniquement le hash ;
+- ne conserve jamais le mot de passe en clair ;
+- ne le journalise jamais ;
+- ne le retourne jamais dans une réponse.
+
+La politique précise de longueur et de complexité doit être définie avant l'implémentation. Aucune valeur arbitraire n'est fixée dans cette conception.
 
 ## 17. Décisions différées
 
-- option définitive d'initialisation des credentials ;
 - durée exacte du JWT ;
 - algorithme de signature exact ;
 - utilisation et valeur éventuelle de `aud` ;

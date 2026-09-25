@@ -104,7 +104,6 @@ Restent à définir :
 
 - les endpoints de connexion, déconnexion et renouvellement éventuel ;
 - la durée, la rotation, la révocation et le stockage des jetons ;
-- le stockage et l'initialisation des mots de passe ou autres credentials ;
 - les limites exactes de longueur et de pagination ;
 - le format exact de la référence métier ;
 - le fournisseur, le modèle et le protocole d'intégration IA ;

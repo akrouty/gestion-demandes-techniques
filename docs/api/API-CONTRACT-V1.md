@@ -50,7 +50,7 @@ Dans le tableau, `RT` désigne `RESPONSABLE_TECHNIQUE`, `AT` désigne `AGENT_TEC
 | `GET /agents` | RT | Retourne uniquement les utilisateurs actifs ayant le rôle AT et les données utiles à leur sélection. | — | Liste de `AgentAssignableResponse` | `200` |
 | `GET /utilisateurs` | ADM | Consultation administrative paginée. | Pagination et tri | Page de `UtilisateurSummaryResponse` | `200` |
 | `GET /utilisateurs/{id}` | ADM | L'utilisateur doit exister. | — | `UtilisateurDetailResponse` | `200` |
-| `POST /utilisateurs` | ADM | Crée un utilisateur interne sans définir ici ses credentials. | `CreationUtilisateurRequest` | `UtilisateurDetailResponse` et en-tête `Location: /api/v1/utilisateurs/{id}` | `201` |
+| `POST /utilisateurs` | ADM | Crée un utilisateur interne ; le mot de passe initial reçu uniquement en entrée est validé puis immédiatement haché. | `CreationUtilisateurRequest` | `UtilisateurDetailResponse` et en-tête `Location: /api/v1/utilisateurs/{id}` | `201` |
 | `PUT /utilisateurs/{id}` | ADM | Modifie les informations générales ; l'activation et les rôles utilisent leurs opérations dédiées. | `ModificationUtilisateurRequest` | `UtilisateurDetailResponse` | `200` |
 | `POST /utilisateurs/{id}/activation` | ADM | Active le compte ciblé. | — | `UtilisateurDetailResponse` | `200` |
 | `POST /utilisateurs/{id}/desactivation` | ADM | Désactive le compte ciblé. | — | `UtilisateurDetailResponse` | `200` |
@@ -179,9 +179,10 @@ Ces champs correspondent aux informations minimales du Client validées pour la 
 - `nom` : obligatoire, non vide ;
 - `email` : obligatoire, syntaxiquement valide ;
 - `actif` : état fonctionnel initial explicite ;
-- `rolesMetier` : ensemble composé uniquement de `RESPONSABLE_TECHNIQUE` et `AGENT_TECHNIQUE`.
+- `rolesMetier` : ensemble composé uniquement de `RESPONSABLE_TECHNIQUE` et `AGENT_TECHNIQUE` ;
+- `password` : obligatoire lors de la création, valeur d'entrée uniquement.
 
-Le DTO ne contient aucun mot de passe ni paramètre de jeton. L'initialisation des credentials est différée à ADR-005.
+Le mot de passe est validé puis haché immédiatement avec `PasswordEncoder`. Il n'est jamais persisté en clair et ne figure dans aucun DTO de réponse. Le DTO ne contient aucun paramètre de jeton.
 
 #### `ModificationUtilisateurRequest`
 
@@ -369,7 +370,7 @@ Ne sont pas définis par ce contrat :
 
 - endpoint exact de connexion, déconnexion ou renouvellement ;
 - durée, rotation, révocation, blacklist ou stockage des JWT ;
-- stockage du mot de passe et initialisation des credentials ;
+- règles exactes de longueur et de complexité du mot de passe initial ;
 - format exact de la référence de demande ;
 - longueurs maximales des champs et limites maximales de pagination ;
 - fournisseur, modèle, SDK ou protocole IA ;

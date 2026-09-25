@@ -2,13 +2,13 @@
 
 ## Statut
 
-**DRAFT**
+**VALIDATED**
 
 ## 1. Contexte
 
 L'API REST V1 est définie et validée. Elle doit être protégée pour une application interne utilisant trois rôles applicatifs, des permissions cumulables et des contrôles contextuels sur les demandes. L'architecture retient Spring Security, JWT, RBAC et des contrôles métier côté backend, sans implémentation existante à ce stade.
 
-Cet ADR propose la conception de sécurité V1. Il reste `DRAFT` jusqu'à validation humaine. Le détail opérationnel est décrit dans `docs/security/SECURITY-DESIGN-V1.md`.
+Cet ADR formalise la conception de sécurité V1 validée. Le détail opérationnel est décrit dans `docs/security/SECURITY-DESIGN-V1.md`.
 
 ## 2. Menaces et besoins
 
@@ -25,7 +25,7 @@ La sécurité doit rester proportionnée à une application interne et ne pas in
 
 ## 3. Authentification
 
-La V1 propose l'opération suivante :
+La V1 retient l'opération suivante :
 
 ```text
 POST /api/v1/auth/login
@@ -35,7 +35,7 @@ Elle reçoit `email` et `password`. Le backend normalise l'email conformément �
 
 Un échec retourne un message générique identique pour un utilisateur inconnu, un mot de passe incorrect ou un compte inactif. L'API ne révèle ni l'existence ni l'état d'un compte.
 
-L'API est proposée comme stateless : aucune `HttpSession` ne sert de mécanisme d'authentification et chaque requête protégée présente son JWT.
+L'API est stateless : aucune `HttpSession` ne sert de mécanisme d'authentification et chaque requête protégée présente son JWT.
 
 ## 4. Mots de passe
 
@@ -79,7 +79,7 @@ L'opération de gestion des rôles métier reste limitée à `RESPONSABLE_TECHNI
 
 ## 8. Gestion des tokens côté SPA
 
-L'approche proposée conserve le JWT d'accès uniquement en mémoire dans la SPA Angular et l'envoie dans l'en-tête :
+La V1 conserve le JWT d'accès uniquement en mémoire dans la SPA Angular et l'envoie dans l'en-tête :
 
 ```text
 Authorization: Bearer <token>
@@ -104,7 +104,7 @@ Pour un monolithe V1 qui émet et valide lui-même ses tokens, HMAC est la recom
 
 CORS est configuré explicitement pour les seules origines frontend autorisées, avec uniquement les méthodes et en-têtes nécessaires. Aucun wildcard incontrôlé n'est retenu. La configuration peut différer selon l'environnement ; l'origine exacte de production reste une décision de déploiement.
 
-Le JWT proposé est envoyé explicitement dans l'en-tête `Authorization` et aucun cookie d'authentification n'est envoyé automatiquement par le navigateur. Le risque CSRF classique fondé sur l'envoi automatique de credentials est donc différent. La configuration Spring Security peut ne pas appliquer une protection CSRF conçue pour une authentification par cookie, à condition de rester strictement cohérente avec cette architecture stateless par en-tête. Si l'authentification migre vers des cookies, la protection CSRF devra être réévaluée avant ce changement.
+Le JWT retenu est envoyé explicitement dans l'en-tête `Authorization` et aucun cookie d'authentification n'est envoyé automatiquement par le navigateur. Le risque CSRF classique fondé sur l'envoi automatique de credentials est donc différent. La configuration Spring Security peut ne pas appliquer une protection CSRF conçue pour une authentification par cookie, à condition de rester strictement cohérente avec cette architecture stateless par en-tête. Si l'authentification migre vers des cookies, la protection CSRF devra être réévaluée avant ce changement.
 
 Les credentials et JWT sont transmis uniquement via HTTPS dans tout environnement réel. Cet ADR ne décide aucune infrastructure de certificat, proxy ou déploiement.
 
@@ -138,7 +138,6 @@ Les réponses ne révèlent ni l'existence d'un utilisateur, ni le détail d'éc
 
 Restent à valider ou définir :
 
-- l'initialisation des credentials lors de la création d'un utilisateur ;
 - la durée exacte du JWT ;
 - l'algorithme de signature exact et la forme précise du secret ou des clés ;
 - l'utilisation éventuelle de `aud` et sa valeur ;
@@ -146,14 +145,18 @@ Restent à valider ou définir :
 - les origines CORS propres à chaque environnement ;
 - les classes et la configuration Spring Security exactes.
 
-## 15. Point à valider : initialisation des credentials
+## 15. Initialisation des credentials
 
-`POST /api/v1/utilisateurs` crée actuellement un utilisateur sans mécanisme de credentials défini. Trois options sont étudiées :
+La V1 retient le mot de passe initial fourni par l'Administrateur lors de `POST /api/v1/utilisateurs`.
 
-| Option | Simplicité | Sécurité et limites | Nouvelles données ou fonctionnalités |
-|---|---|---|---|
-| A. Mot de passe initial fourni par l'Administrateur | La plus simple pour une V1 interne. | L'Administrateur connaît le secret initial ; sa transmission à l'utilisateur doit être maîtrisée. Le backend doit le hacher immédiatement et ne jamais le retourner ni le journaliser. | Ajouter ultérieurement l'entrée nécessaire au contrat de création et définir le canal de transmission. |
-| B. Mot de passe temporaire généré | Évite à l'Administrateur de choisir le secret. | Le secret doit être remis une seule fois par un canal sûr et remplacé ; sa restitution et son expiration doivent être conçues. | Génération, remise sécurisée, état temporaire et changement obligatoire du mot de passe. |
-| C. Invitation ou activation | Offre une meilleure séparation entre l'Administrateur et le secret final. | Plus de flux, de tokens temporaires et de risques d'expiration ou de réutilisation à traiter. | Envoi d'invitation, token à usage limité, écran d'activation et gestion des expirations. |
+Le backend :
 
-**Recommandation DRAFT à valider humainement :** retenir l'option A pour la V1 en raison de sa simplicité, à condition de définir avant implémentation l'entrée API, les règles de validation et un canal de transmission maîtrisé. Cette recommandation ne modifie pas encore `API-CONTRACT-V1.md` ni ADR-003 et ne constitue pas une décision validée.
+- reçoit ce mot de passe uniquement comme donnée d'entrée lors de la création ;
+- vérifie sa présence et sa validité ;
+- le hache immédiatement au moyen de `PasswordEncoder` ;
+- persiste uniquement son hash ;
+- ne le stocke jamais en clair ;
+- ne le journalise jamais ;
+- ne le retourne jamais dans une réponse.
+
+Le mot de passe haché est une donnée technique de sécurité et ne devient pas un attribut du modèle métier UML. La politique exacte de longueur et de complexité devra être définie avant l'implémentation sans valeur arbitraire dans cet ADR.

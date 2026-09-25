@@ -18,8 +18,8 @@ Conception technique en cours.
 - ADR-003 persistance V1 : validé.
 - ADR-004 API REST V1 : validé.
 - Contrat API REST V1 : validé.
-- ADR-005 sécurité V1 : DRAFT.
-- Conception sécurité V1 : DRAFT.
+- ADR-005 sécurité V1 : validé.
+- Conception sécurité V1 : validée.
 - Diagramme de composants V1 : validé.
 - Diagramme de classes de conception backend V1 : DRAFT (préliminaire, non validable tant que les conceptions backend, persistance, API REST et sécurité ne sont pas suffisamment définies).
 
@@ -41,11 +41,15 @@ Conception technique en cours.
 - Les modifications métier et leur historique sont atomiques ; les instants utilisent `Instant` et `timestamptz`.
 - Flyway gère les migrations SQL versionnées ; aucun soft-delete n'est ajouté à `DemandeTechnique`.
 - API REST V1 : validée et formalisée dans ADR-004 et API-CONTRACT-V1.
-- Sécurité détaillée : conception DRAFT.
-- Sécurité : Spring Security, JWT, RBAC et contrôles métier complémentaires dans la couche application/service.
+- Sécurité V1 : validée et formalisée dans ADR-005 et SECURITY-DESIGN-V1.
+- Authentification : API stateless avec JWT d'accès de durée limitée ; les rôles et l'état actif sont relus depuis `identity / administration` à chaque requête protégée.
+- Mots de passe : BCrypt via Spring Security `PasswordEncoder` ; le mot de passe initial est fourni par l'Administrateur à la création, puis immédiatement haché et jamais persisté en clair.
+- Token côté SPA : JWT conservé uniquement en mémoire ; aucun refresh token, blacklist ou Redis en V1.
+- Secrets : configuration externe, jamais codée en dur ni versionnée.
+- Autorisation : RBAC complété par les contrôles métier contextuels.
 - IA : frontière architecturale définie par un port abstrait réalisé par un adaptateur ; fonctionnement non bloquant et validation humaine obligatoire.
 
-Ces décisions portent sur l'architecture générale, l'architecture backend, la persistance et l'API REST. Les classes techniques exactes et leurs dépendances détaillées ne sont pas encore décidées.
+Ces décisions portent sur l'architecture générale, l'architecture backend, la persistance, l'API REST et la sécurité. Les classes techniques exactes et leurs dépendances détaillées ne sont pas encore décidées.
 
 ## État de l'implémentation
 
