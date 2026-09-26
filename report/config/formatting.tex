@@ -1,0 +1,36 @@
+% Marges du corps ; haut de l'en-tête à 1 cm et base du pied à 1 cm.
+\geometry{a4paper,margin=2.5cm,headheight=14pt,headsep=\dimexpr1.5cm-14pt\relax,footskip=1.5cm}
+\onehalfspacing
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+\widowpenalty=10000
+\clubpenalty=10000
+\setlength{\emergencystretch}{2em}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\fontsize{10}{12}\selectfont\nouppercase{\leftmark}}
+\fancyfoot[C]{\fontsize{10}{12}\selectfont\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\fancypagestyle{plain}{\fancyhf{}\fancyhead[L]{\fontsize{10}{12}\selectfont\nouppercase{\leftmark}}\fancyfoot[C]{\fontsize{10}{12}\selectfont\thepage}\renewcommand{\headrulewidth}{0pt}}
+\titleformat{\chapter}[display]{\normalfont\LARGE\bfseries\raggedright}{\chaptername\ \thechapter}{20pt}{}
+\titleformat{\section}{\normalfont\Large\bfseries\raggedright}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\large\bfseries\raggedright}{\thesubsection}{1em}{}
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+\counterwithout{figure}{chapter}
+\counterwithout{table}{chapter}
+\counterwithout{equation}{chapter}
+\counterwithout{footnote}{chapter}
+\DeclareCaptionFont{epibody}{\fontsize{12}{18}\selectfont}
+\captionsetup{font=epibody,justification=justified,singlelinecheck=true,aboveskip=18pt,belowskip=36pt}
+\captionsetup[figure]{position=bottom}
+\captionsetup[table]{position=top}
+\graphicspath{{figures/uml/}{figures/architecture/}{figures/screenshots/}{figures/results/}}
+\makeatletter
+% Lire le sommaire sans tronquer le fichier avant la table détaillée finale.
+\newcommand{\ReportSummary}{\begingroup\@fileswfalse\tableofcontents\endgroup}
+\renewcommand\footnotesize{\@setfontsize\footnotesize{10}{11}}
+\renewcommand\@makefnmark{\hbox{\raisebox{3pt}{\normalfont\fontsize{10}{11}\selectfont\@thefnmark}}}
+\renewcommand\@makefntext[1]{\parindent0pt\noindent\@makefnmark\ #1}
+\makeatother

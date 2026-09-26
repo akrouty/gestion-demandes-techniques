@@ -16,6 +16,6 @@ Structure initiale du projet, en phase d’analyse et de conception.
 - `PROJECT_TRUTH.md` : référence des décisions validées.
 
 Les fichiers `.gitkeep` permettent à Git de conserver les dossiers vides.
-Aucun projet Spring Boot ou Angular ni aucun diagramme UML n’est encore généré.
+Les sources UML et les documents de conception sont présents dans `docs/` ; leur état de validation est suivi dans `PROJECT_TRUTH.md`. Aucun projet Spring Boot ou Angular n’est encore généré.
 
 Dépôt GitHub : https://github.com/akrouty/gestion-demandes-techniques
