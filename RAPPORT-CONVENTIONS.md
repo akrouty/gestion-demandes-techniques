@@ -36,6 +36,18 @@ Prévu ≠ conçu ≠ implémenté ≠ testé ≠ validé. Un document DRAFT res
 
 Phase réellement validée → modification ciblée → compilation → contrôle visuel → revue humaine → validation. Identifier les sources et leur version dans les commentaires internes ou la revue Git. Ne mettre à jour que les sections supportées par la phase validée.
 
+### Travail obligatoire chapitre par chapitre
+
+La branche officielle et unique de référence est `main`. Travailler directement sur son état courant, sans créer de branche de rapport, consulter une ancienne branche comme source de vérité ni fusionner une ancienne branche.
+
+À tout moment, un seul chapitre est actif. Le chapitre actif actuel est **Chapitre 1 — Contexte et environnement du projet**, dans `report/chapters/01-contexte-environnement.tex`.
+
+Processus obligatoire : chapitre actif → rédaction / correction → compilation → contrôle du PDF → revue humaine → corrections éventuelles → validation humaine explicite → seulement ensuite chapitre suivant.
+
+Codex ne doit jamais commencer à rédiger le chapitre suivant sans accord explicite de l'utilisateur, par exemple : « Chapitre 1 validé, passe au chapitre 2. » Une compilation réussie ou une revue partielle ne vaut pas cette autorisation.
+
+Sans cet accord, ne rédiger ni le chapitre 2, ni le chapitre 3, ni aucun autre chapitre suivant et ne pas anticiper leur contenu. Les squelettes existants peuvent rester présents, sans nouveau contenu rédactionnel. L'introduction générale, la conclusion, le résumé, la dédicace et les remerciements restent également hors du travail actif actuel.
+
 ## 5. Règles concernant le contenu
 
 Interdiction d'inventer résultats, métriques, tests, captures, architecture, fonctionnalités, décisions techniques, références, citations, dates ou problèmes métier. Une technologie ne peut être annoncée comme utilisée avant son utilisation réelle. Toute affirmation de réalisation doit être reliée au code ; tout résultat doit être relié à un test exécuté ou une observation traçable.
