@@ -178,4 +178,3 @@ Restent à définir pendant les étapes de conception correspondantes :
 - le format exact de `DemandeTechnique.reference` ;
 - les index supplémentaires justifiés par les futurs cas de recherche ;
 - les détails de l'API REST.
-

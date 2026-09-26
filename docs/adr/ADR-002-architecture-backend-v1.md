@@ -156,4 +156,3 @@ Restent à définir et valider :
 - les contrats, endpoints et réponses REST ;
 - les classes et détails Spring Security/JWT ;
 - le fournisseur, le modèle et le mécanisme d'intégration IA.
-
