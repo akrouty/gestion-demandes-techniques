@@ -72,6 +72,56 @@ Aucune référence ou citation inventée ; chaque entrée correspond à une sour
 
 Français clair et naturel, phrases raisonnablement courtes, terminologie de génie logiciel adaptée, paragraphes structurés et transitions utiles. Éviter remplissage, formulations vagues, répétitions, phrases automatiques génériques, adjectifs promotionnels et conclusions sans preuve. Relier chaque choix technologique à un besoin réel documenté.
 
+## Règles pédagogiques et niveau de lecture du rapport
+
+### Lecteur cible et autonomie du texte
+
+Le rapport s'adresse à un enseignant ou à un jury qui ne connaît ni le dépôt Git, ni les conversations, ni les documents internes, ni leur circuit de validation. Il doit être compréhensible de manière autonome : présenter le contexte, les besoins et les décisions avec les explications nécessaires à leur compréhension.
+
+### Sources internes et narration académique
+
+Les sources internes servent à vérifier la vérité du projet ; elles ne constituent pas la narration du rapport. Sauf nécessité académique justifiée, ne pas citer dans le corps du texte les identifiants ADR-001, ADR-002, etc., `PROJECT_TRUTH.md`, les noms ou chemins de fichiers Markdown, les branches, les commits, les codes de règles tels que RM01 ou les statuts DRAFT et VALIDATED. Ces références peuvent rester dans les commentaires internes.
+
+Éviter : « L'architecture backend est validée dans ADR-002. »
+
+Préférer : « Une architecture modulaire a été retenue afin de séparer les principales responsabilités de l'application tout en conservant un déploiement simple. »
+
+Expliquer la décision, sa raison et ses conséquences, plutôt que le document qui la consigne. L'exemple de formulation ne dispense pas de vérifier la décision dans les sources actuelles.
+
+### Progression du général vers le particulier
+
+Construire la lecture selon la progression : contexte → problème → besoin → objectifs → fonctionnement attendu → analyse → modélisation → architecture générale → choix techniques expliqués → implémentation → tests → résultats. Introduire un besoin et son sens avant les mécanismes techniques qui y répondent, en respectant l'avancement réel du projet et la validation chapitre par chapitre.
+
+### Justification des choix
+
+Présenter les choix importants selon le raisonnement : besoin → problème ou contrainte → options envisagées → choix retenu → justification → conséquence pour le projet. Ne pas produire un catalogue de technologies ni justifier un choix par sa seule popularité. Ne pas inventer une comparaison d'options qui n'a pas été menée.
+
+### Définition des termes et acronymes
+
+Définir les termes et acronymes importants à leur première apparition, en expliquant leur rôle dans le projet. Par exemple, présenter un jeton d'authentification au format JSON Web Token (JWT), une interface de programmation (API) suivant les principes REST (Representational State Transfer), le contrôle d'accès fondé sur les rôles (RBAC, Role-Based Access Control) ou une application web à page unique (SPA, Single-Page Application) avant de réutiliser leurs formes abrégées. N'introduire ces notions que lorsqu'elles sont utiles à la compréhension.
+
+### Niveau de détail et langue
+
+Employer un français académique simple et précis. Éviter le jargon non expliqué, les accumulations d'acronymes et les noms de classes, de packages ou de points d'accès techniques sans utilité pour le lecteur.
+
+Le corps du rapport explique uniquement les concepts et décisions nécessaires à la compréhension du projet. Les détails exhaustifs de conception, contrats API, endpoints, classes, packages ou documents internes restent dans les documents techniques ou éventuellement en annexe lorsqu'ils apportent une vraie valeur académique.
+
+### Construction des sections
+
+Une section importante comporte généralement une introduction, le besoin ou le concept étudié, les explications essentielles, une figure ou un tableau si utile, son interprétation et une transition. Adapter cette organisation au propos : ne pas la transformer en sous-sections artificielles ni en simple liste de décisions.
+
+### Usage pédagogique des diagrammes
+
+Chaque diagramme doit répondre à une question précise : qui utilise le système (cas d'utilisation), quel est le cycle de vie d'une demande (activité), quelles données sont liées (classes), comment se déroule un scénario (séquence). Introduire la question avant la figure et interpréter les éléments importants après celle-ci. Sélectionner les diagrammes utiles à l'argumentation ; réserver les compléments secondaires aux annexes au lieu de reproduire systématiquement tous les modèles.
+
+### Conception et réalisation
+
+Distinguer systématiquement conception et implémentation. « La solution prévoit un contrôle des droits » décrit une conception ; « Le serveur contrôle les droits lors de cette opération » affirme une réalisation et exige une vérification du code actuel. « Ce contrôle a été testé » exige en plus un test réellement exécuté et un résultat traçable. Une décision ou un modèle validé ne prouve jamais que l'application est implémentée ou testée.
+
+### Traçabilité interne
+
+Conserver la traçabilité détaillée dans les commentaires LaTeX, le document de vérité du projet, les ADR, les documents de conception et l'historique Git. Le texte destiné au jury expose le raisonnement et l'état réel du projet, sans raconter ce suivi interne. Ces règles complètent les prescriptions EPI et ne changent ni le statut DRAFT ni l'obligation de validation humaine du chapitre actif avant le suivant.
+
 ## 11. Conventions LaTeX
 
 ### Sources académiques et structure

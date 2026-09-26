@@ -52,15 +52,13 @@ La V1 exclut le portail et le compte Client, ainsi qu'un module autonome de gest
 % docs/architecture/TECHNICAL-CONVENTIONS.md ; docs/uml/component/ ;
 % docs/uml/class/backend-design-v1.puml ; backend/, frontend/, docs/testing/.
 % Les statuts sont vérifiés directement dans la branche de référence main.
-% Référence auditée : main, commit b5e60ae98f94adf65852936695b0ccc9c870a423.
+% Référence auditée : main, commit 3f6eb2e65bd1e11a6fe898cdbc96061d6aa26a76.
 % Source frontend : docs/frontend/FRONTEND-DESIGN-V1.md.
 \section{Démarche et travaux réalisés}
 \label{sec:01-contexte-environnement-5}
 
-La progression du projet part de la définition du besoin et de l'analyse fonctionnelle, puis de leur modélisation. La conception technique est actuellement en cours. L'implémentation, les tests et la validation de l'application restent à réaliser.
+Les travaux ont commencé par la précision du besoin de gestion des demandes techniques. Le périmètre de la première version a ensuite été délimité et les responsabilités des utilisateurs ont été définies. Cette base a permis d'analyser les règles métier et les étapes de traitement d'une demande, de son enregistrement à sa clôture ou à son annulation.
 
-\textbf{Analyse et modélisation métier.} Le périmètre V1 est validé, ainsi que le diagramme global de cas d'utilisation, le diagramme d'activité du cycle de vie, le modèle de classes métier et les cinq diagrammes de séquence métier. Les fiches détaillées des cas d'utilisation restent à l'état de brouillon.
+L'analyse a été prolongée par la modélisation des comportements attendus, des données et de leurs relations. Ces modèles ont servi à préparer la conception générale de la solution : organisation de l'application, conservation des données, échanges entre ses parties, sécurité et place de l'assistance intelligente. Cette conception reste en cours et prépare la mise en œuvre.
 
-\textbf{Conception technique.} Les décisions relatives à l'architecture backend (ADR-002), à la persistance (ADR-003), à l'API REST (ADR-004), à la sécurité (ADR-005) et au frontend (ADR-006) sont validées. Le contrat API REST, les conceptions de sécurité et du frontend, ainsi que le diagramme de composants V1 sont également validés. En revanche, l'ADR-001 relatif à l'architecture applicative et le diagramme de classes de conception backend restent à l'état de brouillon. Ces validations portent sur la conception et ne démontrent pas une implémentation.
-
-\textbf{Travaux restant à réaliser.} Le backend et le frontend ne sont pas commencés ; la base de données n'est pas implémentée. La sécurité JWT/RBAC est conçue, mais non implémentée. Le module IA n'est pas implémenté : sa frontière architecturale est définie, tandis que le fournisseur et le modèle restent à choisir. Les tests d'implémentation ne sont pas commencés. La validation de l'analyse et des modèles ne vaut donc pas validation d'une application opérationnelle.
+Les travaux réalisés portent ainsi sur l'analyse et la conception. L'implémentation de l'application et de son assistance intelligente, puis l'exécution des tests et la validation du fonctionnement, restent à réaliser.

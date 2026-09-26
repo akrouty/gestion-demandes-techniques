@@ -4,98 +4,62 @@
 % Page séparatrice EPI : contenu à partir de la page suivante.
 \clearpage
 
-% STATUT : RÉDIGER MAINTENANT
-% SOURCE : PROJECT_TRUTH.md ; docs/uml/UML-CONVENTIONS.md
-% RAISON : Conception fonctionnelle validée ; rédaction après revue du squelette.
+% STATUT ÉDITORIAL : ATTENDRE — squelette uniquement, chapitre non actif.
+% Le chapitre 1 reste le seul chapitre actif ; aucune rédaction anticipée.
+% SOURCE COURANTE : main, commit 3f6eb2e65bd1e11a6fe898cdbc96061d6aa26a76.
+% Les validations ci-dessous concernent la conception, jamais l'implémentation.
+
+% SOURCE : PROJECT_TRUTH.md ; docs/uml/UML-CONVENTIONS.md.
+% À traiter après autorisation : du besoin à l'analyse puis aux modèles et à la conception.
 \section{Démarche d'analyse et de conception}
-\label{sec:03-cadre-analytique-conception-1}
+\label{sec:03-demarche-analyse-conception}
 
-% STATUT : RÉDIGER MAINTENANT
-% SOURCE : docs/requirements/functional-scope.md
-% RAISON : Conception fonctionnelle validée ; rédaction après revue du squelette.
-\section{Périmètre fonctionnel V1}
-\label{sec:03-cadre-analytique-conception-2}
+% SOURCE : docs/requirements/functional-scope.md — périmètre V1 validé.
+% À traiter : acteurs et responsabilités, fonctions principales, périmètre et exclusions,
+% catégories et priorités, permissions et règles métier essentielles, cycle de vie.
+% Conserver notamment la séparation résolution/acceptation, les transitions autorisées,
+% le motif d'annulation, l'historisation et les limites propres aux rôles et à l'assistance.
+\section{Analyse fonctionnelle}
+\label{sec:03-analyse-fonctionnelle}
 
-% STATUT : RÉDIGER MAINTENANT
-% SOURCE : docs/requirements/functional-scope.md
-% RAISON : Conception fonctionnelle validée ; rédaction après revue du squelette.
-\section{Acteurs et responsabilités}
-\label{sec:03-cadre-analytique-conception-3}
+% SOURCE : docs/uml/use-case/use-case-v1.puml ; activity/request-lifecycle-v1.puml ;
+% class/domain-model-v1.puml ; les cinq diagrammes métier de docs/uml/sequence/.
+% Ces modèles métier sont validés ; sélectionner les cas d'utilisation, activités,
+% classes, scénarios et séquences utiles, avec introduction et interprétation.
+% Les modèles secondaires pourront aller en annexe.
+% docs/requirements/use-case-specifications.md reste DRAFT : les fiches détaillées
+% ne constituent pas automatiquement une section principale du rapport.
+\section{Modélisation fonctionnelle}
+\label{sec:03-modelisation-fonctionnelle}
 
-% STATUT : RÉDIGER MAINTENANT
-% SOURCE : docs/requirements/functional-scope.md
-% RAISON : Conception fonctionnelle validée ; rédaction après revue du squelette.
-\section{Permissions et règles métier}
-\label{sec:03-cadre-analytique-conception-4}
+% SOURCE : PROJECT_TRUTH.md ; docs/adr/ADR-001, ADR-002 et ADR-006 ;
+% docs/frontend/FRONTEND-DESIGN-V1.md ; docs/uml/component/application-components-v1.puml.
+% ADR-002, ADR-006, conception frontend et composants validés ; ADR-001 reste DRAFT.
+% Les conventions techniques et le modèle de classes backend restent DRAFT.
+% À traiter : vue globale, interface web, serveur, stockage et communications principales.
+% Présenter les responsabilités avant les technologies ; aucune réalisation à affirmer.
+\section{Architecture générale de la solution}
+\label{sec:03-architecture-generale}
 
-% STATUT : RÉDIGER MAINTENANT
-% SOURCE : docs/requirements/functional-scope.md
-% RAISON : Conception fonctionnelle validée ; rédaction après revue du squelette.
-\section{Catégories et priorités}
-\label{sec:03-cadre-analytique-conception-5}
+% SOURCE : docs/adr/ADR-003 et ADR-004 ; docs/api/API-CONTRACT-V1.md — validés.
+% À traiter : besoins de persistance, données et historique, relations et intégrité,
+% puis échanges interface-serveur et principes REST expliqués sans liste exhaustive
+% d'endpoints. La base de données et les échanges ne sont pas implémentés.
+\section{Conception des données et des échanges}
+\label{sec:03-donnees-echanges}
 
-% STATUT : RÉDIGER MAINTENANT
-% SOURCE : docs/requirements/functional-scope.md ; docs/uml/activity/request-lifecycle-v1.puml
-% RAISON : Conception fonctionnelle validée ; rédaction après revue du squelette.
-\section{Cycle de vie d'une demande}
-\label{sec:03-cadre-analytique-conception-6}
+% SOURCE : docs/adr/ADR-005 ; docs/security/SECURITY-DESIGN-V1.md — validés.
+% À traiter : besoin de protection, authentification, autorisation, contrôles métier,
+% mots de passe et secrets ; définir les acronymes lors de la future rédaction.
+% La sécurité JWT/RBAC est conçue, mais non implémentée.
+\section{Sécurité de la solution}
+\label{sec:03-securite}
 
-% STATUT : RÉDIGER MAINTENANT
-% SOURCE : docs/uml/use-case/use-case-v1.puml
-% RAISON : Statut VALIDATED vérifié.
-\section{Cas d'utilisation global}
-\label{sec:03-cadre-analytique-conception-7}
-
-% STATUT : ATTENDRE
-% SOURCE : docs/requirements/use-case-specifications.md
-% RAISON : Fiches DRAFT.
-\section{Spécifications détaillées des cas d'utilisation}
-\label{sec:03-cadre-analytique-conception-8}
-
-% STATUT : RÉDIGER MAINTENANT
-% SOURCE : docs/uml/class/domain-model-v1.puml
-% RAISON : Statut VALIDATED vérifié.
-\section{Modèle de classes métier}
-\label{sec:03-cadre-analytique-conception-9}
-
-% STATUT : RÉDIGER MAINTENANT
-% SOURCE : docs/uml/sequence/ : ai-analysis-v1.puml, assign-reassign-request-v1.puml, process-resolve-request-v1.puml, register-qualify-request-v1.puml, review-resolution-v1.puml
-% RAISON : Cinq diagrammes VALIDATED vérifiés ; conception métier seulement.
-\section{Diagrammes de séquence métier}
-\label{sec:03-cadre-analytique-conception-10}
-
-% STATUT : RÉDIGER MAINTENANT
-% SOURCE : docs/requirements/functional-scope.md
-% RAISON : Place fonctionnelle validée ; aucun module IA implémenté.
-\section{Place fonctionnelle de l'IA}
-\label{sec:03-cadre-analytique-conception-11}
-
-% STATUT : COMPLÉTER PLUS TARD
-% SOURCE : PROJECT_TRUTH.md ; docs/adr/
-% RAISON : Aucun ADR présent sur la base main cb721ab ; aucune implémentation.
-\section{Architecture technique}
-\label{sec:03-cadre-analytique-conception-12}
-
-% STATUT : COMPLÉTER PLUS TARD
-% SOURCE : PROJECT_TRUTH.md ; docs/adr/
-% RAISON : Aucun ADR présent sur la base main cb721ab ; aucune implémentation.
-\section{Conception de la persistance}
-\label{sec:03-cadre-analytique-conception-13}
-
-% STATUT : COMPLÉTER PLUS TARD
-% SOURCE : PROJECT_TRUTH.md ; docs/adr/
-% RAISON : Aucun ADR présent sur la base main cb721ab ; aucune implémentation.
-\section{API et contrats applicatifs}
-\label{sec:03-cadre-analytique-conception-14}
-
-% STATUT : COMPLÉTER PLUS TARD
-% SOURCE : PROJECT_TRUTH.md ; docs/adr/
-% RAISON : Aucun ADR présent sur la base main cb721ab ; aucune implémentation.
-\section{Conception de la sécurité}
-\label{sec:03-cadre-analytique-conception-15}
-
-% STATUT : ATTENDRE
-% SOURCE : PROJECT_TRUTH.md ; docs/adr/
-% RAISON : Architecture IA non décidée selon PROJECT_TRUTH.md.
-\section{Conception technique du module IA}
-\label{sec:03-cadre-analytique-conception-16}
+% SOURCE : PROJECT_TRUTH.md ; docs/requirements/functional-scope.md ;
+% docs/adr/ADR-002 ; docs/uml/sequence/ai-analysis-v1.puml.
+% À traiter : rôle de l'assistance, propositions de catégorie et de priorité,
+% validation humaine, gestion manuelle en cas d'indisponibilité, architecture et limites.
+% Frontière architecturale par port/adaptateur définie ; fournisseur et modèle non choisis.
+% Préciser l'état réel d'intégration : module non implémenté, aucun résultat testé.
+\section{Assistance intelligente}
+\label{sec:03-assistance-intelligente}
