@@ -1,0 +1,48 @@
+@startuml
+
+' Statut : VALIDATED
+' Niveau : conception logique
+' Type de vue : architecture logique limitée
+' Objectif : montrer les composants logiques décidés et leurs dépendances importantes
+title Diagramme de composants applicatifs - V1\nVALIDATED\nVue d'architecture logique limitée
+
+left to right direction
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam componentStyle uml2
+skinparam linetype ortho
+skinparam nodesep 50
+skinparam ranksep 65
+
+rectangle "Système de gestion des demandes techniques" as SYSTEM {
+  component "Angular SPA" as SPA
+
+  rectangle "Backend Spring Boot — monolithe modulaire\n« frontière logique »" as BACKEND {
+    together {
+      component "Security" as SECURITY
+      component "Request" as REQUEST
+      component "Identity / Administration" as IDENTITY
+    }
+    interface "Contrat d'analyse IA" as AI_CONTRACT
+    component "AI" as AI
+  }
+
+  database "PostgreSQL\n« SGBD / système de persistance »" as POSTGRES
+}
+
+SPA -[hidden]right- SECURITY
+BACKEND -[hidden]down- POSTGRES
+
+SPA ..> REQUEST : fonctions métier
+SPA ..> IDENTITY : administration
+
+SECURITY ..> IDENTITY : identités et rôles
+REQUEST ..> IDENTITY : utilisateurs liés
+REQUEST ..> AI_CONTRACT : assistance IA
+AI ..|> AI_CONTRACT : réalise
+
+REQUEST ..> POSTGRES : données des demandes
+IDENTITY ..> POSTGRES : utilisateurs et rôles
+
+@enduml

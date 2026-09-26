@@ -8,7 +8,7 @@ Avant toute création, correction ou validation d'un diagramme UML, il faut lire
 - `PROJECT_TRUTH.md` ;
 - `docs/uml/UML-CONVENTIONS.md`.
 
-Les règles sémantiques UML définissent ce que le diagramme signifie. Les conventions PlantUML définissent uniquement la manière de produire un rendu clair. Une convention de rendu ne doit jamais modifier, remplacer ou contredire la sémantique UML.
+La sémantique des diagrammes suit la spécification OMG Unified Modeling Language 2.5.1. La documentation officielle PlantUML définit principalement la syntaxe et les possibilités de rendu utilisées par le projet. Une facilité PlantUML ne constitue pas une nouvelle règle UML et ne doit jamais modifier, remplacer ou contredire la sémantique définie par l'OMG.
 
 ## 1. Principes généraux de modélisation
 
@@ -84,12 +84,18 @@ Les règles sémantiques UML définissent ce que le diagramme signifie. Les conv
 
 ### 2.4 Diagrammes de classes
 
+- Une boîte `class` représente une classe réellement identifiée au niveau de conception ; elle ne sert pas de boîte générique pour une responsabilité, une couche, une fonction, un module ou une idée encore indécise.
+- Une boîte `interface` représente une interface réellement identifiée et un `enum` représente un ensemble fermé de valeurs.
+- Un stéréotype tel que `<<conceptuel>>` ou `<<responsabilité>>` ne transforme pas une boîte générique en classe UML correcte.
+- Des libellés comme `API demandes`, `Service demandes` ou `Sécurité applicative` ne doivent donc pas être représentés comme classes tant qu'aucune classe correspondante n'a été décidée.
 - Faire correspondre les classes métier, attributs, types, associations et multiplicités au besoin validé.
 - Utiliser la notation `nom : Type` et, si nécessaire, `nom : Type [multiplicité]`.
 - Ne pas imposer un type technique lorsqu'il n'a pas été décidé.
-- Représenter par `enum` les ensembles fermés de valeurs.
+- Utiliser les packages pour regrouper des classes réellement identifiées appartenant au même espace logique ; un package n'implique à lui seul ni couche logicielle ni dépendance.
 - Une association représente un lien structurel entre instances.
-- Une dépendance représente un usage plus faible et ne doit pas remplacer une association métier réelle.
+- Une dépendance représente un usage plus faible, lorsqu'un élément en utilise un autre sans relation structurelle permanente ; elle ne doit pas remplacer une association métier réelle.
+- Ne montrer que les dépendances utiles à l'objectif du diagramme, sans dessiner toutes les collaborations possibles.
+- Lorsqu'une classe ou un composant implémente une interface, utiliser une réalisation UML dont le triangle pointe vers l'interface réalisée.
 - Une composition utilise un losange noir du côté du tout et suppose une appartenance forte de la partie au tout.
 - N'utiliser l'agrégation partagée, avec losange blanc, que lorsqu'une sémantique tout/partie indépendante est réellement justifiée ; sinon préférer une association simple.
 - Placer les multiplicités aux bonnes extrémités et pouvoir justifier chacune d'elles par une règle métier, pas par une structure de base de données supposée.
@@ -101,17 +107,31 @@ Les règles sémantiques UML définissent ce que le diagramme signifie. Les conv
 - Une dépendance vers une énumération peut être affichée si elle améliore réellement la lecture, sans être interprétée comme une association métier.
 - Ne pas ajouter d'opérations aux classes métier avant la conception de leurs responsabilités.
 - Ne pas introduire de détails Spring/JPA, DTO, mapper ou SQL dans un diagramme de classes métier.
+- Dans un diagramme de conception, ne pas créer de classes techniques avant que leurs responsabilités soient réellement décidées, notamment les contrôleurs, services, repositories, DTO, mappers, filtres de sécurité, services JWT et adaptateurs.
+- La décision d'utiliser des DTO séparés, des repositories ou des mappers ne suffit pas à déterminer leurs classes exactes ; celles-ci doivent découler des contrats et cas d'utilisation étudiés.
+- Ne pas recopier systématiquement tout le diagramme de classes métier dans un diagramme technique ; ne montrer que les classes métier nécessaires à son objectif et conserver le diagramme métier `VALIDATED` comme référence du modèle complet.
+- Éviter un diagramme unique couvrant tout le backend lorsqu'il devient dense ou ambigu. Préférer des diagrammes focalisés, par exemple sur `request`, `identity / administration`, `security` ou la frontière IA. Ne conserver un diagramme global que s'il reste réellement lisible.
 
 ### 2.5 Diagrammes de composants
 
-- Un composant représente une unité logicielle cohérente ayant une responsabilité et des interfaces identifiables, pas une classe individuelle.
+- Un composant représente une unité logicielle modulaire et encapsulée ayant une responsabilité cohérente et des interfaces identifiables, pas une classe individuelle ni une simple boîte graphique.
+- Un package utilisé pour organiser plusieurs éléments n'est pas automatiquement un composant.
+- Avant de construire le diagramme, préciser s'il présente une vue externe `black-box`, une vue interne `white-box` ou une vue d'architecture logique explicitement limitée.
+- Ne pas mélanger involontairement un composant vu comme boîte noire avec sa décomposition interne détaillée.
+- Lorsqu'un conteneur sert seulement à regrouper visuellement des modules internes, utiliser une notation de regroupement adaptée sans lui donner implicitement la sémantique d'un composant composite.
 - Ne représenter que les composants réellement décidés dans l'architecture.
-- Distinguer clairement les composants internes, les bibliothèques et les systèmes externes.
+- Distinguer clairement le système étudié, l'application frontend, le backend, les composants internes, les bibliothèques et les systèmes ou technologies externes.
 - Placer les systèmes externes hors de la frontière du système étudié.
 - Utiliser une dépendance dans le sens du composant utilisateur vers le composant utilisé.
+- Chaque dépendance visible doit répondre à la question : « Pourquoi le client dépend-il du fournisseur ? » Ne pas créer de dépendance uniquement pour connecter visuellement deux éléments.
 - Représenter une interface fournie ou requise uniquement lorsqu'un contrat réel a été identifié.
+- Une interface ne sert jamais de point graphique destiné à réunir plusieurs flèches.
+- Représenter la fourniture d'une interface par une réalisation UML correcte et l'utilisation d'un contrat par une dépendance dirigée du composant utilisateur vers ce contrat.
+- Si aucun contrat précis n'est encore décidé, préférer une dépendance simple entre composants plutôt qu'inventer une interface.
+- Distinguer le terme architectural « port », utilisé par exemple pour désigner une abstraction d'intégration, de l'élément UML `Port`. Un port architectural ne doit pas être représenté automatiquement par un Port UML. N'utiliser un Port UML que lorsque sa sémantique UML sur un classifier structuré est réellement nécessaire et décidée.
 - Ne pas inventer d'interface, de port, de protocole, de service IA, de proxy, de broker ou de couche technique non décidé.
 - Ne pas confondre composant, package, classe, artefact déployable et nœud d'exécution.
+- Lorsqu'un SGBD tel que PostgreSQL apparaît dans une vue logique, préciser son rôle de système de persistance sans introduire implicitement une topologie ou une décision de déploiement.
 - Éviter les dépendances circulaires ; toute dépendance circulaire conservée doit être explicitement justifiée.
 - Ne pas mélanger l'architecture logique des composants avec la topologie physique de déploiement.
 
@@ -138,11 +158,13 @@ Ces conventions concernent uniquement la source et la présentation PlantUML. El
 - Utiliser `DRAFT` par défaut ; utiliser `VALIDATED` uniquement après une demande explicite suivant la validation humaine.
 - Utiliser des alias stables et explicites afin de séparer les libellés affichés des identifiants PlantUML.
 - Conserver les fichiers en UTF-8 pour préserver la terminologie française.
-- Utiliser les réglages de direction, d'espacement et de tracé uniquement pour améliorer la lisibilité.
-- Les liens invisibles, `together` et autres contraintes de placement ne doivent servir qu'à la mise en page et ne doivent jamais remplacer une relation UML réelle.
+- Choisir `left to right direction` ou `top to bottom direction` uniquement selon le flux dominant du diagramme.
+- Utiliser les réglages de direction, d'espacement et de tracé uniquement pour améliorer la lisibilité, sans forcer de nombreuses directions de flèches pour compenser un mauvais découpage.
+- N'utiliser `linetype ortho` que si les relations et leurs libellés restent lisibles dans le rendu obtenu.
+- Les liens `[hidden]`, `together` et autres contraintes de placement ne doivent servir qu'à la mise en page et ne représentent aucune relation UML.
 - Ne pas forcer une direction de flèche qui inverse la sémantique de la relation.
 - Minimiser les croisements et garder les libellés, gardes et multiplicités lisibles.
-- Vérifier le rendu visuel après chaque modification importante, de préférence dans le format destiné au rapport, notamment SVG ou PDF.
+- Compiler puis inspecter le rendu réel après chaque modification importante, de préférence dans le format destiné au rapport, notamment SVG ou PDF ; une source PlantUML propre ne suffit pas si le résultat est illisible.
 
 ### 3.2 Cas d'utilisation
 
@@ -175,6 +197,7 @@ Ces conventions concernent uniquement la source et la présentation PlantUML. El
 - Utiliser `*--` pour une composition, `o--` uniquement pour une agrégation justifiée et `..>` pour une dépendance.
 - Placer le losange du côté du tout et vérifier le sens visuel de chaque dépendance.
 - Ne pas masquer les attributs ou valeurs d'énumération nécessaires à la compréhension du modèle.
+- Ne pas réduire fortement la taille de police pour faire tenir un diagramme de classes trop dense ; réduire son périmètre ou le découper en plusieurs diagrammes focalisés.
 
 ### 3.6 Composants et déploiement
 
@@ -182,6 +205,10 @@ Ces conventions concernent uniquement la source et la présentation PlantUML. El
 - Utiliser des regroupements visuels uniquement pour représenter une frontière ou une organisation déjà décidée.
 - Conserver les systèmes externes et les nœuds hors des regroupements auxquels ils n'appartiennent pas.
 - Ne pas faire passer un choix graphique de conteneur, d'icône ou de stéréotype pour une décision d'architecture.
+- Pour un diagramme de composants destiné au rapport, viser une lecture confortable sur une page A4 paysage avec un flux principal organisé dans une direction cohérente et un espacement régulier.
+- Éviter les croisements, les flèches qui traversent des composants, les labels répartis sur plusieurs lignes et les nombreuses relations convergeant vers un même point.
+- Ne pas réduire fortement la taille de police pour faire tenir trop d'éléments ; si le rendu devient dense, réduire le périmètre ou créer un second diagramme.
+- Après compilation, contrôler explicitement les chevauchements, croisements, labels coupés ou traversés par des traits, l'alignement, la taille du texte, la densité et la lecture sur A4.
 
 ## 4. Relecture obligatoire avant validation
 

@@ -1,0 +1,147 @@
+@startuml
+
+' Statut : DRAFT
+' Niveau : conception technique préliminaire
+' Validation : non validable à cette étape ; reconstruction après les conceptions backend, persistance, API REST et sécurité
+' Objectif : représenter les responsabilités backend déjà décidées sans figer les classes d'implémentation
+title Diagramme de classes de conception backend - V1\nDRAFT - préliminaire, non validable à cette étape
+
+top to bottom direction
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam nodesep 30
+skinparam ranksep 40
+hide methods
+hide empty members
+
+package "request" as REQUEST_MODULE {
+  package "Présentation" as REQUEST_PRESENTATION {
+    class "API demandes" as REQUEST_API <<responsabilité>>
+    class "DTO demandes" as REQUEST_DTO <<conceptuel>>
+    class "Mapper demandes" as REQUEST_MAPPER <<conceptuel>>
+  }
+
+  package "Application" as REQUEST_APPLICATION {
+    class "Service applicatif demandes" as REQUEST_SERVICE <<responsabilité>>
+    interface AnalyseIaPort <<port>>
+  }
+
+  package "Domaine et persistance" as REQUEST_DOMAIN {
+    class DemandeTechnique <<métier>>
+    class Client <<métier>>
+    class HistoriqueDemande <<métier>>
+
+    enum StatutDemande {
+      NOUVELLE
+      ASSIGNEE
+      EN_COURS
+      RESOLUE
+      CLOTUREE
+      ANNULEE
+    }
+
+    enum Priorite {
+      BASSE
+      MOYENNE
+      HAUTE
+      CRITIQUE
+    }
+
+    enum Categorie {
+      Étude de dangers
+      Analyse de risques industriels
+      Protection incendie
+      Note de calcul
+      Dossier technique
+      Assistance réglementaire
+      Autre
+    }
+
+    interface DemandeRepository <<repository>>
+    interface ClientRepository <<repository>>
+  }
+}
+
+package "identity / administration" as IDENTITY_MODULE {
+  package "Présentation" as IDENTITY_PRESENTATION {
+    class "API administration" as IDENTITY_API <<responsabilité>>
+    class "DTO utilisateurs" as IDENTITY_DTO <<conceptuel>>
+    class "Mapper utilisateurs" as IDENTITY_MAPPER <<conceptuel>>
+  }
+
+  package "Application" as IDENTITY_APPLICATION {
+    class "Service applicatif administration" as IDENTITY_SERVICE <<responsabilité>>
+  }
+
+  package "Domaine et persistance" as IDENTITY_DOMAIN {
+    class Utilisateur <<métier>>
+
+    enum Role {
+      RESPONSABLE_TECHNIQUE
+      AGENT_TECHNIQUE
+      ADMINISTRATEUR
+    }
+
+    interface UtilisateurRepository <<repository>>
+  }
+}
+
+package "security" as SECURITY_MODULE {
+  class "Sécurité applicative" as SECURITY_ROLE <<responsabilité architecturale>>
+  note bottom of SECURITY_ROLE
+    Spring Security
+    JWT
+    RBAC
+    contrôles métier complémentaires
+  end note
+}
+
+package "ai" as AI_MODULE {
+  class "Adaptateur IA" as AI_ADAPTER <<responsabilité conceptuelle>>
+}
+
+REQUEST_API ..> REQUEST_DTO : échange
+REQUEST_API ..> REQUEST_SERVICE : délègue
+REQUEST_MAPPER ..> REQUEST_DTO : transforme
+REQUEST_MAPPER ..> DemandeTechnique : transforme
+
+REQUEST_SERVICE ..> DemandeRepository : utilise
+REQUEST_SERVICE ..> ClientRepository : utilise
+REQUEST_SERVICE ..> AnalyseIaPort : demande une analyse
+DemandeRepository ..> DemandeTechnique : persiste
+ClientRepository ..> Client : persiste
+
+IDENTITY_API ..> IDENTITY_DTO : échange
+IDENTITY_API ..> IDENTITY_SERVICE : délègue
+IDENTITY_MAPPER ..> IDENTITY_DTO : transforme
+IDENTITY_MAPPER ..> Utilisateur : transforme
+IDENTITY_SERVICE ..> UtilisateurRepository : utilise
+UtilisateurRepository ..> Utilisateur : persiste
+
+REQUEST_API ..> SECURITY_ROLE : accès protégé
+IDENTITY_API ..> SECURITY_ROLE : accès protégé
+SECURITY_ROLE ..> Utilisateur : identité
+SECURITY_ROLE ..> Role : rôles
+
+AI_ADAPTER ..|> AnalyseIaPort : réalise
+
+Client "1" -- "0..*" DemandeTechnique : concerne
+Utilisateur "1" -- "0..*" DemandeTechnique : créée par\n{créateur avec rôle\nRESPONSABLE_TECHNIQUE}
+Utilisateur "0..1" -- "0..*" DemandeTechnique : agent affecté\n{agent avec rôle\nAGENT_TECHNIQUE}
+DemandeTechnique "1" *-- "0..*" HistoriqueDemande : historique
+Utilisateur "1" -- "0..*" HistoriqueDemande : effectué par
+
+Utilisateur ..> Role : utilise
+DemandeTechnique ..> Categorie : utilise
+DemandeTechnique ..> Priorite : utilise
+DemandeTechnique ..> StatutDemande : utilise
+
+AI_MODULE -[hidden]down- REQUEST_MODULE
+REQUEST_MODULE -[hidden]down- IDENTITY_MODULE
+IDENTITY_MODULE -[hidden]down- SECURITY_MODULE
+
+@enduml
