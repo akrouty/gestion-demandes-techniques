@@ -21,6 +21,11 @@ import java.util.Objects;
  * suppression d'un événement existant, aucun setter public réécrivant son
  * contenu. Une correction produit un nouvel événement. Ceci n'est pas de
  * l'Event Sourcing.</p>
+ *
+ * <p>Aucun constructeur public : toute création fonctionnelle d'un événement
+ * est pilotée par {@link DemandeTechnique#ajouterEvenement} et associe
+ * obligatoirement l'événement à sa demande. Seul le constructeur protégé sans
+ * argument reste disponible pour JPA.</p>
  */
 @Entity
 @Table(name = "historique_demande")
@@ -37,10 +42,10 @@ public class HistoriqueDemande {
 	@Column(name = "type_evenement", nullable = false)
 	private String typeEvenement;
 
-	@Column(name = "ancienne_valeur")
+	@Column(name = "ancienne_valeur", columnDefinition = "text")
 	private String ancienneValeur;
 
-	@Column(name = "nouvelle_valeur")
+	@Column(name = "nouvelle_valeur", columnDefinition = "text")
 	private String nouvelleValeur;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -54,22 +59,10 @@ public class HistoriqueDemande {
 	protected HistoriqueDemande() {
 	}
 
-	public HistoriqueDemande(
-			Instant dateEvenement,
-			String typeEvenement,
-			String ancienneValeur,
-			String nouvelleValeur,
-			Utilisateur auteur) {
-		this.dateEvenement = Objects.requireNonNull(dateEvenement, "dateEvenement obligatoire");
-		this.typeEvenement = Objects.requireNonNull(typeEvenement, "typeEvenement obligatoire");
-		this.ancienneValeur = ancienneValeur;
-		this.nouvelleValeur = nouvelleValeur;
-		this.auteur = Objects.requireNonNull(auteur, "auteur obligatoire");
-	}
-
 	/**
-	 * Constructeur interne utilisé par {@link DemandeTechnique#ajouterEvenement}
-	 * pour maintenir l'appartenance de l'événement à sa demande.
+	 * Constructeur interne unique de création, utilisé par
+	 * {@link DemandeTechnique#ajouterEvenement} : l'événement est toujours
+	 * rattaché à une {@link DemandeTechnique} obligatoire.
 	 */
 	HistoriqueDemande(
 			Instant dateEvenement,
@@ -78,7 +71,11 @@ public class HistoriqueDemande {
 			String nouvelleValeur,
 			Utilisateur auteur,
 			DemandeTechnique demande) {
-		this(dateEvenement, typeEvenement, ancienneValeur, nouvelleValeur, auteur);
+		this.dateEvenement = Objects.requireNonNull(dateEvenement, "dateEvenement obligatoire");
+		this.typeEvenement = Objects.requireNonNull(typeEvenement, "typeEvenement obligatoire");
+		this.ancienneValeur = ancienneValeur;
+		this.nouvelleValeur = nouvelleValeur;
+		this.auteur = Objects.requireNonNull(auteur, "auteur obligatoire");
 		this.demande = Objects.requireNonNull(demande, "demande obligatoire");
 	}
 

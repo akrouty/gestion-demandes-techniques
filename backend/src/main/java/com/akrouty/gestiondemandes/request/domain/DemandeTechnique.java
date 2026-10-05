@@ -50,7 +50,7 @@ public class DemandeTechnique {
 	@Column(nullable = false)
 	private String titre;
 
-	@Column(nullable = false, length = 4000)
+	@Column(nullable = false, columnDefinition = "text")
 	private String description;
 
 	@Enumerated(EnumType.STRING)
@@ -65,13 +65,13 @@ public class DemandeTechnique {
 	@Column(nullable = false)
 	private StatutDemande statut;
 
-	@Column(length = 4000)
+	@Column(columnDefinition = "text")
 	private String descriptionTraitement;
 
-	@Column(length = 4000)
+	@Column(columnDefinition = "text")
 	private String solution;
 
-	@Column(length = 4000)
+	@Column(columnDefinition = "text")
 	private String motifAnnulation;
 
 	@Column(nullable = false)
@@ -216,7 +216,11 @@ public class DemandeTechnique {
 		return agentAffecte;
 	}
 
+	/**
+	 * Retourne une vue non modifiable de l'historique : aucun événement existant
+	 * ne peut être retiré ou réécrit depuis l'extérieur.
+	 */
 	public List<HistoriqueDemande> getHistorique() {
-		return historique;
+		return List.copyOf(historique);
 	}
 }

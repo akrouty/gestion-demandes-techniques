@@ -15,6 +15,8 @@ import com.akrouty.gestiondemandes.request.domain.StatutDemande;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -101,14 +103,51 @@ class HistoriqueDemandeTest {
 	@Test
 	void auteur_et_date_evenement_sont_obligatoires() {
 		Instant maintenant = Instant.now().truncatedTo(ChronoUnit.MICROS);
+		DemandeTechnique demande = nouvelleDemande("REF-TEST-H003", maintenant);
 
-		assertThatThrownBy(() -> new HistoriqueDemande(maintenant, "CREATION", null, null, null))
+		assertThatThrownBy(() -> demande.ajouterEvenement(maintenant, "CREATION", null, null, null))
 				.isInstanceOf(NullPointerException.class)
 				.hasMessageContaining("auteur");
 
-		assertThatThrownBy(() -> new HistoriqueDemande(null, "CREATION", null, null, createur))
+		assertThatThrownBy(() -> demande.ajouterEvenement(null, "CREATION", null, null, createur))
 				.isInstanceOf(NullPointerException.class)
 				.hasMessageContaining("dateEvenement");
+	}
+
+	@Test
+	void historique_est_toujours_associe_a_une_demande() {
+		// Aucun constructeur public : impossible de créer fonctionnellement un événement sans demande.
+		assertThat(HistoriqueDemande.class.getConstructors()).isEmpty();
+
+		// Tout constructeur hors JPA exige une DemandeTechnique en dernier paramètre.
+		boolean creationSansDemandePossible = Arrays.stream(HistoriqueDemande.class.getDeclaredConstructors())
+				.filter(constructeur -> constructeur.getParameterCount() > 0)
+				.anyMatch(constructeur -> {
+					Class<?>[] types = constructeur.getParameterTypes();
+					return types[types.length - 1] != DemandeTechnique.class;
+				});
+		assertThat(creationSansDemandePossible).isFalse();
+
+		Instant maintenant = Instant.now().truncatedTo(ChronoUnit.MICROS);
+		DemandeTechnique demande = nouvelleDemande("REF-TEST-H004", maintenant);
+		HistoriqueDemande evenement = demande.ajouterEvenement(
+				maintenant, "CREATION", null, "NOUVELLE", createur);
+		assertThat(evenement.getDemande()).isSameAs(demande);
+	}
+
+	@Test
+	void collection_historique_exposee_en_lecture_seule() {
+		Instant maintenant = Instant.now().truncatedTo(ChronoUnit.MICROS);
+		DemandeTechnique demande = nouvelleDemande("REF-TEST-H005", maintenant);
+		demande.ajouterEvenement(maintenant, "CREATION", null, "NOUVELLE", createur);
+
+		List<HistoriqueDemande> vue = demande.getHistorique();
+		assertThat(vue).hasSize(1);
+		assertThatThrownBy(() -> vue.clear()).isInstanceOf(UnsupportedOperationException.class);
+		assertThatThrownBy(() -> vue.remove(0)).isInstanceOf(UnsupportedOperationException.class);
+
+		// La collection interne reste intacte après les tentatives de modification.
+		assertThat(demande.getHistorique()).hasSize(1);
 	}
 
 	@Test
