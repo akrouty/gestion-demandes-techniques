@@ -51,9 +51,16 @@ public class JwtService {
 		this.nomAlgorithme = algorithme.getName();
 		SecretKey cle = proprietes.cleHmac();
 
-		this.encodeur = NimbusJwtEncoder.withSecretKey(cle).build();
+		// L'algorithme configuré (HS256/HS384/HS512) est transmis EXPLICITEMENT à
+		// l'émetteur comme au validateur : aucun défaut silencieux (HS256) ne doit
+		// pouvoir s'appliquer. La vérification du header alg reste en plus côté filtre.
+		this.encodeur = NimbusJwtEncoder.withSecretKey(cle)
+				.algorithm(algorithme)
+				.build();
 
-		NimbusJwtDecoder decodeurHmac = NimbusJwtDecoder.withSecretKey(cle).build();
+		NimbusJwtDecoder decodeurHmac = NimbusJwtDecoder.withSecretKey(cle)
+				.macAlgorithm(algorithme)
+				.build();
 		OAuth2TokenValidator<Jwt> validateurTemps = new JwtTimestampValidator(Duration.ZERO);
 		OAuth2TokenValidator<Jwt> validateurIssuer = new JwtIssuerValidator(proprietes.issuer());
 		decodeurHmac.setJwtValidator(jwt -> {

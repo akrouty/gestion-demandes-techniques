@@ -140,7 +140,6 @@ public class SecurityConfig {
 				HttpMethod.POST.name(),
 				HttpMethod.PUT.name(),
 				HttpMethod.PATCH.name(),
-				HttpMethod.DELETE.name(),
 				HttpMethod.OPTIONS.name()));
 		configuration.setAllowedHeaders(List.of(HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE));
 		configuration.setMaxAge(3600L);
