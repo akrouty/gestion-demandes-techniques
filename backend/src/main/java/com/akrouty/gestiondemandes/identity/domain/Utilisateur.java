@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -94,7 +95,54 @@ public class Utilisateur {
 		return passwordHash;
 	}
 
+	/**
+	 * Retourne une vue non modifiable des rôles.
+	 *
+	 * <p>Appelants internes : la copie protège la collection interne de toute
+	 * mutation arbitraire extérieure ({@code clear()}/{@code add(...)}). La
+	 * modification des rôles passe uniquement par {@link #remplacerRolesMetier(Set)}.
+	 * La lecture initialise la collection paresseuse si nécessaire.</p>
+	 */
 	public Set<Role> getRoles() {
-		return roles;
+		return Set.copyOf(roles);
+	}
+
+	/** Modifie les informations générales ; n'affecte ni {@code actif}, ni rôles, ni mot de passe. */
+	public void modifierInformations(String nom, String email) {
+		this.nom = Objects.requireNonNull(nom, "nom obligatoire");
+		this.email = EmailNormalizer.normalize(Objects.requireNonNull(email, "email obligatoire"));
+	}
+
+	public void activer() {
+		this.actif = true;
+	}
+
+	public void desactiver() {
+		this.actif = false;
+	}
+
+	/**
+	 * Remplace l'ensemble des rôles métier ({@code RESPONSABLE_TECHNIQUE},
+	 * {@code AGENT_TECHNIQUE}) en conservant intact un éventuel rôle
+	 * {@code ADMINISTRATEUR} déjà possédé.
+	 *
+	 * <p>Cette opération ne peut ni attribuer ni retirer {@code ADMINISTRATEUR} :
+	 * toute présence de ce rôle dans la demande est refusée.</p>
+	 *
+	 * @param rolesMetier nouveaux rôles métier (RT et/ou AT, éventuellement vides)
+	 * @throws RoleAdministrateurNonAttribuableException si {@code ADMINISTRATEUR} figure dans {@code rolesMetier}
+	 */
+	public void remplacerRolesMetier(Set<Role> rolesMetier) {
+		Objects.requireNonNull(rolesMetier, "roles obligatoires");
+		if (rolesMetier.contains(Role.ADMINISTRATEUR)) {
+			throw new RoleAdministrateurNonAttribuableException();
+		}
+		Set<Role> nouveauxRoles = EnumSet.noneOf(Role.class);
+		if (roles.contains(Role.ADMINISTRATEUR)) {
+			nouveauxRoles.add(Role.ADMINISTRATEUR);
+		}
+		nouveauxRoles.addAll(rolesMetier);
+		roles.clear();
+		roles.addAll(nouveauxRoles);
 	}
 }
