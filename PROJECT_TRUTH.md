@@ -67,6 +67,7 @@ ADR-006 et FRONTEND-DESIGN-V1 retiennent une organisation Angular SPA feature-ba
 - Backend : implémentation en cours.
 - Bloc 1 — fondation Spring Boot + persistance V1 : implémenté et validé.
 - Bloc 2 — Identity + Sécurité V1 : implémenté et validé.
+- Bloc 3 — Module Demandes + API + historique : implémenté et validé.
 - Schéma initial Flyway (`V1__initial_schema.sql`) : implémenté.
 - Entités, enums et repositories de persistance V1 : implémentés.
 - Tests Bloc 1 : 16 tests exécutés avec succès dans l'environnement H2 isolé ;
@@ -75,10 +76,12 @@ ADR-006 et FRONTEND-DESIGN-V1 retiennent une organisation Angular SPA feature-ba
   pas une validation PostgreSQL.
 - Sécurité JWT/RBAC : implémentée pour le périmètre du Bloc 2 (JWT, relecture
   utilisateur, RBAC, 401/403, CORS, CSRF, stateless) ; validée humainement.
-- Contrôles métier contextuels des demandes : pas encore implémentés avant le
-  Bloc 3 (Bloc 3 en cours ; sa validation restera humaine après revue).
+- Contrôles métier contextuels des demandes : implémentés et validés dans le Bloc 3.
+- Validation finale du Bloc 3 : 218 tests réussis, avec `clean test` et
+  `clean verify` en succès, sans failure, error ni test ignoré.
+- Validation PostgreSQL réelle du Bloc 3 : connexion réussie, migration Flyway V1
+  appliquée, `Hibernate validate` réussi, backend démarré et workflow API V1
+  vérifié par appels HTTP réels.
 - Frontend : non implémenté.
 - IA : non implémentée.
-- Aucune validation PostgreSQL réelle n'est prétendue si elle n'a pas été
-  effectivement exécutée.
 - Frontière architecturale IA : décidée ; fournisseur et modèle IA non encore choisis.
