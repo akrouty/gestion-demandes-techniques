@@ -77,6 +77,8 @@ Accès uniquement à ses demandes affectées et aux opérations de démarrage, s
 
 Accès aux opérations d'administration des utilisateurs et des rôles métier. Ce rôle seul ne donne aucun accès métier aux demandes.
 
+Un Administrateur authentifié ne peut pas désactiver son propre compte : la couche application compare l’identifiant ciblé à celui du principal Spring Security et refuse avec `409 Conflict` / `AUTO_DESACTIVATION_INTERDITE` (« Vous ne pouvez pas désactiver votre propre compte. »). Le compte reste actif. Angular reflète cette interdiction uniquement pour l’UX ; le contrôle serveur reste obligatoire. La désactivation d’un autre Administrateur demeure autorisée, sans règle de dernier administrateur.
+
 ### Utilisateur multi-rôles
 
 Les permissions sont l'union des rôles actuels. Les contrôles contextuels restent applicables pour chaque opération.

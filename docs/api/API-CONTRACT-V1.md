@@ -54,8 +54,10 @@ Dans le tableau, `RT` désigne `RESPONSABLE_TECHNIQUE`, `AT` désigne `AGENT_TEC
 | `POST /utilisateurs` | ADM | Crée un utilisateur interne ; le mot de passe initial reçu uniquement en entrée est validé puis immédiatement haché. | `CreationUtilisateurRequest` | `UtilisateurDetailResponse` et en-tête `Location: /api/v1/utilisateurs/{id}` | `201` |
 | `PUT /utilisateurs/{id}` | ADM | Modifie les informations générales ; l'activation et les rôles utilisent leurs opérations dédiées. | `ModificationUtilisateurRequest` | `UtilisateurDetailResponse` | `200` |
 | `POST /utilisateurs/{id}/activation` | ADM | Active le compte ciblé. | — | `UtilisateurDetailResponse` | `200` |
-| `POST /utilisateurs/{id}/desactivation` | ADM | Désactive le compte ciblé. | — | `UtilisateurDetailResponse` | `200` |
+| `POST /utilisateurs/{id}/desactivation` | ADM | Désactive le compte ciblé, sauf le compte authentifié lui-même. | — | `UtilisateurDetailResponse` | `200` |
 | `PUT /utilisateurs/{id}/roles-metier` | ADM | Remplace uniquement l'ensemble des rôles métier `RESPONSABLE_TECHNIQUE` et `AGENT_TECHNIQUE`. Un éventuel rôle `ADMINISTRATEUR` existant est conservé intact : cette opération ne peut ni l'attribuer ni le retirer. | `RolesMetierRequest` | `UtilisateurDetailResponse` | `200` |
+
+La désactivation compare l’identifiant stable ciblé avec celui du principal authentifié. Une auto-désactivation est refusée avec `409 Conflict`, code `AUTO_DESACTIVATION_INTERDITE` et message « Vous ne pouvez pas désactiver votre propre compte. » ; le compte reste actif. Un autre utilisateur, y compris un autre Administrateur, reste désactivable. Aucune règle de dernier administrateur n’est ajoutée.
 
 Il n'existe en V1 aucun endpoint générique de modification de statut, aucun CRUD autonome de clients ou d'historique et aucun endpoint de suppression d'utilisateur.
 

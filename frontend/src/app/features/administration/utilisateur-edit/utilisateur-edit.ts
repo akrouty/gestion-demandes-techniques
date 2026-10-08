@@ -8,6 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Subject, catchError, finalize, of, skip, startWith, switchMap, takeUntil } from 'rxjs';
+import { SessionService } from '../../../core/session/session';
 import { PageState } from '../../../shared/ui/page-state/page-state';
 import { AdministrationApi } from '../administration-api';
 import { administrationError, businessRoles, nonBlank } from '../administration-feedback';
@@ -28,6 +29,7 @@ import { AdministrationError, UtilisateurDetailResponse, roleLabels } from '../u
 })
 export class UtilisateurEdit {
   private readonly api = inject(AdministrationApi);
+  private readonly session = inject(SessionService);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
@@ -114,6 +116,11 @@ export class UtilisateurEdit {
         }
       });
   }
+  // Aide UX uniquement : le backend impose cette règle avec le principal authentifié.
+  isOwnAccount(): boolean {
+    const user = this.user();
+    return !!user && user.id === this.session.user()?.id;
+  }
   hasAdministrator(): boolean {
     return this.user()?.roles.includes('ADMINISTRATEUR') ?? false;
   }
@@ -166,6 +173,7 @@ export class UtilisateurEdit {
   changeState(): void {
     const user = this.user();
     if (!user || this.stateBusy() || this.stateReload()) return;
+    if (user.actif && this.isOwnAccount()) return;
     if (user.actif && this.confirmDeactivate.invalid) {
       this.confirmDeactivate.markAsTouched();
       return;

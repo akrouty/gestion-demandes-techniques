@@ -26,15 +26,42 @@ import org.springframework.http.MediaType;
 class UtilisateurApiTest extends ApiTestSupport {
 
 	private String jetonAdmin;
+	private Long adminId;
 
 	@BeforeEach
 	void creerAdministrateur() {
 		Utilisateur admin = creerUtilisateur("Admin Principal", "admin@example.com", true, Role.ADMINISTRATEUR);
+		adminId = admin.getId();
 		jetonAdmin = jeton(admin);
 	}
 
 	private String administration() {
 		return BEARER_PREFIX + jetonAdmin;
+	}
+
+	@Test
+	void auto_desactivation_refusee_conserve_compte_actif_et_acces_protege() throws Exception {
+		mockMvc.perform(post("/api/v1/utilisateurs/{id}/desactivation", adminId)
+				.header("Authorization", administration()))
+				.andExpect(status().isConflict())
+				.andExpect(jsonPath("$.code").value("AUTO_DESACTIVATION_INTERDITE"))
+				.andExpect(jsonPath("$.message").value("Vous ne pouvez pas désactiver votre propre compte."));
+		assertThat(utilisateurRepository.findById(adminId).orElseThrow().isActif()).isTrue();
+		mockMvc.perform(get("/api/v1/utilisateurs/{id}", adminId)
+				.header("Authorization", administration()))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.actif").value(true));
+	}
+
+	@Test
+	void desactivation_autre_administrateur_reste_autorisee() throws Exception {
+		Utilisateur autre = creerUtilisateur("Autre Admin", "autre-admin@example.com", true, Role.ADMINISTRATEUR);
+		mockMvc.perform(post("/api/v1/utilisateurs/{id}/desactivation", autre.getId())
+				.header("Authorization", administration()))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.actif").value(false));
+		assertThat(utilisateurRepository.findById(autre.getId()).orElseThrow().isActif()).isFalse();
+		assertThat(utilisateurRepository.findById(adminId).orElseThrow().isActif()).isTrue();
 	}
 
 	// ---------------------------------------------------------------- création

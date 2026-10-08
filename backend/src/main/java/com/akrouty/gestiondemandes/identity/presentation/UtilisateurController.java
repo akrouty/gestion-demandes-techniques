@@ -4,6 +4,8 @@ import com.akrouty.gestiondemandes.identity.application.CreationUtilisateurComma
 import com.akrouty.gestiondemandes.identity.application.IdentiteService;
 import com.akrouty.gestiondemandes.identity.application.UtilisateurConsultation;
 import com.akrouty.gestiondemandes.identity.domain.Role;
+import com.akrouty.gestiondemandes.security.application.UtilisateurAuthentifie;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.Set;
@@ -86,8 +88,9 @@ public class UtilisateurController {
 	}
 
 	@PostMapping("/{id}/desactivation")
-	public UtilisateurDetailResponse desactiver(@PathVariable Long id) {
-		return versDetail(identite.desactiver(id));
+	public UtilisateurDetailResponse desactiver(@PathVariable Long id,
+			@AuthenticationPrincipal UtilisateurAuthentifie acteur) {
+		return versDetail(identite.desactiver(id, acteur.id()));
 	}
 
 	@PutMapping("/{id}/roles-metier")

@@ -99,33 +99,37 @@
     @if (stateSuccess()) {
       <p class="feedback feedback-success" role="status">{{ stateSuccess() }}</p>
     }
-    @if (detail.actif) {
-      <p class="muted">
-        La désactivation rend le compte inutilisable pour la connexion et les requêtes protégées.
-      </p>
-      <p>
-        <mat-checkbox [formControl]="confirmDeactivate"
-          >Je confirme la désactivation de ce compte.</mat-checkbox
-        >
-      </p>
-      @if (confirmDeactivate.touched && confirmDeactivate.invalid) {
-        <p role="alert">Confirmez la désactivation avant de poursuivre.</p>
+    @if (detail.actif && isOwnAccount()) {
+      <p class="muted">Vous ne pouvez pas désactiver votre propre compte.</p>
+    } @else {
+      @if (detail.actif) {
+        <p class="muted">
+          La désactivation rend le compte inutilisable pour la connexion et les requêtes protégées.
+        </p>
+        <p>
+          <mat-checkbox [formControl]="confirmDeactivate"
+            >Je confirme la désactivation de ce compte.</mat-checkbox
+          >
+        </p>
+        @if (confirmDeactivate.touched && confirmDeactivate.invalid) {
+          <p role="alert">Confirmez la désactivation avant de poursuivre.</p>
+        }
       }
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="changeState()"
+        [disabled]="stateBusy() || stateReload()"
+      >
+        {{
+          stateBusy()
+            ? 'Enregistrement…'
+            : detail.actif
+              ? 'Désactiver le compte'
+              : 'Activer le compte'
+        }}
+      </button>
     }
-    <button
-      mat-stroked-button
-      type="button"
-      (click)="changeState()"
-      [disabled]="stateBusy() || stateReload()"
-    >
-      {{
-        stateBusy()
-          ? 'Enregistrement…'
-          : detail.actif
-            ? 'Désactiver le compte'
-            : 'Activer le compte'
-      }}
-    </button>
   </section>
   <section class="surface">
     <h2>Rôles</h2>

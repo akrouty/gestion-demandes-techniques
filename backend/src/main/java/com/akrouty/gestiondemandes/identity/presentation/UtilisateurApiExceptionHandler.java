@@ -1,5 +1,6 @@
 package com.akrouty.gestiondemandes.identity.presentation;
 
+import com.akrouty.gestiondemandes.identity.application.AutoDesactivationInterditeException;
 import com.akrouty.gestiondemandes.identity.application.EmailDejaUtiliseException;
 import com.akrouty.gestiondemandes.identity.application.MotDePasseNonConformeException;
 import com.akrouty.gestiondemandes.identity.application.UtilisateurIntrouvableException;
@@ -22,6 +23,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  */
 @RestControllerAdvice(assignableTypes = UtilisateurController.class)
 public class UtilisateurApiExceptionHandler {
+
+	@ExceptionHandler(AutoDesactivationInterditeException.class)
+	public ResponseEntity<ErreurApi> autoDesactivation(AutoDesactivationInterditeException e) {
+		return ResponseEntity.status(HttpStatus.CONFLICT)
+				.body(ErreurApi.simple("AUTO_DESACTIVATION_INTERDITE", e.getMessage()));
+	}
 
 	@ExceptionHandler(UtilisateurIntrouvableException.class)
 	public ResponseEntity<ErreurApi> introuvable(UtilisateurIntrouvableException e) {

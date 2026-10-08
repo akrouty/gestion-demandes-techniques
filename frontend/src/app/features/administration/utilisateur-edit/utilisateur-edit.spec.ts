@@ -351,4 +351,60 @@ describe('Modification utilisateur F3', () => {
     harness.detectChanges();
     expect(harness.routeNativeElement?.textContent).toContain('Utilisateur introuvable');
   });
+  function currentAccount() {
+    TestBed.inject(SessionService).establish({
+      accessToken: 'test',
+      tokenType: 'Bearer',
+      expiresAt: new Date(Date.now() + 60000).toISOString(),
+      user: { id: 7, nom: 'Admin', email: 'admin@example.test', roles: ['ADMINISTRATEUR'] },
+    });
+  }
+  it('autre compte actif propose bouton et confirmation', async () => {
+    await setup();
+    expect(harness.routeNativeElement!.textContent).toContain('Désactiver le compte');
+    expect(harness.routeNativeElement!.textContent).toContain('Je confirme la désactivation');
+  });
+  it('compte courant masque action et confirmation et conserve les éditions', async () => {
+    currentAccount();
+    await setup();
+    const text = harness.routeNativeElement!.textContent!;
+    expect(text).not.toContain('Désactiver le compte');
+    expect(text).not.toContain('Je confirme la désactivation');
+    expect(text).toContain('Vous ne pouvez pas désactiver votre propre compte.');
+    expect(text).toContain('lecture seule');
+    expect(page.identity.enabled).toBe(true);
+    expect(page.rolesForm.enabled).toBe(true);
+    page.saveIdentity();
+    http.expectOne(base).flush(data());
+    page.saveRoles();
+    action('roles-metier').flush(data());
+  });
+  it('appel direct de changeState sur compte courant ne produit aucune requête', async () => {
+    currentAccount();
+    await setup();
+    page.confirmDeactivate.setValue(true);
+    page.changeState();
+    http.expectNone(base + '/desactivation');
+    expect(page.stateBusy()).toBe(false);
+    expect(page.user()?.actif).toBe(true);
+  });
+  it('refus serveur auto-désactivation affiche message et conserve session', async () => {
+    await setup();
+    page.confirmDeactivate.setValue(true);
+    page.changeState();
+    action('desactivation').flush(
+      {
+        code: 'AUTO_DESACTIVATION_INTERDITE',
+        message: 'Vous ne pouvez pas désactiver votre propre compte.',
+      },
+      { status: 409, statusText: 'Conflict' },
+    );
+    harness.detectChanges();
+    expect(harness.routeNativeElement!.textContent).toContain(
+      'Vous ne pouvez pas désactiver votre propre compte.',
+    );
+    expect(harness.routeNativeElement!.textContent).toContain('AUTO_DESACTIVATION_INTERDITE');
+    expect(TestBed.inject(SessionService).token()).toBe('test');
+    expect(page.user()?.actif).toBe(true);
+  });
 });

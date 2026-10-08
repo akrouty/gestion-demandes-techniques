@@ -95,7 +95,10 @@ public class IdentiteService {
 	}
 
 	@Transactional
-	public UtilisateurConsultation desactiver(Long id) {
+	public UtilisateurConsultation desactiver(Long id, Long acteurId) {
+		if (id.equals(acteurId)) {
+			throw new AutoDesactivationInterditeException();
+		}
 		Utilisateur utilisateur = charger(id);
 		utilisateur.desactiver();
 		return consulter(utilisateur);
