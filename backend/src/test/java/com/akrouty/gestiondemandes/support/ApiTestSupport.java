@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -25,6 +26,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * <p>Les fixtures créent directement les utilisateurs (dont l'administrateur)
  * : aucun bootstrap de premier ADMINISTRATEUR n'existe dans les décisions
  * validées.</p>
+ *
+ * <p>Bloc 3 : le nettoyage supprime d'abord historique, demandes et clients
+ * (clés étrangères) puis les utilisateurs.</p>
  */
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -49,8 +53,15 @@ public abstract class ApiTestSupport {
 	@Autowired
 	protected PasswordEncoder passwordEncoder;
 
+	@Autowired
+	protected JdbcTemplate jdbcTemplate;
+
 	@BeforeEach
-	void nettoyerLesUtilisateurs() {
+	void nettoyerLesDonnees() {
+		// Ordre des clés étrangères : historique → demandes → clients → utilisateurs.
+		jdbcTemplate.update("DELETE FROM historique_demande");
+		jdbcTemplate.update("DELETE FROM demande_technique");
+		jdbcTemplate.update("DELETE FROM client");
 		utilisateurRepository.deleteAll();
 	}
 

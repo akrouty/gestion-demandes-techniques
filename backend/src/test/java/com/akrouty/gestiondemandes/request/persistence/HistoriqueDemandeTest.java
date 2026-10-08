@@ -63,16 +63,14 @@ class HistoriqueDemandeTest {
 	}
 
 	private DemandeTechnique nouvelleDemande(String reference, Instant creation) {
-		return new DemandeTechnique(
+		return DemandeTechnique.creer(
 				reference,
 				"Titre de test",
 				"Description de test",
 				Categorie.NOTE_CALCUL,
 				Priorite.MOYENNE,
-				StatutDemande.NOUVELLE,
 				client,
 				createur,
-				creation,
 				creation);
 	}
 

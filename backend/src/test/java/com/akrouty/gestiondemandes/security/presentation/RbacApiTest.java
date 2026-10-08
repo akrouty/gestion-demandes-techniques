@@ -81,15 +81,16 @@ class RbacApiTest extends ApiTestSupport {
 		Utilisateur rt = creerUtilisateur("RT", "rt@example.com", true, Role.RESPONSABLE_TECHNIQUE);
 		String jeton = BEARER_PREFIX + jeton(rt);
 
-		// Autorisé par le RBAC : 404 (contrôleur métier attendu au Bloc 3).
+		// Autorisé par le RBAC : le contrôleur métier est atteint (Bloc 3).
+		// Payload incomplet → 400 de validation, preuve que la barrière est franchie.
 		mockMvc.perform(post("/api/v1/demandes")
 						.header("Authorization", jeton)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content("{\"titre\":\"t\"}"))
-				.andExpect(status().isNotFound());
+				.andExpect(status().isBadRequest());
 
 		mockMvc.perform(get("/api/v1/clients").header("Authorization", jeton))
-				.andExpect(status().isNotFound());
+				.andExpect(status().isOk());
 	}
 
 	@Test
@@ -132,12 +133,13 @@ class RbacApiTest extends ApiTestSupport {
 		mockMvc.perform(get("/api/v1/utilisateurs").header("Authorization", jeton))
 				.andExpect(status().isOk());
 
-		// Route RT (RESPONSABLE_TECHNIQUE) : barrière franchie → 404 au Bloc 3.
+		// Route RT (RESPONSABLE_TECHNIQUE) : barrière franchie → contrôleur atteint
+		// (payload incomplet → 400 de validation).
 		mockMvc.perform(post("/api/v1/demandes")
 						.header("Authorization", jeton)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content("{\"titre\":\"t\"}"))
-				.andExpect(status().isNotFound());
+				.andExpect(status().isBadRequest());
 
 		// Route AT (absente des rôles) : refus.
 		mockMvc.perform(post("/api/v1/demandes/REF-1/resolution")

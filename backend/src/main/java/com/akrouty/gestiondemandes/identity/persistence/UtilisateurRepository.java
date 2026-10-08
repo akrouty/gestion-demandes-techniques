@@ -32,4 +32,13 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> 
 	 */
 	@Query("select distinct u from Utilisateur u left join fetch u.roles where u.id in :ids")
 	List<Utilisateur> findAllByIdAvecRoles(@Param("ids") Collection<Long> ids);
+
+	/**
+	 * Utilisateurs ACTIFS avec leurs rôles chargés par requête ciblée
+	 * (cas d'utilisation : liste des Agents affectables, Bloc 3). Le filtre
+	 * sur le rôle {@code AGENT_TECHNIQUE} est appliqué ensuite dans
+	 * l'application pour garder cette requête générique.
+	 */
+	@Query("select distinct u from Utilisateur u left join fetch u.roles where u.actif = true")
+	List<Utilisateur> findAllActifsAvecRoles();
 }

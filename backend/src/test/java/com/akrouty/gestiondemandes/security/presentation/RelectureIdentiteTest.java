@@ -27,9 +27,9 @@ class RelectureIdentiteTest extends ApiTestSupport {
 		String jetonRt = BEARER_PREFIX + jeton(rt);
 
 		// 1-4. Le rôle est autorisé : la barrière RBAC laisse passer la requête
-		// (aucun contrôleur métier avant le Bloc 3 → 404, jamais 401/403).
+		// (contrôleur métier atteint au Bloc 3 → 200, jamais 401/403).
 		mockMvc.perform(get("/api/v1/demandes").header("Authorization", jetonRt))
-				.andExpect(status().isNotFound());
+				.andExpect(status().isOk());
 
 		// 5. Retrait du rôle EN BASE via le cas d'utilisation d'administration.
 		mockMvc.perform(put("/api/v1/utilisateurs/" + rt.getId() + "/roles-metier")

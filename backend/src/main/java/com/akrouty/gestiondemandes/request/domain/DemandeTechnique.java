@@ -101,30 +101,289 @@ public class DemandeTechnique {
 	@OneToMany(mappedBy = "demande", cascade = CascadeType.PERSIST, orphanRemoval = false, fetch = FetchType.LAZY)
 	private List<HistoriqueDemande> historique = new ArrayList<>();
 
+	/**
+	 * Aucun constructeur public fonctionnel : la création métier passe uniquement
+	 * par {@link #creer} qui impose {@code NOUVELLE}. Seul le constructeur JPA
+	 * protégé sans argument subsiste.
+	 */
 	protected DemandeTechnique() {
 	}
 
-	public DemandeTechnique(
+	/**
+	 * Opération de création d'une nouvelle demande (RM05).
+	 *
+	 * <p>La création impose {@code statut = NOUVELLE}, positionne
+	 * {@code dateCreation} et {@code dateModification} à l'instant serveur et
+	 * laisse les autres dates métier à {@code null}. Le client REST ne choisit
+	 * jamais le statut, la référence, le créateur ni les dates.</p>
+	 *
+	 * @param reference référence générée côté serveur (UUID v4), obligatoire et immuable
+	 * @param maintenant instant serveur de création
+	 */
+	public static DemandeTechnique creer(
 			String reference,
 			String titre,
 			String description,
 			Categorie categorie,
 			Priorite priorite,
-			StatutDemande statut,
 			Client client,
 			Utilisateur createur,
-			Instant dateCreation,
-			Instant dateModification) {
-		this.reference = Objects.requireNonNull(reference, "reference obligatoire");
-		this.titre = Objects.requireNonNull(titre, "titre obligatoire");
-		this.description = Objects.requireNonNull(description, "description obligatoire");
-		this.categorie = Objects.requireNonNull(categorie, "categorie obligatoire");
-		this.priorite = Objects.requireNonNull(priorite, "priorite obligatoire");
-		this.statut = Objects.requireNonNull(statut, "statut obligatoire");
-		this.client = Objects.requireNonNull(client, "client obligatoire");
-		this.createur = Objects.requireNonNull(createur, "createur obligatoire");
-		this.dateCreation = Objects.requireNonNull(dateCreation, "dateCreation obligatoire");
-		this.dateModification = Objects.requireNonNull(dateModification, "dateModification obligatoire");
+			Instant maintenant) {
+		Objects.requireNonNull(reference, "reference obligatoire");
+		Objects.requireNonNull(titre, "titre obligatoire");
+		Objects.requireNonNull(description, "description obligatoire");
+		Objects.requireNonNull(categorie, "categorie obligatoire");
+		Objects.requireNonNull(priorite, "priorite obligatoire");
+		Objects.requireNonNull(client, "client obligatoire");
+		Objects.requireNonNull(createur, "createur obligatoire");
+		Objects.requireNonNull(maintenant, "dateCreation obligatoire");
+
+		DemandeTechnique demande = new DemandeTechnique();
+		demande.reference = reference;
+		demande.titre = titre;
+		demande.description = description;
+		demande.categorie = categorie;
+		demande.priorite = priorite;
+		demande.statut = StatutDemande.NOUVELLE;
+		demande.client = client;
+		demande.createur = createur;
+		demande.dateCreation = maintenant;
+		demande.dateModification = maintenant;
+		return demande;
+	}
+
+	// ------------------------------------------------- invariants de cycle de vie
+
+	/** RM43 : {@code CLOTUREE} et {@code ANNULEE} sont terminales et non modifiables. */
+	private void verifierFonctionnellementModifiable() {
+		if (statut == StatutDemande.CLOTUREE || statut == StatutDemande.ANNULEE) {
+			throw new DemandeTermineeException(reference);
+		}
+	}
+
+	/**
+	 * Qualification (RM13, RM21) : réservée à une demande fonctionnellement
+	 * modifiable. Seuls les changements réels sont appliqués et historisés :
+	 * une valeur identique ne produit aucun événement parasite.
+	 */
+	public void qualifier(Categorie nouvelleCategorie, Priorite nouvellePriorite, Utilisateur auteur, Instant maintenant) {
+		verifierFonctionnellementModifiable();
+		Objects.requireNonNull(nouvelleCategorie, "categorie obligatoire");
+		Objects.requireNonNull(nouvellePriorite, "priorite obligatoire");
+		Objects.requireNonNull(auteur, "auteur obligatoire");
+		Objects.requireNonNull(maintenant, "instant obligatoire");
+
+		boolean categorieChangee = categorie != nouvelleCategorie;
+		boolean prioriteChangee = priorite != nouvellePriorite;
+		if (!categorieChangee && !prioriteChangee) {
+			return;
+		}
+		if (categorieChangee) {
+			ajouterEvenement(maintenant, EvenementsDemande.CATEGORIE_MODIFIEE, categorie.name(), nouvelleCategorie.name(), auteur);
+			categorie = nouvelleCategorie;
+		}
+		if (prioriteChangee) {
+			ajouterEvenement(maintenant, EvenementsDemande.PRIORITE_MODIFIEE, priorite.name(), nouvellePriorite.name(), auteur);
+			priorite = nouvellePriorite;
+		}
+		dateModification = maintenant;
+	}
+
+	/**
+	 * Affectation / réaffectation (RM29, RM34, RM35) :
+	 *
+	 * <ul>
+	 *   <li>états autorisés : {@code NOUVELLE}, {@code ASSIGNEE}, {@code EN_COURS} ;</li>
+	 *   <li>{@code NOUVELLE → ASSIGNEE} ;</li>
+	 *   <li>{@code ASSIGNEE → ASSIGNEE} lors d'une vraie réaffectation ;</li>
+	 *   <li>{@code EN_COURS → ASSIGNEE} lors d'une réaffectation vers UN AUTRE
+	 *       Agent (RM34) ;</li>
+	 *   <li>un même Agent déjà affecté ne déclenche aucune réaffectation ni
+	 *       aucun événement ;</li>
+	 *   <li>les données de traitement / solution ne sont jamais supprimées.</li>
+	 * </ul>
+	 */
+	public void affecter(Utilisateur agent, Utilisateur auteur, Instant maintenant) {
+		verifierFonctionnellementModifiable();
+		Objects.requireNonNull(agent, "agent obligatoire");
+		Objects.requireNonNull(auteur, "auteur obligatoire");
+		Objects.requireNonNull(maintenant, "instant obligatoire");
+
+		if (statut != StatutDemande.NOUVELLE && statut != StatutDemande.ASSIGNEE && statut != StatutDemande.EN_COURS) {
+			throw new TransitionInvalidException(
+					"Affectation impossible depuis l'état " + statut + ".");
+		}
+		boolean memeAgent = agentAffecte != null && Objects.equals(agentAffecte.getId(), agent.getId());
+		if (memeAgent) {
+			// Pas de fausse réaffectation pour le même Agent (RM34) :
+			// aucun changement de statut, aucun événement, aucune remise à zéro.
+			return;
+		}
+		StatutDemande avant = statut;
+		Utilisateur ancien = agentAffecte;
+		agentAffecte = agent;
+		if (avant == StatutDemande.NOUVELLE || avant == StatutDemande.EN_COURS) {
+			// NOUVELLE → ASSIGNEE ; RM34 : EN_COURS réaffecté à un AUTRE Agent → ASSIGNEE.
+			// RM35 : ASSIGNEE → ASSIGNEE est conservé (branche non modifiée).
+			statut = StatutDemande.ASSIGNEE;
+		}
+		dateModification = maintenant;
+		ajouterEvenement(
+				maintenant,
+				avant == StatutDemande.NOUVELLE ? EvenementsDemande.AFFECTATION : EvenementsDemande.REAFFECTATION,
+				ancien == null ? null : ancien.getEmail(),
+				agent.getEmail(),
+				auteur);
+	}
+
+	/**
+	 * Démarrage du traitement : {@code ASSIGNEE → EN_COURS} (RM30). Un Agent
+	 * affecté est obligatoire avant {@code EN_COURS}.
+	 */
+	public void demarrerTraitement(Utilisateur auteur, Instant maintenant) {
+		verifierFonctionnellementModifiable();
+		Objects.requireNonNull(auteur, "auteur obligatoire");
+		Objects.requireNonNull(maintenant, "instant obligatoire");
+
+		if (statut != StatutDemande.ASSIGNEE) {
+			throw new TransitionInvalidException(
+					"Le démarrage du traitement exige l'état ASSIGNEE, état actuel : " + statut + ".");
+		}
+		if (agentAffecte == null) {
+			throw new TransitionInvalidException("Aucun Agent affecté.");
+		}
+		statut = StatutDemande.EN_COURS;
+		dateModification = maintenant;
+		ajouterEvenement(maintenant, EvenementsDemande.TRAITEMENT_DEMARRE,
+				StatutDemande.ASSIGNEE.name(), StatutDemande.EN_COURS.name(), auteur);
+	}
+
+	/**
+	 * Mise à jour de la description du traitement et/ou de la solution.
+	 * Chaque champ fourni remplace la valeur existante ; un champ non fourni
+	 * reste inchangé. Seuls les changements réels sont historisés.
+	 * État obligatoire : {@code EN_COURS}.
+	 */
+	public void majTraitement(
+			String nouvelleDescriptionTraitement,
+			boolean descriptionFournie,
+			String nouvelleSolution,
+			boolean solutionFournie,
+			Utilisateur auteur,
+			Instant maintenant) {
+		verifierFonctionnellementModifiable();
+		Objects.requireNonNull(auteur, "auteur obligatoire");
+		Objects.requireNonNull(maintenant, "instant obligatoire");
+
+		if (statut != StatutDemande.EN_COURS) {
+			throw new TransitionInvalidException(
+					"La mise à jour du traitement exige l'état EN_COURS, état actuel : " + statut + ".");
+		}
+		boolean change = false;
+		if (descriptionFournie && !Objects.equals(descriptionTraitement, nouvelleDescriptionTraitement)) {
+			ajouterEvenement(maintenant, EvenementsDemande.DESCRIPTION_TRAITEMENT_MODIFIEE,
+					descriptionTraitement, nouvelleDescriptionTraitement, auteur);
+			descriptionTraitement = nouvelleDescriptionTraitement;
+			change = true;
+		}
+		if (solutionFournie && !Objects.equals(solution, nouvelleSolution)) {
+			ajouterEvenement(maintenant, EvenementsDemande.SOLUTION_MODIFIEE,
+					solution, nouvelleSolution, auteur);
+			solution = nouvelleSolution;
+			change = true;
+		}
+		if (change) {
+			dateModification = maintenant;
+		}
+	}
+
+	/**
+	 * Résolution (RM33) : {@code EN_COURS → RESOLUE}, uniquement si une solution
+	 * non blanche existe.
+	 */
+	public void resoudre(Utilisateur auteur, Instant maintenant) {
+		verifierFonctionnellementModifiable();
+		Objects.requireNonNull(auteur, "auteur obligatoire");
+		Objects.requireNonNull(maintenant, "instant obligatoire");
+
+		if (statut != StatutDemande.EN_COURS) {
+			throw new TransitionInvalidException(
+					"La résolution exige l'état EN_COURS, état actuel : " + statut + ".");
+		}
+		if (solution == null || solution.isBlank()) {
+			throw new SolutionRequiseException();
+		}
+		statut = StatutDemande.RESOLUE;
+		dateResolution = maintenant;
+		dateModification = maintenant;
+		ajouterEvenement(maintenant, EvenementsDemande.RESOLUTION,
+				StatutDemande.EN_COURS.name(), StatutDemande.RESOLUE.name(), auteur);
+	}
+
+	/**
+	 * Refus de résolution (RM38) : {@code RESOLUE → EN_COURS}. La description du
+	 * traitement et la solution sont conservées ; {@code dateResolution} repasse
+	 * à {@code null}. L'événement {@code RESOLUTION} antérieur conserve la
+	 * traçabilité de l'ancienne résolution.
+	 */
+	public void refuserResolution(Utilisateur auteur, Instant maintenant) {
+		verifierFonctionnellementModifiable();
+		Objects.requireNonNull(auteur, "auteur obligatoire");
+		Objects.requireNonNull(maintenant, "instant obligatoire");
+
+		if (statut != StatutDemande.RESOLUE) {
+			throw new TransitionInvalidException(
+					"Le refus de résolution exige l'état RESOLUE, état actuel : " + statut + ".");
+		}
+		statut = StatutDemande.EN_COURS;
+		dateResolution = null;
+		dateModification = maintenant;
+		ajouterEvenement(maintenant, EvenementsDemande.REFUS_RESOLUTION,
+				StatutDemande.RESOLUE.name(), StatutDemande.EN_COURS.name(), auteur);
+	}
+
+	/**
+	 * Clôture (RM37) : {@code RESOLUE → CLOTUREE}, état terminal.
+	 */
+	public void cloturer(Utilisateur auteur, Instant maintenant) {
+		verifierFonctionnellementModifiable();
+		Objects.requireNonNull(auteur, "auteur obligatoire");
+		Objects.requireNonNull(maintenant, "instant obligatoire");
+
+		if (statut != StatutDemande.RESOLUE) {
+			throw new TransitionInvalidException(
+					"La clôture exige l'état RESOLUE, état actuel : " + statut + ".");
+		}
+		statut = StatutDemande.CLOTUREE;
+		dateCloture = maintenant;
+		dateModification = maintenant;
+		ajouterEvenement(maintenant, EvenementsDemande.CLOTURE,
+				StatutDemande.RESOLUE.name(), StatutDemande.CLOTUREE.name(), auteur);
+	}
+
+	/**
+	 * Annulation (RM40, RM41, RM42) : autorisée uniquement depuis
+	 * {@code NOUVELLE}, {@code ASSIGNEE} ou {@code EN_COURS} ; interdite depuis
+	 * {@code RESOLUE} et depuis les états terminaux. Motif obligatoire non blanc.
+	 */
+	public void annuler(String motif, Utilisateur auteur, Instant maintenant) {
+		verifierFonctionnellementModifiable();
+		if (motif == null || motif.isBlank()) {
+			throw new IllegalArgumentException("motif obligatoire non blanc");
+		}
+		Objects.requireNonNull(auteur, "auteur obligatoire");
+		Objects.requireNonNull(maintenant, "instant obligatoire");
+
+		if (statut != StatutDemande.NOUVELLE && statut != StatutDemande.ASSIGNEE && statut != StatutDemande.EN_COURS) {
+			throw new TransitionInvalidException(
+					"Annulation interdite depuis l'état " + statut + ".");
+		}
+		StatutDemande avant = statut;
+		statut = StatutDemande.ANNULEE;
+		motifAnnulation = motif;
+		dateAnnulation = maintenant;
+		dateModification = maintenant;
+		ajouterEvenement(maintenant, EvenementsDemande.ANNULATION, avant.name(), motif, auteur);
 	}
 
 	/**

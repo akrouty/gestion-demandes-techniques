@@ -68,17 +68,15 @@ class DemandeTechniqueRepositoryTest {
 	}
 
 	private DemandeTechnique nouvelleDemande(String reference, Instant creation) {
-		return new DemandeTechnique(
+		return DemandeTechnique.creer(
 				reference,
 				"Titre de test",
 				"Description de test",
 				Categorie.PROTECTION_INCENDIE,
 				Priorite.HAUTE,
-				StatutDemande.NOUVELLE,
 				client,
 				createur,
-				creation,
-				creation.plusSeconds(60));
+				creation);
 	}
 
 	@Test
@@ -98,7 +96,8 @@ class DemandeTechniqueRepositoryTest {
 		assertThat(relu.getPriorite()).isEqualTo(Priorite.HAUTE);
 		assertThat(relu.getStatut()).isEqualTo(StatutDemande.NOUVELLE);
 		assertThat(relu.getDateCreation()).isEqualTo(creation);
-		assertThat(relu.getDateModification()).isEqualTo(creation.plusSeconds(60));
+		// La factory impose statut NOUVELLE et dateModification = instant serveur.
+		assertThat(relu.getDateModification()).isEqualTo(creation);
 		assertThat(relu.getDateResolution()).isNull();
 		assertThat(relu.getDateCloture()).isNull();
 		assertThat(relu.getDateAnnulation()).isNull();

@@ -5,6 +5,7 @@ import com.akrouty.gestiondemandes.identity.domain.Role;
 import com.akrouty.gestiondemandes.identity.domain.RoleAdministrateurNonAttribuableException;
 import com.akrouty.gestiondemandes.identity.domain.Utilisateur;
 import com.akrouty.gestiondemandes.identity.persistence.UtilisateurRepository;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -119,6 +120,19 @@ public class IdentiteService {
 	}
 
 	/**
+	 * Utilisateur interne EXISTANT chargé en entité pour les relations JPA des
+	 * demandes (créateur, Agent affecté, auteur d'historique) — responsabilité
+	 * publique étendue pour le module {@code request} (Bloc 3), sans exposer
+	 * {@link UtilisateurRepository}.
+	 *
+	 * @throws UtilisateurIntrouvableException si l'id n'existe pas
+	 */
+	@Transactional(readOnly = true)
+	public Utilisateur obtenirUtilisateur(Long id) {
+		return charger(id);
+	}
+
+	/**
 	 * Liste paginée ; les rôles sont chargés par une requête ciblée
 	 * (pas de N+1, pas d'EAGER global).
 	 */
@@ -158,6 +172,35 @@ public class IdentiteService {
 	@Transactional(readOnly = true)
 	public Optional<UtilisateurConsultation> chargerIdentite(Long id) {
 		return repository.findById(id).map(this::consulter);
+	}
+
+	/**
+	 * Snapshots non modifiables d'un ensemble restreint d'utilisateurs, avec
+	 * rôles chargés par requête ciblée (pas de N+1). Permet au module
+	 * {@code request} de construire ses projections de consultation sans
+	 * dépendance à {@link UtilisateurRepository}.
+	 */
+	@Transactional(readOnly = true)
+	public List<UtilisateurConsultation> consulterUtilisateurs(Collection<Long> ids) {
+		if (ids == null || ids.isEmpty()) {
+			return List.of();
+		}
+		return repository.findAllByIdAvecRoles(ids).stream()
+				.map(this::consulter)
+				.toList();
+	}
+
+	/**
+	 * Agents affectables (Bloc 3) : uniquement les utilisateurs ACTIFS
+	 * possédant le rôle {@code AGENT_TECHNIQUE}. Les rôles sont chargés par une
+	 * requête ciblée puis filtrés ; aucun credential n'est exposé.
+	 */
+	@Transactional(readOnly = true)
+	public List<UtilisateurConsultation> listerAgentsActifs() {
+		return repository.findAllActifsAvecRoles().stream()
+				.filter(utilisateur -> utilisateur.getRoles().contains(Role.AGENT_TECHNIQUE))
+				.map(this::consulter)
+				.toList();
 	}
 
 	// ---------------------------------------------------------------- privé
