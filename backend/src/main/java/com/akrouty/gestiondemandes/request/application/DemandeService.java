@@ -111,7 +111,6 @@ public class DemandeService {
 		DemandeTechnique demande = charger(reference);
 		Utilisateur auteur = identite.obtenirUtilisateur(acteurId);
 		demande.qualifier(categorie, priorite, auteur, Instant.now());
-		demandes.save(demande);
 		return verserDetail(demande);
 	}
 
@@ -131,7 +130,6 @@ public class DemandeService {
 		}
 		Utilisateur auteur = identite.obtenirUtilisateur(acteurId);
 		demande.affecter(agent, auteur, Instant.now());
-		demandes.save(demande);
 		return verserDetail(demande);
 	}
 	// ---------------------------------------------------------------- traitements & fin de cycle
@@ -146,7 +144,6 @@ public class DemandeService {
 		verifierAgentAffecte(demande, acteurId);
 		Utilisateur auteur = identite.obtenirUtilisateur(acteurId);
 		demande.demarrerTraitement(auteur, Instant.now());
-		demandes.save(demande);
 		return verserDetail(demande);
 	}
 
@@ -163,7 +160,6 @@ public class DemandeService {
 				commande.descriptionTraitement(), commande.descriptionFournie(),
 				commande.solution(), commande.solutionFournie(),
 				auteur, Instant.now());
-		demandes.save(demande);
 		return verserDetail(demande);
 	}
 
@@ -174,7 +170,6 @@ public class DemandeService {
 		verifierAgentAffecte(demande, acteurId);
 		Utilisateur auteur = identite.obtenirUtilisateur(acteurId);
 		demande.resoudre(auteur, Instant.now());
-		demandes.save(demande);
 		return verserDetail(demande);
 	}
 
@@ -184,7 +179,6 @@ public class DemandeService {
 		DemandeTechnique demande = charger(reference);
 		Utilisateur auteur = identite.obtenirUtilisateur(acteurId);
 		demande.refuserResolution(auteur, Instant.now());
-		demandes.save(demande);
 		return verserDetail(demande);
 	}
 
@@ -194,7 +188,6 @@ public class DemandeService {
 		DemandeTechnique demande = charger(reference);
 		Utilisateur auteur = identite.obtenirUtilisateur(acteurId);
 		demande.cloturer(auteur, Instant.now());
-		demandes.save(demande);
 		return verserDetail(demande);
 	}
 
@@ -207,7 +200,6 @@ public class DemandeService {
 		DemandeTechnique demande = charger(reference);
 		Utilisateur auteur = identite.obtenirUtilisateur(acteurId);
 		demande.annuler(motif, auteur, Instant.now());
-		demandes.save(demande);
 		return verserDetail(demande);
 	}
 	// ---------------------------------------------------------------- consultations
@@ -270,6 +262,8 @@ public class DemandeService {
 	// ---------------------------------------------------------------- privé
 
 	private DemandeTechnique charger(String reference) {
+		// Entité gérée dans la transaction : les écritures sont synchronisées au flush,
+		// avec cascade PERSIST des nouveaux événements, sans merge supplémentaire.
 		return demandes.findByReference(reference)
 				.orElseThrow(() -> new DemandeIntrouvableException(reference));
 	}

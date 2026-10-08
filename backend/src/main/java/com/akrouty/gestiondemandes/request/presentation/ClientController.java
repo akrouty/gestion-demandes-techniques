@@ -57,7 +57,10 @@ public class ClientController {
 		if (sort == null || sort.isBlank()) {
 			return PageRequest.of(page, size);
 		}
-		String[] parts = sort.split(",");
+		String[] parts = sort.split(",", -1);
+		if (parts.length > 2) {
+			throw new ParametreInvalidException("Format de tri invalide");
+		}
 		String champ = parts[0].trim();
 		if (!CHAMPS_TRI_AUTORISES.contains(champ)) {
 			throw new ParametreInvalidException("Champ de tri invalide");

@@ -35,6 +35,7 @@ class DemandeQualificationApiTest extends DemandeApiTestSupport {
 						.header("Authorization", BEARER_PREFIX + jetonRt)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(corps))
+				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
 	}
 
@@ -76,6 +77,7 @@ class DemandeQualificationApiTest extends DemandeApiTestSupport {
 	void valeurs_identiques_ne_creent_aucun_evenement_artificiel() throws Exception {
 		String reference = creerDemande(jetonRt, clientId);
 		int avant = compterEvenements(reference);
+		var dateAvant = demandeRepository.findByReference(reference).orElseThrow().getDateModification();
 
 		// La demande est créée avec NOTE_CALCUL / HAUTE : mêmes valeurs envoyées.
 		mockMvc.perform(put("/api/v1/demandes/" + reference + "/qualification")
@@ -85,6 +87,7 @@ class DemandeQualificationApiTest extends DemandeApiTestSupport {
 				.andExpect(status().isOk());
 
 		assertThat(compterEvenements(reference)).isEqualTo(avant);
+		assertThat(demandeRepository.findByReference(reference).orElseThrow().getDateModification()).isEqualTo(dateAvant);
 	}
 
 	@Test
@@ -127,10 +130,12 @@ class DemandeQualificationApiTest extends DemandeApiTestSupport {
 	@Test
 	void qualification_ajoute_date_modification() throws Exception {
 		String reference = creerDemande(jetonRt, clientId);
+		var avant = demandeRepository.findByReference(reference).orElseThrow().getDateModification();
 
 		String reponse = qualification(reference,
 				"{\"categorie\":\"DOSSIER_TECHNIQUE\",\"priorite\":\"BASSE\"}");
 		assertThat(reponse).contains("\"categorie\":\"DOSSIER_TECHNIQUE\"");
+		assertThat(demandeRepository.findByReference(reference).orElseThrow().getDateModification()).isAfter(avant);
 	}
 
 	@Test

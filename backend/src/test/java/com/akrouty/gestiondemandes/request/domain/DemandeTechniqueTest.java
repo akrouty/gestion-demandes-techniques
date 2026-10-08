@@ -11,6 +11,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Tests unitaires de domaine de {@link DemandeTechnique} (Bloc 3 §37) :
@@ -355,6 +357,31 @@ class DemandeTechniqueTest {
 	}
 
 	// ---------------------------------------------------------------- utilitaires
+
+	@ParameterizedTest
+	@ValueSource(booleans = {true, false})
+	void toutes_operations_refusees_sur_les_deux_etats_terminaux(boolean cloturee) {
+		DemandeTechnique demande = cloturee ? demandeResolue("TERM") : nouvelleDemande("TERM");
+		if (cloturee) demande.cloturer(rt, maintenant);
+		else demande.annuler("Sans objet", rt, maintenant);
+		var avant = demande.getStatut();
+		var historiqueAvant = demande.getHistorique();
+		var dateAvant = demande.getDateModification();
+		var apres = maintenant.plusSeconds(1);
+		assertThatThrownBy(() -> demande.qualifier(Categorie.AUTRE, Priorite.BASSE, rt, apres))
+				.isInstanceOf(DemandeTermineeException.class);
+		assertThatThrownBy(() -> demande.affecter(agentB, rt, apres)).isInstanceOf(DemandeTermineeException.class);
+		assertThatThrownBy(() -> demande.demarrerTraitement(agentA, apres)).isInstanceOf(DemandeTermineeException.class);
+		assertThatThrownBy(() -> demande.majTraitement("T", true, "S", true, agentA, apres))
+				.isInstanceOf(DemandeTermineeException.class);
+		assertThatThrownBy(() -> demande.resoudre(agentA, apres)).isInstanceOf(DemandeTermineeException.class);
+		assertThatThrownBy(() -> demande.refuserResolution(rt, apres)).isInstanceOf(DemandeTermineeException.class);
+		assertThatThrownBy(() -> demande.cloturer(rt, apres)).isInstanceOf(DemandeTermineeException.class);
+		assertThatThrownBy(() -> demande.annuler("Motif", rt, apres)).isInstanceOf(DemandeTermineeException.class);
+		assertThat(demande.getStatut()).isEqualTo(avant);
+		assertThat(demande.getDateModification()).isEqualTo(dateAvant);
+		assertThat(demande.getHistorique()).containsExactlyElementsOf(historiqueAvant);
+	}
 
 	private DemandeTechnique nouvelleDemande(String reference) {
 		return DemandeTechnique.creer(

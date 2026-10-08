@@ -1,6 +1,7 @@
 package com.akrouty.gestiondemandes.request.presentation;
 
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * DTO de mise à jour du traitement (API-CONTRACT-V1 §4.1).
@@ -37,6 +38,7 @@ public class TraitementDemandeRequest {
 		return descriptionTraitement;
 	}
 
+	@JsonIgnore
 	public boolean isDescriptionTraitementFournie() {
 		return descriptionTraitementFournie;
 	}
@@ -45,6 +47,7 @@ public class TraitementDemandeRequest {
 		return solution;
 	}
 
+	@JsonIgnore
 	public boolean isSolutionFournie() {
 		return solutionFournie;
 	}
