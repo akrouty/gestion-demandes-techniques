@@ -1,0 +1,168 @@
+@use '@angular/material' as mat;
+html {
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        theme-type: light,
+      ),
+      typography: (
+        plain-family: 'Segoe UI, Arial, sans-serif',
+        brand-family: 'Segoe UI, Arial, sans-serif',
+      ),
+      density: 0,
+    )
+  );
+  @include mat.theme-overrides(
+    (
+      primary: #003056,
+      on-primary: #fff,
+      primary-container: #eaf1f6,
+      on-primary-container: #003056,
+      secondary: #b94e00,
+      on-secondary: #fff,
+      surface: #fff,
+      surface-container: #f6f8fa,
+      on-surface: #17212b,
+      on-surface-variant: #5e6b78,
+      outline: #75818d,
+      outline-variant: #d9e2ea,
+    )
+  );
+  @include mat.button-overrides(
+    (
+      filled-container-shape: 8px,
+      outlined-container-shape: 8px,
+      text-container-shape: 6px,
+    )
+  );
+  --safyron-navy: #003056;
+  --safyron-navy-dark: #00233f;
+  --safyron-navy-soft: #eaf1f6;
+  --safyron-orange: #f57a12;
+  --safyron-orange-strong: #b94e00;
+  --app-background: #f6f8fa;
+  --surface: #fff;
+  --text-primary: #17212b;
+  --text-secondary: #5e6b78;
+  --border: #d9e2ea;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --radius-small: 6px;
+  --radius-standard: 8px;
+  --radius-card: 12px;
+  color-scheme: light;
+}
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  font-size: 14px;
+  color: var(--text-primary);
+  background: var(--app-background);
+}
+* {
+  box-sizing: border-box;
+}
+a {
+  color: var(--safyron-navy);
+}
+:focus-visible {
+  outline: 3px solid var(--safyron-navy);
+  outline-offset: 3px;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.page-heading {
+  margin-bottom: 32px;
+}
+.page-heading h1 {
+  font-size: 28px;
+  line-height: 1.3;
+  font-weight: 650;
+  margin: 8px 0;
+  letter-spacing: -0.5px;
+}
+.page-heading p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+.eyebrow {
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 1px;
+}
+.feedback {
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin: 0;
+  line-height: 1.5;
+}
+.feedback-error {
+  background: #fff2f1;
+  color: #9c2525;
+  border-color: #edbaba;
+}
+.feedback-success {
+  background: #e5f3ec;
+  color: #226047;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid currentColor;
+}
+.status-NOUVELLE {
+  color: #003056;
+  background: #eaf1f6;
+}
+.status-ASSIGNEE {
+  color: #4b467b;
+  background: #f0eef8;
+}
+.status-EN_COURS,
+.priority-HAUTE {
+  color: #b94e00;
+  background: #fff0e3;
+}
+.status-RESOLUE {
+  color: #226047;
+  background: #e5f3ec;
+}
+.status-CLOTUREE {
+  color: #394956;
+  background: #edf0f2;
+}
+.status-ANNULEE {
+  color: #674848;
+  background: #f4ecec;
+}
+.priority-BASSE {
+  color: #52616b;
+  background: #edf0f2;
+}
+.priority-MOYENNE {
+  color: #003056;
+  background: #eaf1f6;
+}
+.priority-CRITIQUE {
+  color: #a32020;
+  background: #fce9e9;
+}

@@ -1,0 +1,68 @@
+<a class="skip-link" href="#main-content" (click)="focusContent($event)">Aller au contenu</a>
+<mat-sidenav-container>
+  <mat-sidenav
+    id="main-navigation"
+    [mode]="mobile() ? 'over' : 'side'"
+    [opened]="!mobile() || drawerOpen()"
+    (closedStart)="closeDrawer()"
+    [attr.role]="mobile() ? 'dialog' : 'navigation'"
+    aria-label="Navigation principale"
+  >
+    <div class="branding">
+      <img src="safyron-logo.png" alt="Safyron Engineering" width="1201" height="463" /><span
+        >Demandes techniques</span
+      >
+    </div>
+    <nav aria-label="Sections">
+      <p class="nav-caption">ESPACE DE TRAVAIL</p>
+      @if (session.hasDemandes()) {
+        <a
+          routerLink="/demandes"
+          routerLinkActive="active"
+          ariaCurrentWhenActive="page"
+          (click)="closeDrawer()"
+          ><span class="nav-marker" aria-hidden="true">▤</span>Demandes</a
+        >
+      }
+      @if (session.hasAdministration()) {
+        <a
+          routerLink="/administration/utilisateurs"
+          routerLinkActive="active"
+          ariaCurrentWhenActive="page"
+          (click)="closeDrawer()"
+          ><span class="nav-marker" aria-hidden="true">◇</span>Administration</a
+        >
+      }
+    </nav>
+    <div class="nav-footer">Safyron Engineering</div>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <header class="topbar">
+      @if (mobile()) {
+        <button
+          mat-button
+          class="menu-button"
+          (click)="drawerOpen.set(!drawerOpen())"
+          [attr.aria-expanded]="drawerOpen()"
+          aria-controls="main-navigation"
+          aria-label="Ouvrir le menu de navigation"
+        >
+          ☰ Menu</button
+        ><img
+          class="mobile-logo"
+          src="safyron-logo.png"
+          alt="Safyron Engineering"
+          width="1201"
+          height="463"
+        />
+      } @else {
+        <span class="context">Gestion des demandes techniques</span>
+      }
+      <div class="account">
+        <span class="account-name">{{ session.user()?.nom }}</span
+        ><button mat-button (click)="session.logout()">Déconnexion</button>
+      </div>
+    </header>
+    <main id="main-content" tabindex="-1"><router-outlet /></main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

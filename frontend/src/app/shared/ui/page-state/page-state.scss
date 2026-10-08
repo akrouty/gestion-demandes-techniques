@@ -1,0 +1,35 @@
+.page-state {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 48px 24px;
+  text-align: center;
+}
+.state-marker {
+  display: inline-grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  background: var(--safyron-navy-soft);
+  color: var(--safyron-navy);
+  border-radius: 8px;
+  font-size: 24px;
+}
+h2 {
+  font-size: 18px;
+  margin: 24px 0 8px;
+}
+p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.state-error .state-marker {
+  background: #fce9e9;
+  color: #a32020;
+}
+.state-success .state-marker {
+  background: #e5f3ec;
+  color: #226047;
+}

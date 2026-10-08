@@ -77,7 +77,7 @@ ADR-006 et FRONTEND-DESIGN-V1 retiennent une organisation Angular SPA feature-ba
   utilisateur, RBAC, 401/403, CORS, CSRF, stateless) ; validée humainement.
 - Contrôles métier contextuels des demandes : pas encore implémentés avant le
   Bloc 3 (Bloc 3 en cours ; sa validation restera humaine après revue).
-- Frontend : non implémenté.
+- Frontend : implémentation en cours (F1 sur branche dédiée ; revue humaine en attente).
 - IA : non implémentée.
 - Aucune validation PostgreSQL réelle n'est prétendue si elle n'a pas été
   effectivement exécutée.

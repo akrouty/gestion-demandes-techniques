@@ -1,0 +1,134 @@
+mat-sidenav-container {
+  min-height: 100dvh;
+  background: var(--app-background);
+}
+mat-sidenav {
+  width: 244px;
+  border-right: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--surface);
+}
+.branding {
+  padding: 32px 24px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.branding img {
+  display: block;
+  width: 196px;
+  max-width: 100%;
+  height: auto;
+}
+.branding span {
+  display: block;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 16px;
+}
+nav {
+  padding: 24px 12px;
+}
+.nav-caption {
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 1px;
+  margin: 0 12px 12px;
+  color: var(--text-secondary);
+}
+nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 0 12px;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+}
+nav a:hover {
+  background: var(--app-background);
+}
+nav a.active {
+  background: var(--safyron-navy-soft);
+  color: var(--safyron-navy);
+  font-weight: 650;
+  border-left: 3px solid var(--safyron-navy);
+  padding-left: 9px;
+}
+.nav-marker {
+  font-size: 20px;
+}
+.nav-footer {
+  padding: 24px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  border-top: 1px solid var(--border);
+}
+.topbar {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 32px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  box-sizing: border-box;
+}
+.context {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.account {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.account-name {
+  font-size: 13px;
+  font-weight: 600;
+}
+.mobile-logo {
+  width: 120px;
+  height: auto;
+}
+main {
+  padding: 32px;
+  max-width: 1200px;
+  margin: auto;
+}
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 16px;
+  z-index: 1000;
+  background: white;
+  padding: 12px;
+}
+.skip-link:focus {
+  top: 8px;
+}
+@media (max-width: 767px) {
+  .topbar {
+    padding: 12px 16px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .account {
+    width: 100%;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .account-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+  }
+  main {
+    padding: 24px 16px;
+  }
+  .menu-button {
+    min-width: 48px;
+  }
+}
