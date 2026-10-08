@@ -1,0 +1,153 @@
+<header class="page-heading">
+  <div>
+    <h1>Demandes techniques</h1>
+    <p class="muted">Consultez les demandes et suivez leur avancement.</p>
+  </div>
+  @if (session.hasAnyRole(['RESPONSABLE_TECHNIQUE'])) {
+    <a mat-flat-button routerLink="/demandes/nouvelle">Nouvelle demande</a>
+  }
+</header>
+<section class="surface" aria-label="Filtres des demandes">
+  <form [formGroup]="filters">
+    <div class="filters">
+      <mat-form-field
+        ><mat-label>Rechercher</mat-label
+        ><input matInput formControlName="recherche" placeholder="Référence, titre ou description"
+      /></mat-form-field>
+      <mat-form-field
+        ><mat-label>Statut</mat-label
+        ><mat-select formControlName="statut"
+          ><mat-option value="">Tous les statuts</mat-option>
+          @for (item of statuts | keyvalue; track item.key) {
+            <mat-option [value]="item.key">{{ item.value }}</mat-option>
+          }
+        </mat-select></mat-form-field
+      >
+      <mat-form-field
+        ><mat-label>Priorité</mat-label
+        ><mat-select formControlName="priorite"
+          ><mat-option value="">Toutes les priorités</mat-option>
+          @for (item of priorites | keyvalue; track item.key) {
+            <mat-option [value]="item.key">{{ item.value }}</mat-option>
+          }
+        </mat-select></mat-form-field
+      >
+      <mat-form-field
+        ><mat-label>Catégorie</mat-label
+        ><mat-select formControlName="categorie"
+          ><mat-option value="">Toutes les catégories</mat-option>
+          @for (item of categories | keyvalue; track item.key) {
+            <mat-option [value]="item.key">{{ item.value }}</mat-option>
+          }
+        </mat-select></mat-form-field
+      >
+    </div>
+    <div class="actions">
+      <mat-form-field
+        ><mat-label>Trier par</mat-label
+        ><mat-select formControlName="sort">
+          @for (item of sortOptions; track item.value) {
+            <mat-option [value]="item.value">{{ item.label }}</mat-option>
+          }
+        </mat-select></mat-form-field
+      ><button mat-button type="button" (click)="reset()">Réinitialiser les filtres</button>
+    </div>
+  </form>
+</section>
+@if (loading()) {
+  <p role="status" aria-live="polite">Chargement des demandes…</p>
+}
+@if (error(); as failure) {
+  <div class="feedback feedback-error" role="alert">
+    <p>
+      {{ failure.message }}
+      @if (failure.code) {
+        ({{ failure.code }})
+      }
+    </p>
+    <button mat-button (click)="retry()">Réessayer</button>
+  </div>
+}
+@if (result(); as page) {
+  @if (!page.items.length) {
+    <section class="surface">
+      <h2>Aucune demande</h2>
+      <p class="muted">
+        Aucune demande accessible ne correspond à cette vue. Vous pouvez ajuster les filtres.
+      </p>
+    </section>
+  } @else {
+    <div class="desktop-list">
+      <table>
+        <caption class="muted">
+          Demandes accessibles —
+          {{
+            page.totalElements
+          }}
+          résultat(s)
+        </caption>
+        <thead>
+          <tr>
+            <th>Référence / titre</th>
+            <th>Client</th>
+            <th>Catégorie</th>
+            <th>Priorité</th>
+            <th>Statut</th>
+            <th>Agent</th>
+            <th>Création</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of page.items; track item.reference) {
+            <tr>
+              <td>
+                <a [routerLink]="['/demandes', item.reference]" class="reference">{{
+                  item.reference
+                }}</a>
+                <p>{{ item.titre }}</p>
+              </td>
+              <td>{{ item.client.nom }}</td>
+              <td>{{ categories[item.categorie] }}</td>
+              <td>
+                <span [class]="'badge priority-' + item.priorite">{{
+                  priorites[item.priorite]
+                }}</span>
+              </td>
+              <td>
+                <span [class]="'badge status-' + item.statut">{{ statuts[item.statut] }}</span>
+              </td>
+              <td>{{ item.agentAffecte?.nom ?? 'À affecter' }}</td>
+              <td>{{ item.dateCreation | date: 'dd/MM/yyyy' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="mobile-list">
+      @for (item of page.items; track item.reference) {
+        <article class="surface">
+          <a [routerLink]="['/demandes', item.reference]" class="reference">{{ item.reference }}</a>
+          <h2>{{ item.titre }}</h2>
+          <div class="actions">
+            <span [class]="'badge status-' + item.statut">{{ statuts[item.statut] }}</span
+            ><span [class]="'badge priority-' + item.priorite">{{ priorites[item.priorite] }}</span>
+          </div>
+          <p>{{ item.client.nom }} · {{ categories[item.categorie] }}</p>
+          <p class="muted">
+            {{ item.agentAffecte?.nom ?? 'À affecter' }} ·
+            {{ item.dateCreation | date: 'dd/MM/yyyy' }}
+          </p>
+        </article>
+      }
+    </div>
+  }
+  <mat-paginator
+    aria-label="Pagination des demandes"
+    [length]="page.totalElements"
+    [pageIndex]="page.page"
+    [pageSize]="page.size"
+    [pageSizeOptions]="[10, 20, 50]"
+    showFirstLastButtons
+    (page)="paginate($event)"
+  />
+}

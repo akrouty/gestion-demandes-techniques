@@ -1,0 +1,277 @@
+<a mat-button routerLink="/demandes">Retour aux demandes</a>
+@if (loading()) {
+  <p role="status">Chargement de la demande…</p>
+}
+@if (success()) {
+  <p class="feedback feedback-success" role="status">{{ success() }}</p>
+}
+@if (error(); as failure) {
+  <div class="feedback feedback-error" role="alert">
+    @if (status() === 403) {
+      <h2>Accès refusé</h2>
+    }
+    @if (status() === 404) {
+      <h2>Demande introuvable</h2>
+    }
+    <p>
+      {{ failure.message }}
+      @if (failure.code) {
+        ({{ failure.code }})
+      }
+    </p>
+    @for (field of failure.fieldErrors; track $index) {
+      <p>{{ field.field }} : {{ field.message }}</p>
+    }
+    @if (reloadRequired()) {
+      <p>
+        L’état affiché peut avoir changé. Le rechargement remplacera vos saisies par les valeurs du
+        serveur.
+      </p>
+      <button mat-button (click)="reload()" [disabled]="busy()">Recharger l’état serveur</button>
+    } @else if (!demande() && status() !== 403 && status() !== 404) {
+      <button mat-button (click)="reload()">Réessayer</button>
+    }
+  </div>
+}
+@if (demande(); as detail) {
+  <header class="page-heading">
+    <div>
+      <p class="reference">{{ detail.reference }}</p>
+      <h1>{{ detail.titre }}</h1>
+      <div class="actions">
+        <span [class]="'badge status-' + detail.statut">{{ statuts[detail.statut] }}</span
+        ><span [class]="'badge priority-' + detail.priorite">{{ priorites[detail.priorite] }}</span
+        ><span>{{ categories[detail.categorie] }}</span>
+      </div>
+    </div>
+  </header>
+  <section class="surface">
+    <h2>Informations générales</h2>
+    <p class="prose">{{ detail.description }}</p>
+    <p class="muted">Créée par {{ detail.createur.nom }} · {{ detail.createur.email }}</p>
+  </section>
+  <div class="form-grid">
+    <section class="surface">
+      <h2>Client</h2>
+      <dl>
+        <dt>Nom</dt>
+        <dd>{{ detail.client.nom }}</dd>
+        <dt>Email</dt>
+        <dd>{{ detail.client.email }}</dd>
+        <dt>Téléphone</dt>
+        <dd>{{ detail.client.telephone }}</dd>
+      </dl>
+    </section>
+    <section class="surface">
+      <h2>Affectation</h2>
+      @if (detail.agentAffecte; as agent) {
+        <p>{{ agent.nom }}</p>
+        <p class="muted">{{ agent.email }}</p>
+      } @else {
+        <p class="muted">La demande attend une affectation.</p>
+      }
+    </section>
+  </div>
+  <section class="surface">
+    <h2>Traitement et solution</h2>
+    @if (detail.descriptionTraitement) {
+      <h3>Traitement enregistré</h3>
+      <p class="prose">{{ detail.descriptionTraitement }}</p>
+    }
+    @if (detail.solution) {
+      <h3>Solution enregistrée</h3>
+      <p class="prose">{{ detail.solution }}</p>
+    }
+    @if (!detail.descriptionTraitement && !detail.solution) {
+      <p class="muted">Aucun traitement enregistré pour le moment.</p>
+    }
+    @if (detail.motifAnnulation) {
+      <h3>Motif d’annulation</h3>
+      <p class="prose">{{ detail.motifAnnulation }}</p>
+    }
+  </section>
+  <section class="surface">
+    <h2>Dates</h2>
+    <dl>
+      <dt>Création</dt>
+      <dd>{{ detail.dateCreation | date: 'dd/MM/yyyy HH:mm' }}</dd>
+      <dt>Dernière modification</dt>
+      <dd>{{ detail.dateModification | date: 'dd/MM/yyyy HH:mm' }}</dd>
+      @if (detail.dateResolution) {
+        <dt>Résolution</dt>
+        <dd>{{ detail.dateResolution | date: 'dd/MM/yyyy HH:mm' }}</dd>
+      }
+      @if (detail.dateCloture) {
+        <dt>Clôture</dt>
+        <dd>{{ detail.dateCloture | date: 'dd/MM/yyyy HH:mm' }}</dd>
+      }
+      @if (detail.dateAnnulation) {
+        <dt>Annulation</dt>
+        <dd>{{ detail.dateAnnulation | date: 'dd/MM/yyyy HH:mm' }}</dd>
+      }
+    </dl>
+  </section>
+  @if (busy()) {
+    <p role="status">Enregistrement de l’action…</p>
+  }
+  @if (rt() && qualifiable()) {
+    <section class="surface">
+      <h2>Qualification</h2>
+      <form [formGroup]="qualification" (ngSubmit)="qualify()">
+        <div class="form-grid">
+          <mat-form-field
+            ><mat-label>Catégorie</mat-label
+            ><mat-select formControlName="categorie">
+              @for (item of categories | keyvalue; track item.key) {
+                <mat-option [value]="item.key">{{ item.value }}</mat-option>
+              }</mat-select
+            ><mat-error>{{
+              qualification.controls.categorie.getError('server') ?? 'Choisissez une catégorie.'
+            }}</mat-error></mat-form-field
+          >
+          <mat-form-field
+            ><mat-label>Priorité</mat-label
+            ><mat-select formControlName="priorite">
+              @for (item of priorites | keyvalue; track item.key) {
+                <mat-option [value]="item.key">{{ item.value }}</mat-option>
+              }</mat-select
+            ><mat-error>{{
+              qualification.controls.priorite.getError('server') ?? 'Choisissez une priorité.'
+            }}</mat-error></mat-form-field
+          >
+        </div>
+        <button mat-flat-button type="submit" [disabled]="busy() || reloadRequired()">
+          Enregistrer la qualification
+        </button>
+      </form>
+    </section>
+  }
+  @if (rt() && active()) {
+    <section class="surface">
+      <h2>{{ detail.agentAffecte ? 'Réaffecter la demande' : 'Affecter la demande' }}</h2>
+      @if (agents() === null) {
+        <button mat-button (click)="loadAgents()" [disabled]="agentsLoading() || busy()">
+          {{ agentsLoading() ? 'Chargement des agents…' : 'Afficher les agents disponibles' }}
+        </button>
+      }
+      @if (agentsError(); as failure) {
+        <p class="feedback feedback-error" role="alert">{{ failure.message }}</p>
+      }
+      @if (agents(); as choices) {
+        @if (!choices.length) {
+          <p>Aucun agent actif disponible.</p>
+        } @else {
+          <form [formGroup]="affectation" (ngSubmit)="assign()">
+            <mat-form-field
+              ><mat-label>Agent technique</mat-label
+              ><mat-select formControlName="agentId">
+                @for (agent of choices; track agent.id) {
+                  <mat-option [value]="agent.id">{{ agent.nom }} · {{ agent.email }}</mat-option>
+                }</mat-select
+              ><mat-error>{{
+                affectation.controls.agentId.getError('server') ?? 'Choisissez un agent.'
+              }}</mat-error></mat-form-field
+            ><button mat-flat-button type="submit" [disabled]="busy() || reloadRequired()">
+              Enregistrer l’affectation
+            </button>
+          </form>
+        }
+      }
+    </section>
+  }
+  @if (at() && detail.statut === 'ASSIGNEE') {
+    <section class="surface">
+      <h2>Commencer le traitement</h2>
+      <button mat-flat-button (click)="start()" [disabled]="busy() || reloadRequired()">
+        Démarrer le traitement
+      </button>
+    </section>
+  }
+  @if (at() && detail.statut === 'EN_COURS') {
+    <section class="surface">
+      <h2>Renseigner le traitement</h2>
+      <form [formGroup]="traitement" (ngSubmit)="saveTreatment()">
+        <mat-form-field
+          ><mat-label>Description du traitement</mat-label
+          ><textarea matInput rows="4" formControlName="descriptionTraitement"></textarea
+          ><mat-error>{{
+            traitement.controls.descriptionTraitement.getError('server') ??
+              'Un champ modifié ne peut pas être vide.'
+          }}</mat-error></mat-form-field
+        >
+        <mat-form-field
+          ><mat-label>Solution</mat-label
+          ><textarea matInput rows="4" formControlName="solution"></textarea
+          ><mat-error>{{
+            traitement.controls.solution.getError('server') ??
+              'Une solution modifiée ne peut pas être vide.'
+          }}</mat-error></mat-form-field
+        >
+        <p class="muted">
+          Seuls les champs modifiés seront enregistrés. L’effacement d’une valeur enregistrée n’est
+          pas prévu.
+        </p>
+        <div class="actions">
+          <button
+            mat-flat-button
+            type="submit"
+            [disabled]="busy() || reloadRequired() || !treatmentChanged()"
+          >
+            Enregistrer le traitement</button
+          ><button
+            mat-stroked-button
+            type="button"
+            (click)="resolve()"
+            [disabled]="busy() || reloadRequired() || !canResolve()"
+          >
+            Déclarer résolue
+          </button>
+        </div>
+        @if (!canResolve()) {
+          <p class="muted">
+            Enregistrez une solution et toutes vos modifications avant de déclarer la demande
+            résolue.
+          </p>
+        }
+      </form>
+    </section>
+  }
+  @if (rt() && detail.statut === 'RESOLUE') {
+    <section class="surface">
+      <h2>Examiner la résolution</h2>
+      <p>Lisez la solution enregistrée avant de confirmer votre décision.</p>
+      <div class="actions">
+        <button mat-flat-button (click)="close()" [disabled]="busy() || reloadRequired()">
+          Clôturer la demande</button
+        ><button mat-stroked-button (click)="refuse()" [disabled]="busy() || reloadRequired()">
+          Refuser la résolution
+        </button>
+      </div>
+    </section>
+  }
+  @if (rt() && active()) {
+    <section class="surface">
+      <h2>Annuler la demande</h2>
+      <form [formGroup]="annulation" (ngSubmit)="cancel()">
+        <mat-form-field
+          ><mat-label>Motif d’annulation</mat-label
+          ><textarea matInput rows="2" formControlName="motif"></textarea
+          ><mat-error>{{
+            annulation.controls.motif.getError('server') ?? 'Renseignez un motif.'
+          }}</mat-error></mat-form-field
+        >
+        <p>
+          <mat-checkbox formControlName="confirme"
+            >Je confirme l’annulation définitive de cette demande.</mat-checkbox
+          >
+        </p>
+        @if (annulation.controls.confirme.touched && annulation.controls.confirme.invalid) {
+          <p role="alert">Confirmez l’annulation avant de poursuivre.</p>
+        }
+        <button mat-stroked-button type="submit" [disabled]="busy() || reloadRequired()">
+          Annuler la demande
+        </button>
+      </form>
+    </section>
+  }
+}

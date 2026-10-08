@@ -37,7 +37,23 @@ export const routes: Routes = [
         canActivate: [authGuard, roleGuard],
         data: { roles: ['RESPONSABLE_TECHNIQUE', 'AGENT_TECHNIQUE'] },
         loadComponent: () =>
-          import('./features/demandes/demandes-entry/demandes-entry').then((m) => m.DemandesEntry),
+          import('./features/demandes/demandes-list/demandes-list').then((m) => m.DemandesList),
+      },
+      {
+        path: 'demandes/nouvelle',
+        title: 'Nouvelle demande · Safyron',
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['RESPONSABLE_TECHNIQUE'] },
+        loadComponent: () =>
+          import('./features/demandes/demande-create/demande-create').then((m) => m.DemandeCreate),
+      },
+      {
+        path: 'demandes/:reference',
+        title: 'Détail demande · Safyron',
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['RESPONSABLE_TECHNIQUE', 'AGENT_TECHNIQUE'] },
+        loadComponent: () =>
+          import('./features/demandes/demande-detail/demande-detail').then((m) => m.DemandeDetail),
       },
       {
         path: 'administration/utilisateurs',

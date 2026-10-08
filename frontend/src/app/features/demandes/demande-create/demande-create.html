@@ -1,0 +1,163 @@
+<a mat-button routerLink="/demandes">Retour aux demandes</a>
+<header class="page-heading">
+  <div>
+    <h1>Nouvelle demande</h1>
+    <p class="muted">Décrivez le besoin et choisissez sa catégorie et sa priorité.</p>
+  </div>
+</header>
+@if (error(); as failure) {
+  <div class="feedback feedback-error" role="alert">
+    <p>
+      {{ failure.message }}
+      @if (failure.code) {
+        ({{ failure.code }})
+      }
+    </p>
+    @for (field of failure.fieldErrors; track $index) {
+      <p>{{ field.field }} : {{ field.message }}</p>
+    }
+  </div>
+}
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <fieldset class="surface" [disabled]="loading()">
+    <legend>Informations générales</legend>
+    <mat-form-field
+      ><mat-label>Titre</mat-label><input matInput formControlName="titre" />
+      @if (form.controls.titre.invalid) {
+        <mat-error>{{
+          form.controls.titre.getError('server') ?? 'Renseignez un titre.'
+        }}</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field
+      ><mat-label>Description du besoin</mat-label
+      ><textarea matInput rows="5" formControlName="description"></textarea>
+      @if (form.controls.description.invalid) {
+        <mat-error>{{
+          form.controls.description.getError('server') ?? 'Renseignez une description.'
+        }}</mat-error>
+      }
+    </mat-form-field>
+    <div class="form-grid">
+      <mat-form-field
+        ><mat-label>Catégorie</mat-label
+        ><mat-select formControlName="categorie">
+          @for (item of categories | keyvalue; track item.key) {
+            <mat-option [value]="item.key">{{ item.value }}</mat-option>
+          }</mat-select
+        ><mat-error>{{
+          form.controls.categorie.getError('server') ?? 'Choisissez une catégorie.'
+        }}</mat-error></mat-form-field
+      >
+      <mat-form-field
+        ><mat-label>Priorité</mat-label
+        ><mat-select formControlName="priorite">
+          @for (item of priorites | keyvalue; track item.key) {
+            <mat-option [value]="item.key">{{ item.value }}</mat-option>
+          }</mat-select
+        ><mat-error>{{
+          form.controls.priorite.getError('server') ?? 'Choisissez une priorité.'
+        }}</mat-error></mat-form-field
+      >
+    </div>
+  </fieldset>
+  <section class="surface">
+    <h2>Client</h2>
+    <mat-radio-group
+      aria-label="Choix du client"
+      formControlName="clientMode"
+      [disabled]="loading()"
+      class="actions"
+      ><mat-radio-button value="existing">Client existant</mat-radio-button
+      ><mat-radio-button value="new">Nouveau client</mat-radio-button></mat-radio-group
+    >
+    @if (form.controls.clientMode.value === 'existing') {
+      <mat-form-field
+        ><mat-label>Rechercher un client</mat-label
+        ><input matInput [formControl]="search" placeholder="Nom, email ou téléphone"
+      /></mat-form-field>
+      @if (selectedClient(); as client) {
+        <p role="status">
+          Client sélectionné : <strong>{{ client.nom }}</strong> · {{ client.email }}
+        </p>
+      }
+      @if (clientsLoading()) {
+        <p role="status">Recherche des clients…</p>
+      }
+      @if (clientsError(); as failure) {
+        <div role="alert" class="feedback feedback-error">
+          {{ failure.message }}
+          <button mat-button type="button" (click)="searchClients()">Réessayer</button>
+        </div>
+      }
+      @if (clients(); as page) {
+        @if (!page.items.length) {
+          <p>Aucun client trouvé. Ajustez la recherche ou choisissez « Nouveau client ».</p>
+        }
+        <div
+          class="client-choice"
+          role="radiogroup"
+          aria-label="Résultats de recherche des clients"
+        >
+          @for (client of page.items; track client.id) {
+            <label
+              ><input
+                type="radio"
+                name="selectedClient"
+                [checked]="form.controls.clientId.value === client.id"
+                [disabled]="loading()"
+                (change)="selectClient(client)"
+              /><span
+                ><strong>{{ client.nom }}</strong
+                ><br />{{ client.email }} · {{ client.telephone }}</span
+              ></label
+            >
+          }
+        </div>
+        <mat-paginator
+          aria-label="Pagination des clients"
+          [length]="page.totalElements"
+          [pageIndex]="page.page"
+          [pageSize]="page.size"
+          hidePageSize
+          (page)="paginateClients($event)"
+        />
+      }
+      @if (form.controls.clientId.touched && form.controls.clientId.invalid) {
+        <p role="alert" class="feedback feedback-error">
+          {{ form.controls.clientId.getError('server') ?? 'Sélectionnez un client.' }}
+        </p>
+      }
+    } @else {
+      <div formGroupName="nouveauClient" class="form-grid">
+        <mat-form-field
+          ><mat-label>Nom du client</mat-label><input matInput formControlName="nom" /><mat-error>{{
+            form.controls.nouveauClient.controls.nom.getError('server') ?? 'Renseignez le nom.'
+          }}</mat-error></mat-form-field
+        >
+        <mat-form-field
+          ><mat-label>Email du client</mat-label
+          ><input matInput type="email" formControlName="email" /><mat-error>{{
+            form.controls.nouveauClient.controls.email.getError('server') ??
+              'Renseignez un email valide.'
+          }}</mat-error></mat-form-field
+        >
+        <mat-form-field
+          ><mat-label>Téléphone du client</mat-label
+          ><input matInput type="tel" formControlName="telephone" /><mat-error>{{
+            form.controls.nouveauClient.controls.telephone.getError('server') ??
+              'Renseignez le téléphone.'
+          }}</mat-error></mat-form-field
+        >
+      </div>
+    }
+  </section>
+  <div class="actions">
+    <button mat-flat-button type="submit" [disabled]="loading()">
+      {{ loading() ? 'Enregistrement…' : 'Créer la demande' }}</button
+    ><a mat-button routerLink="/demandes">Retour à la liste</a>
+  </div>
+  @if (loading()) {
+    <p role="status">La demande est en cours d’enregistrement.</p>
+  }
+</form>
