@@ -37,3 +37,29 @@ démarrage : aucun repli ni secret codé en dur n'existe.
 Les tests automatiques s'exécutent sur un H2 de test isolé (avec leurs
 propres paramètres de sécurité TEST dans `src/test/resources`) ; ils ne
 remplacent pas une validation PostgreSQL réelle.
+
+## Lancement local avec .env (PowerShell)
+
+Le fichier `.env` n’est pas charge automatiquement par Spring Boot. Le lanceur
+`start-dev.ps1` lit ses valeurs litteralement et les transmet comme variables
+d’environnement au processus Maven, sans executer le contenu ni afficher les secrets.
+
+Configuration initiale sur une nouvelle machine : copier `.env.example` vers `.env`,
+renseigner DB_PASSWORD, un JWT_SECRET HMAC aleatoire et JAVA_HOME (JDK 21).
+Le fichier `.env` et ses variantes locales sont ignores par Git ; seul l’exemple
+sans secrets est versionnable. Garder cette configuration exclusivement en local.
+
+Depuis `backend/`, pour les lancements suivants :
+
+```powershell
+.\start-dev.ps1
+```
+
+Pour verifier le fichier et Java sans demarrer de serveur :
+
+```powershell
+.\start-dev.ps1 -CheckOnly
+```
+
+Le lancement direct `mvnw.cmd spring-boot:run` reste possible si les variables sont
+ deja presentes dans le terminal ; il ne lit pas `.env` a lui seul.
