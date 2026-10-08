@@ -1,13 +1,13 @@
-# Safyron — Frontend F1 et F2
+# Safyron — Frontend F1, F2 et F3
 
 F1 est implémenté et validé humainement (IMPLEMENTED + VALIDATED), intégré dans main.
-F2 est en implémentation en cours, livré pour revue humaine ; aucune validation humaine F2 n’est prétendue.
-F3 reste non implémenté. L’IA reste non implémentée et aucune API IA n’est appelée.
+F2 est implémenté et validé humainement (IMPLEMENTED + VALIDATED), selon la confirmation explicite de l’utilisateur.
+F3 est implémenté techniquement, en attente de validation humaine navigateur/backend. F4 et l’IA restent non implémentés ; aucune API IA n’est appelée.
 
 ## Périmètre
 
 SPA initialisée avec Angular CLI 22 (standalone, routing, SCSS, TypeScript strict, sans SSR).
-Les composants F2, le service API et le fichier des modèles ont été créés avec le générateur Angular.
+Les composants, services API et fichiers des modèles F2/F3 ont été créés avec le générateur Angular.
 Angular Material 22 et le thème Safyron de F1 sont conservés.
 
 F1 : login réel, session uniquement en mémoire, expiration, logout, guards UX,
@@ -42,7 +42,7 @@ Aucun secret n’est stocké dans le frontend.
 - core/session, guards, http et layout : fondation F1 conservée.
 - features/auth : formulaire et service de connexion F1.
 - features/demandes : service HTTP simple, DTO, libellés, feedback, styles et trois pages F2.
-- features/administration : point d’entrée F1 ; F3 non implémenté.
+- features/administration : API utilisateurs, DTO et trois pages F3 (liste, création, modification).
 - shared/ui/page-state et src/styles.scss : présentation et thème F1 conservés.
 
 Le logo source images/logo.png et sa copie public/safyron-logo.png sont inchangés.
@@ -86,10 +86,9 @@ les corps de création exclusifs, le PATCH partiel, les actions et les erreurs.
 Les comptes/demandes/clients utilisés comme fixtures sont limités aux fichiers .spec.ts.
 Le nombre final et les résultats de build/tests sont consignés dans PROJECT_TRUTH.
 
-Les validations navigateur réelles de F1 restent acquises. Aucune nouvelle validation
-navigateur, Spring Boot/PostgreSQL ou visuelle F2 n’est prétendue pendant cette livraison.
+Les validations de F1 restent acquises. La validation fonctionnelle réelle de F2 est explicitement confirmée par l’utilisateur (intégration Spring Boot, navigateur, workflow RT/AT). La finition visuelle globale reste prévue pour F4.
 
-Pour la revue humaine F2 après lancement des serveurs par l’utilisateur :
+Parcours de référence F2 pour les vérifications manuelles :
 
 1. RT : chercher, filtrer, trier, paginer ; revenir avec le navigateur et vérifier la vue.
 2. RT : créer avec chacun des deux modes client ; vérifier le détail retourné.
@@ -110,7 +109,7 @@ Les ADR et documents de conception VALIDATED restent inchangés. Leurs phrases h
 « sans implémentation » décrivent la conception ; PROJECT_TRUTH donne l’état actuel.
 L’endpoint IA est prévu au contrat mais absent du backend actuel : il reste exclu de F2.
 
-## Fichiers F2 de cette livraison
+## Fichiers F2 — livraison précédente
 
 Préfixe des fichiers de la feature : src/app/features/demandes/.
 
@@ -122,3 +121,87 @@ Préfixe des fichiers de la feature : src/app/features/demandes/.
 | Création infrastructure de feature | demandes-api.ts, demandes-api.spec.ts, demande-models.ts, demande-feedback.ts, demandes.scss, demandes-routes.spec.ts |
 | Modification                       | src/app/app.routes.ts, README.md, ../PROJECT_TRUTH.md                                                                 |
 | Suppression du scaffolding         | demandes-entry/demandes-entry.ts, demandes-entry.html, demandes-entry.scss                                            |
+
+## F3 — Administration
+
+Routes SPA protégées par les guards UX F1 et le rôle ADMINISTRATEUR :
+
+- /administration/utilisateurs
+- /administration/utilisateurs/nouveau
+- /administration/utilisateurs/:id/modifier
+
+Le cumul ADM + RT/AT conserve l’accès à l’administration.
+Le backend reste l’unique autorité sur les rôles actuels et l’état actif.
+
+La liste utilise MatTable sur desktop et des cartes sur mobile, avec MatPaginator.
+Les pages commencent à zéro, avec size 20 par défaut. Les seuls tris proposés
+sont id, nom, email et actif, côté serveur. Aucun tri par défaut n’est imposé,
+aucun filtre ou paramètre recherche n’est ajouté.
+
+La création utilise un Reactive Form avec nom, email, actif, rôles métier et
+mot de passe initial. Seuls RT et AT sont sélectionnables, ensemble ou séparément ;
+un tableau vide est accepté. Le mot de passe n’a aucune longueur minimale
+arbitraire côté frontend, reste une donnée d’entrée et est effacé après succès.
+
+La modification comporte trois sauvegardes indépendantes : nom/email, activation
+ou désactivation, remplacement complet des rôles métier. Une réponse s’applique
+uniquement aux champs de sa section afin de ne pas écraser une autre réponse
+concurrente ou les saisies encore présentes dans une autre section.
+La désactivation requiert une confirmation explicite.
+
+ADMINISTRATEUR existant est affiché en lecture seule et n’est jamais envoyé dans
+rolesMetier. C’est le backend qui le conserve. Aucune suppression ou modification
+de mot de passe existant n’est proposée.
+
+| Méthode | Endpoint relatif à /api/v1       | Usage                        |
+| ------- | -------------------------------- | ---------------------------- |
+| GET     | /utilisateurs                    | Pagination et tri serveur    |
+| GET     | /utilisateurs/{id}               | Lecture du compte            |
+| POST    | /utilisateurs                    | Création, réponse 201        |
+| PUT     | /utilisateurs/{id}               | Nom/email uniquement         |
+| POST    | /utilisateurs/{id}/activation    | Activation sans corps        |
+| POST    | /utilisateurs/{id}/desactivation | Désactivation sans corps     |
+| PUT     | /utilisateurs/{id}/roles-metier  | Remplacement des rôles RT/AT |
+
+Les erreurs connues sont affichées dans leur section : fieldErrors, email déjà
+utilisé, politique minimale du mot de passe, rôles invalides, paramètres invalides,
+accès refusé, utilisateur absent et conflit. Un 403 conserve la session.
+Les 401 utilisent l’interceptor F1. Après résultat de mutation incertain ou CONFLIT,
+la section attend un rechargement explicite ; les saisies ne sont pas écrasées silencieusement.
+
+### Audit et validation F3
+
+Aucune modification backend nécessaire pour F3.
+Les contrôleurs, DTO, erreurs, RBAC, pagination, tris, unicité email et préservation
+du rôle ADM sont compatibles avec les parcours. La liste charge les rôles en groupe
+après pagination. Aucune modification des ADR, contrats validés ou du backend.
+
+Validation technique : npm ci et build production réussis ; 161 tests frontend réussis (24 F1, 66 F2 et 71 F3), dans 15 fichiers. Aucun serveur démarré.
+
+Les tests F3 couvrent les sept endpoints, les rôles cumulés, la pagination/tri,
+les quatre combinaisons de rôles métier, les opérations indépendantes/concurrentes,
+les erreurs, la confirmation de désactivation et la fin de session globale F1.
+Les fixtures de test restent dans les fichiers .spec.ts ; aucune donnée métier fictive
+n’est incluse dans les écrans.
+
+La validation humaine F3 reste à réaliser par l’utilisateur après lancement des serveurs :
+
+1. ADM : paginer, trier et consulter les comptes réels.
+2. Créer un utilisateur avec chacun des ensembles de rôles métier, y compris aucun.
+3. Vérifier email dupliqué, politique de mot de passe et effacement après création.
+4. Modifier nom/email, désactiver avec confirmation puis réactiver.
+5. Modifier les rôles RT/AT d’un compte ADM et vérifier sa conservation en lecture seule.
+6. Vérifier les accès multi-rôles, le mobile, les labels, le clavier et les messages d’erreur.
+
+### Fichiers F3 de cette livraison
+
+Préfixe de la feature : src/app/features/administration/.
+
+| Changement                | Fichiers                                                                                                                                                 |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Liste                     | utilisateurs-list/utilisateurs-list.ts, utilisateurs-list.html, utilisateurs-list.spec.ts                                                                |
+| Création                  | utilisateur-create/utilisateur-create.ts, utilisateur-create.html, utilisateur-create.spec.ts                                                            |
+| Modification              | utilisateur-edit/utilisateur-edit.ts, utilisateur-edit.html, utilisateur-edit.spec.ts                                                                    |
+| Infrastructure de feature | administration-api.ts, administration-api.spec.ts, utilisateur-models.ts, administration-feedback.ts, administration.scss, administration-routes.spec.ts |
+| Fichiers modifiés         | src/app/app.routes.ts, README.md, ../PROJECT_TRUTH.md                                                                                                    |
+| Scaffolding supprimé      | utilisateurs-entry/utilisateurs-entry.ts, utilisateurs-entry.html, utilisateurs-entry.scss                                                               |

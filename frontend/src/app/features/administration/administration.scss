@@ -1,0 +1,118 @@
+:host {
+  display: block;
+}
+.surface {
+  background: white;
+  border: 1px solid #dce3e9;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.page-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+h2 {
+  margin: 0 0 1rem;
+  color: #003056;
+  font-size: 1.15rem;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 1rem;
+}
+mat-form-field {
+  width: 100%;
+}
+.sort-field {
+  max-width: 22rem;
+}
+.actions,
+.roles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+.roles {
+  gap: 0.4rem;
+}
+.muted {
+  color: #526478;
+}
+.role {
+  color: #003056;
+  background: #e9f0f6;
+}
+.account-active {
+  color: #125436;
+  background: #e4f2e9;
+}
+.account-inactive {
+  color: #526478;
+  background: #edf0f3;
+}
+table {
+  width: 100%;
+}
+.mat-column-roles {
+  min-width: 15rem;
+}
+.mobile-list {
+  display: none;
+}
+dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.7rem 1.5rem;
+}
+dt {
+  color: #526478;
+}
+dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.role-checkboxes {
+  display: grid;
+  gap: 0.3rem;
+  margin: 1rem 0;
+}
+.feedback {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 1000px) {
+  .desktop-list {
+    display: none;
+  }
+  .mobile-list {
+    display: grid;
+    gap: 0.75rem;
+  }
+}
+@media (max-width: 600px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .surface {
+    padding: 1rem;
+  }
+  dl {
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+  }
+  dd {
+    margin-bottom: 0.6rem;
+  }
+}
+
+.surface p,
+h1,
+h2,
+.mat-mdc-cell {
+  overflow-wrap: anywhere;
+}

@@ -61,8 +61,28 @@ export const routes: Routes = [
         canActivate: [authGuard, roleGuard],
         data: { roles: ['ADMINISTRATEUR'] },
         loadComponent: () =>
-          import('./features/administration/utilisateurs-entry/utilisateurs-entry').then(
-            (m) => m.UtilisateursEntry,
+          import('./features/administration/utilisateurs-list/utilisateurs-list').then(
+            (m) => m.UtilisateursList,
+          ),
+      },
+      {
+        path: 'administration/utilisateurs/nouveau',
+        title: 'Nouvel utilisateur · Safyron',
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['ADMINISTRATEUR'] },
+        loadComponent: () =>
+          import('./features/administration/utilisateur-create/utilisateur-create').then(
+            (m) => m.UtilisateurCreate,
+          ),
+      },
+      {
+        path: 'administration/utilisateurs/:id/modifier',
+        title: 'Modifier un utilisateur · Safyron',
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['ADMINISTRATEUR'] },
+        loadComponent: () =>
+          import('./features/administration/utilisateur-edit/utilisateur-edit').then(
+            (m) => m.UtilisateurEdit,
           ),
       },
       { path: 'acces-refuse', component: AccessDenied, title: 'Accès refusé · Safyron' },

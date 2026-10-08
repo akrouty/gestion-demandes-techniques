@@ -2,7 +2,7 @@
 
 ## Phase actuelle
 
-Implémentation backend en cours.
+Implémentation frontend en cours.
 
 ## État des livrables
 
@@ -85,10 +85,14 @@ ADR-006 et FRONTEND-DESIGN-V1 retiennent une organisation Angular SPA feature-ba
 - Frontend : implémentation en cours.
 - F1 — fondation Angular + Angular Material + thème Safyron + shell + authentification : implémenté et validé (IMPLEMENTED + VALIDATED ; validation humaine autorisée).
 - Tests frontend F1 : 24 tests réussis ; `npm ci`, `npm run build` et `npm test -- --watch=false` réussis avant intégration, sans démarrage de serveur.
-- F2 — demandes frontend : implémentation en cours ; validation humaine en attente.
-- Livraison technique F2 pour revue : liste avec filtres/tri/pagination serveur, création avec choix exclusif du client, détail et actions métier consommant les DTO/API existants ; aucune modification backend.
+- F2 — demandes frontend : implémenté et validé (IMPLEMENTED + VALIDATED ; validation humaine explicitement confirmée par l’utilisateur).
+- Livraison F2 validée : liste avec filtres/tri/pagination serveur, création avec choix exclusif du client, détail et actions métier consommant les DTO/API existants ; aucune modification backend.
 - Tests frontend F1 + F2 : 90 tests réussis (24 F1 conservés + 66 F2), répartis dans 10 fichiers ; installation propre avec npm ci, build production et npm test -- --watch=false réussis, sans démarrage de serveur.
-- Validation navigateur/visuelle et workflow HTTP réel F2 : non réalisés pendant cette livraison ; revue humaine encore nécessaire après lancement des serveurs par l’utilisateur.
-- F3 — administration frontend : non implémenté.
+- Validation fonctionnelle réelle F2 confirmée par l’utilisateur : intégration Spring Boot, tests navigateur et workflow RT/AT (création, affectation, traitement, résolution, refus, clôture, annulation) sans problème bloquant. La finition visuelle globale est réservée à F4.
+- F3 — administration frontend : implémenté techniquement ; validation humaine navigateur/backend en attente.
+- Livraison technique F3 : liste avec pagination/tri serveur, création, modification nom/email, activation/désactivation et remplacement des rôles métier ; ADMINISTRATEUR affiché en lecture seule, jamais envoyé dans rolesMetier.
+- Tests frontend F1 + F2 + F3 : 161 tests réussis (24 F1 + 66 F2 + 71 F3), répartis dans 15 fichiers ; npm ci, npm run build et npm test -- --watch=false réussis, sans démarrage de serveur.
+- Audit d’intégration F3 : aucune modification backend nécessaire ; contrôleurs/DTO/RBAC/pagination/tri/erreurs compatibles avec les parcours implémentés.
+- F4 — finition visuelle globale : non implémenté.
 - IA : non implémentée.
 - Frontière architecturale IA : décidée ; fournisseur et modèle IA non encore choisis.

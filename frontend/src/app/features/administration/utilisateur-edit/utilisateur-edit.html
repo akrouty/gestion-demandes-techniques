@@ -1,0 +1,189 @@
+<a mat-button routerLink="/administration/utilisateurs">Retour aux utilisateurs</a>
+@if (loading()) {
+  <app-page-state
+    kind="loading"
+    title="Chargement du compte"
+    message="Les informations de l’utilisateur sont en cours de chargement."
+  />
+}
+@if (pageError(); as failure) {
+  <app-page-state
+    kind="error"
+    [title]="
+      pageStatus() === 404
+        ? 'Utilisateur introuvable'
+        : pageStatus() === 403
+          ? 'Accès refusé'
+          : 'Chargement impossible'
+    "
+    [message]="failure.message"
+  />
+  @if (failure.code) {
+    <p class="muted">{{ failure.code }}</p>
+  }
+  @if (pageStatus() !== 404 && pageStatus() !== 403) {
+    <button mat-button (click)="reload()">Réessayer</button>
+  }
+}
+@if (pageSuccess()) {
+  <p class="feedback feedback-success" role="status">{{ pageSuccess() }}</p>
+}
+@if (user(); as detail) {
+  <header class="page-heading">
+    <div>
+      <h1>{{ detail.nom }}</h1>
+      <p class="muted">{{ detail.email }}</p>
+    </div>
+    <span [class]="detail.actif ? 'badge account-active' : 'badge account-inactive'">{{
+      detail.actif ? 'Actif' : 'Inactif'
+    }}</span>
+  </header>
+  @if (identityReload() || stateReload() || rolesReload()) {
+    <div class="feedback feedback-error" role="alert">
+      <p>
+        L’état du compte ou le résultat de l’action doit être vérifié sur le serveur. Recharger
+        remplacera vos saisies par les valeurs enregistrées.
+      </p>
+      <button mat-button (click)="reload()" [disabled]="anyBusy()">Recharger le compte</button>
+    </div>
+  }
+  <section class="surface">
+    <h2>Informations générales</h2>
+    @if (identityError(); as failure) {
+      <div class="feedback feedback-error" role="alert">
+        <p>
+          {{ failure.message }}
+          @if (failure.code) {
+            ({{ failure.code }})
+          }
+        </p>
+        @for (field of failure.fieldErrors; track $index) {
+          <p>{{ field.field }} : {{ field.message }}</p>
+        }
+      </div>
+    }
+    @if (identitySuccess()) {
+      <p class="feedback feedback-success" role="status">{{ identitySuccess() }}</p>
+    }
+    <form [formGroup]="identity" (ngSubmit)="saveIdentity()">
+      <div class="form-grid">
+        <mat-form-field
+          ><mat-label>Nom</mat-label><input matInput formControlName="nom" /><mat-error>{{
+            identity.controls.nom.getError('server') ?? 'Renseignez le nom.'
+          }}</mat-error></mat-form-field
+        ><mat-form-field
+          ><mat-label>Email</mat-label
+          ><input matInput type="email" formControlName="email" /><mat-error>{{
+            identity.controls.email.getError('server') ?? 'Renseignez un email valide.'
+          }}</mat-error></mat-form-field
+        >
+      </div>
+      <button mat-flat-button type="submit" [disabled]="identityBusy() || identityReload()">
+        {{ identityBusy() ? 'Enregistrement…' : 'Enregistrer le nom et l’email' }}
+      </button>
+    </form>
+  </section>
+  <section class="surface">
+    <h2>État du compte</h2>
+    <p>
+      État actuel : <strong>{{ detail.actif ? 'Actif' : 'Inactif' }}</strong>
+    </p>
+    @if (stateError(); as failure) {
+      <p class="feedback feedback-error" role="alert">
+        {{ failure.message }}
+        @if (failure.code) {
+          ({{ failure.code }})
+        }
+      </p>
+    }
+    @if (stateSuccess()) {
+      <p class="feedback feedback-success" role="status">{{ stateSuccess() }}</p>
+    }
+    @if (detail.actif) {
+      <p class="muted">
+        La désactivation rend le compte inutilisable pour la connexion et les requêtes protégées.
+      </p>
+      <p>
+        <mat-checkbox [formControl]="confirmDeactivate"
+          >Je confirme la désactivation de ce compte.</mat-checkbox
+        >
+      </p>
+      @if (confirmDeactivate.touched && confirmDeactivate.invalid) {
+        <p role="alert">Confirmez la désactivation avant de poursuivre.</p>
+      }
+    }
+    <button
+      mat-stroked-button
+      type="button"
+      (click)="changeState()"
+      [disabled]="stateBusy() || stateReload()"
+    >
+      {{
+        stateBusy()
+          ? 'Enregistrement…'
+          : detail.actif
+            ? 'Désactiver le compte'
+            : 'Activer le compte'
+      }}
+    </button>
+  </section>
+  <section class="surface">
+    <h2>Rôles</h2>
+    @if (hasAdministrator()) {
+      <h3>Rôle administratif</h3>
+      <p><span class="badge role">Administrateur</span> — lecture seule</p>
+      <p class="muted">
+        Ce rôle est conservé par le serveur lors du remplacement des rôles métier.
+      </p>
+    }
+    @if (rolesError(); as failure) {
+      <div class="feedback feedback-error" role="alert">
+        <p>
+          {{ failure.message }}
+          @if (failure.code) {
+            ({{ failure.code }})
+          }
+        </p>
+        @for (field of failure.fieldErrors; track $index) {
+          <p>{{ field.field }} : {{ field.message }}</p>
+        }
+      </div>
+    }
+    @if (rolesSuccess()) {
+      <p class="feedback feedback-success" role="status">{{ rolesSuccess() }}</p>
+    }
+    <form [formGroup]="rolesForm" (ngSubmit)="saveRoles()">
+      <h3>Rôles métier modifiables</h3>
+      <div formGroupName="rolesMetier" class="role-checkboxes">
+        <mat-checkbox formControlName="responsable">Responsable technique</mat-checkbox
+        ><mat-checkbox formControlName="agent">Agent technique</mat-checkbox>
+      </div>
+      <p class="muted">
+        L’enregistrement remplace l’ensemble des rôles métier. Vous pouvez aussi ne sélectionner
+        aucun rôle métier.
+      </p>
+      <button mat-flat-button type="submit" [disabled]="rolesBusy() || rolesReload()">
+        {{ rolesBusy() ? 'Enregistrement…' : 'Enregistrer les rôles métier' }}
+      </button>
+    </form>
+  </section>
+  <section class="surface">
+    <h2>Informations de lecture</h2>
+    <dl>
+      <dt>Identifiant</dt>
+      <dd>{{ detail.id }}</dd>
+      <dt>Rôles enregistrés</dt>
+      <dd>
+        <div class="roles">
+          @for (role of detail.roles; track role) {
+            <span class="badge role">{{ roleLabels[role] }}</span>
+          } @empty {
+            <span>Aucun rôle</span>
+          }
+        </div>
+      </dd>
+    </dl>
+    <p class="muted">Recharger remplace vos saisies par les valeurs du serveur.</p>
+    <button mat-button (click)="reload()" [disabled]="anyBusy()">Recharger le compte</button>
+  </section>
+}
