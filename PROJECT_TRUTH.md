@@ -82,6 +82,10 @@ ADR-006 et FRONTEND-DESIGN-V1 retiennent une organisation Angular SPA feature-ba
 - Validation PostgreSQL réelle du Bloc 3 : connexion réussie, migration Flyway V1
   appliquée, `Hibernate validate` réussi, backend démarré et workflow API V1
   vérifié par appels HTTP réels.
-- Frontend : non implémenté.
+- Frontend : implémentation en cours.
+- F1 — fondation Angular + Angular Material + thème Safyron + shell + authentification : implémenté et validé (IMPLEMENTED + VALIDATED ; validation humaine autorisée).
+- Tests frontend F1 : 24 tests réussis ; `npm ci`, `npm run build` et `npm test -- --watch=false` réussis avant intégration, sans démarrage de serveur.
+- F2 — demandes frontend : non implémenté.
+- F3 — administration frontend : non implémenté.
 - IA : non implémentée.
 - Frontière architecturale IA : décidée ; fournisseur et modèle IA non encore choisis.
