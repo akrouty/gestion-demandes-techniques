@@ -309,12 +309,16 @@ class GroqPacer:
         self.ready_at = max(self.ready_at, time.monotonic() + delay)
 
     def wait(self):
-        waited = 0.0
-        while (remaining := self.ready_at - time.monotonic()) > 0:
-            chunk = min(remaining, 60.0)
-            time.sleep(chunk)
-            waited += chunk
-        return waited
+        return wait_until(self.ready_at)
+
+
+def wait_until(ready_at):
+    waited = 0.0
+    while (remaining := ready_at - time.monotonic()) > 0:
+        chunk = min(remaining, 60.0)
+        time.sleep(chunk)
+        waited += chunk
+    return waited
 
 
 def technical_error(exc):
@@ -347,13 +351,14 @@ def utc_now():
 
 def perform_case(provider, case, spec, key, timeout, retry_transient, log, pacer=None):
     model_latency_ms = 0.0
+    retry_ready_at = 0.0
     pacer = (pacer or GroqPacer()) if provider == "GROQ" else None
     body = payload(provider, case, spec)
     returned_model = PROVIDERS[provider][0]
     tokens = [None, None, None]
     result, error, fatal = None, "OTHER", False
     for attempt in range(1, 2 + int(retry_transient)):
-        pacing_seconds = pacer.wait() if pacer else 0.0
+        pacing_seconds = pacer.wait() if pacer else wait_until(retry_ready_at)
         attempt_start = time.perf_counter()
         headers = {}
         record = {"caseId": case["id"], "provider": provider,
@@ -401,6 +406,9 @@ def perform_case(provider, case, spec, key, timeout, retry_transient, log, pacer
         log.flush()
         if not record["retryNext"]:
             break
+        if not pacer:
+            # Retry-After fournisseur uniquement ; aucun quota ou delai de repli.
+            retry_ready_at = time.monotonic() + duration_seconds(headers.get("retry-after"))
     row = {"caseId": case["id"], "provider": provider, "model": returned_model,
            "promptVersion": spec["version"], "categorieReference": case["categorieReference"],
            "prioriteReference": case["prioriteReference"],

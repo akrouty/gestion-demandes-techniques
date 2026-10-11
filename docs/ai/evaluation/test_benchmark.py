@@ -315,6 +315,53 @@ class BenchmarkOfflineTests(unittest.TestCase):
         self.assertAlmostEqual(row["latenceMs"], 300)
         self.assertEqual(row["sortieValide"], "true")
 
+    def test_gemini_retry_after_wait_is_traced_without_affecting_model_latency(self):
+        clock = [100.0]
+        call_times = []
+        waits = []
+        def sleep(seconds):
+            waits.append(seconds)
+            clock[0] += seconds
+        def post(*args):
+            call_times.append(clock[0])
+            if len(call_times) == 1:
+                raise HTTPError("https://example.invalid", 429, "rate", {"Retry-After": "30"}, None)
+            return json.dumps(self.envelope("GEMINI")), {}
+        log = io.StringIO()
+        with patch.object(b.time, "monotonic", side_effect=lambda:clock[0]), \
+             patch.object(b.time, "sleep", side_effect=sleep), \
+             patch.object(b.time, "perf_counter", side_effect=[0,.1,30,30.2]), \
+             patch.object(b, "post_json", side_effect=post):
+            row, _ = b.perform_case("GEMINI", self.cases[0], self.spec, "test-only", 1, True, log)
+        events = [json.loads(line) for line in log.getvalue().splitlines()]
+        self.assertEqual(call_times, [100,130])
+        self.assertEqual(waits, [30])
+        self.assertEqual(len(events),2)
+        self.assertEqual(events[0]["typeErreur"],"HTTP_429")
+        self.assertEqual(events[1]["pacingSeconds"],30)
+        self.assertAlmostEqual(row["latenceMs"],300)
+        self.assertEqual(row["sortieValide"],"true")
+
+    def test_gemini_without_retry_does_not_wait_or_make_second_call(self):
+        error = HTTPError("https://example.invalid",429,"rate",{"Retry-After":"30"},None)
+        log = io.StringIO()
+        with patch.object(b, "post_json", side_effect=error) as post, \
+             patch.object(b.time, "sleep", side_effect=AssertionError("Attente interdite")):
+            row, _ = b.perform_case("GEMINI",self.cases[0],self.spec,"test-only",1,False,log)
+        self.assertEqual(post.call_count,1)
+        self.assertEqual(row["typeErreur"],"HTTP_429")
+        self.assertEqual(json.loads(log.getvalue())["pacingSeconds"],0)
+
+    def test_gemini_retry_without_retry_after_does_not_invent_delay(self):
+        error = HTTPError("https://example.invalid",429,"rate",{},None)
+        log = io.StringIO()
+        with patch.object(b, "post_json", side_effect=[error,(json.dumps(self.envelope("GEMINI")),{})]) as post, \
+             patch.object(b.time, "sleep", side_effect=AssertionError("Attente inventee")):
+            row, _ = b.perform_case("GEMINI",self.cases[0],self.spec,"test-only",1,True,log)
+        self.assertEqual(post.call_count,2)
+        self.assertEqual(json.loads(log.getvalue().splitlines()[1])["pacingSeconds"],0)
+        self.assertEqual(row["sortieValide"],"true")
+
     def sdk_factory(self, handler):
         # Vrai SDK et vrais types HTTP, transport entierement en memoire.
         import groq

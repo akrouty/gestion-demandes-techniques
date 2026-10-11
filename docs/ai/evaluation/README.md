@@ -48,7 +48,10 @@ python -B docs/ai/evaluation/benchmark.py run --timeout $timeoutSeconds
 `--retry-transient` est facultatif : au plus **un** retry après timeout,
 HTTP 429, HTTP 500/502/503/504 ou connexion interrompue/reset. Aucun retry de sortie
 métier invalide, de refus, de JSON tronqué, ou de prédiction valide incorrecte.
-Sans cette option, aucun retry. Un timeout peut avoir été traité côté fournisseur :
+Sans cette option, aucun retry. Pour tous les fournisseurs, un retry technique
+respecte `Retry-After` lorsqu’il est fourni. L’attente est tracée en `pacingSeconds`
+et exclue de `latenceMs` ; sans cet en-tête, aucun délai de retry n’est inventé.
+Aucun quota RPM/TPM fixe Gemini n’est supposé. Un timeout peut avoir été traité côté fournisseur :
 la nouvelle tentative éventuelle est enregistrée comme telle, sans garantie d’unicité
 ni de déterminisme du fournisseur.
 

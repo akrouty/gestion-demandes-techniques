@@ -1,0 +1,31 @@
+{
+  "startedAtUtc": "2026-10-11T23:13:49.311176+00:00",
+  "status": "completed",
+  "python": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+  "datasetSha256": "abd51d581ec368fd6502a6b1a9a6181ae9f095e11542479892a43ebc7f10d78e",
+  "designSha256": "3bac63d66c536fe4d9d3d9d51fc003af10a1e39a31db56ebbb3c1ec2b65b7234",
+  "scriptSha256": "7bcca8b5acbead014a4311e6d2b1ad159a41aeba24d8ba4c5af44f231291daa0",
+  "promptVersion": "AI-QUALIFICATION-PROMPT-v1.0.0",
+  "promptSha256": "490c0d71023bd8491b2f54a1ba9915d015c0b028d874e2b5c5bf221b995a7b30",
+  "timeoutSeconds": 60.0,
+  "maxTechnicalRetries": 1,
+  "providers": {
+    "GEMINI": {
+      "model": "gemini-3.8-flash",
+      "endpoint": "https://generativelanguage.googleapis.com/v1/interactions"
+    },
+    "GROQ": {
+      "model": "qwen/qwen3.8-27b",
+      "endpoint": "https://api.groq.com/openai/v1/chat/completions"
+    }
+  },
+  "geminiThinkingLevel": "low",
+  "geminiThinkingSummaries": "none",
+  "geminiSamplingParameters": "omitted",
+  "groqReasoningEffort": "none",
+  "groqPacing": "response rate-limit headers and actual token usage; excluded from model latency",
+  "tokenAccounting": "final attempt only; earlier attempts preserved in JSONL",
+  "costAccounting": "unknown, empty CSV cells",
+  "resultsSha256": "b45bdb76345a1136ddf65583d9a64b604c47ea902a7ad163747ceefc4a08d049",
+  "finishedAtUtc": "2026-10-11T23:17:07.297911+00:00"
+}
