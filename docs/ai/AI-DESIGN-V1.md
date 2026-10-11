@@ -4,7 +4,7 @@
 
 **DRAFT**
 
-Document de conception uniquement, transcrit à partir des éléments fournis humainement dans la discussion. La validation de cette transcription ne valide ni les définitions marquées `À VALIDER MÉTIER`, ni les labels proposés, ni les décisions encore ouvertes. Aucune implémentation, aucun appel API IA et aucun benchmark ne sont réalisés à cette étape.
+Document de conception transcrit à partir des décisions retenues et des propositions explicitement marquées à valider dans la discussion. La validation de cette transcription ne valide ni les définitions marquées `À VALIDER MÉTIER`, ni les labels proposés, ni les décisions encore ouvertes. Aucune implémentation, aucun appel API IA et aucun benchmark ne sont réalisés à cette étape.
 
 ## 1. Objectif et limites du module IA
 
@@ -325,6 +325,8 @@ aucune suggestion IA → aucune valeur inventée → qualification manuelle touj
 ```
 
 Aucun fallback automatique de classification ou priorisation. Les timeouts doivent être configurables, mais aucune valeur chiffrée n’est encore validée.
+
+Conformément à API-CONTRACT-V1, une indisponibilité temporaire de l’analyse IA peut produire HTTP 503 Service Unavailable lorsque cette cause s’applique.
 
 ## 11. Fournisseurs et modèles candidats
 
@@ -682,6 +684,8 @@ Résultats à comparer :
 - **Analyse métier :** sous-priorisation ;
 - **Technique :** erreurs fournisseur, sorties invalides, temps de réponse, coût ;
 - **Optionnel :** Weighted Cohen’s Kappa uniquement s’il est validé plus tard.
+
+Les paramètres d’inférence doivent être rendus aussi comparables que raisonnablement possible entre les fournisseurs. Lorsqu’un paramètre n’a pas d’équivalent exact ou possède une sémantique différente selon l’API, cette différence doit être documentée plutôt que masquée.
 
 Les paramètres définitifs du benchmark restent non validés. Aucun résultat, classement final ou seuil d’acceptation n’est présenté.
 
