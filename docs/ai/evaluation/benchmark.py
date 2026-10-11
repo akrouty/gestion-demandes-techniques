@@ -223,8 +223,42 @@ def rate_headers(headers):
     return {key: normalized[key] for key in RATE_HEADERS if key in normalized}
 
 
+def load_groq_sdk():
+    # Import differe : validate et score restent utilisables sans SDK ni cle.
+    try:
+        import groq
+    except ImportError as exc:
+        raise ValidationError("Installer docs/ai/evaluation/requirements.txt avant run") from exc
+    return groq
+
+
+def post_groq_sdk(key, body, timeout):
+    groq = load_groq_sdk()
+    try:
+        with groq.Groq(api_key=key, max_retries=0, timeout=timeout) as client:
+            # Wrapper officiel de chat.completions.create : conserve le texte brut
+            # et les headers, sans parser/reparer la sortie metier via le SDK.
+            response = client.chat.completions.with_raw_response.create(**body)
+            raw = response.text() if callable(response.text) else response.text
+            return raw, rate_headers(response.headers)
+    except groq.APITimeoutError as exc:
+        raise TimeoutError("Timeout SDK Groq") from exc
+    except groq.APIStatusError as exc:
+        headers = rate_headers(exc.response.headers)
+        exc.response.close()
+        # Meme mapping, pacing et retry que le transport precedent.
+        raise HTTPError(PROVIDERS["GROQ"][1], exc.status_code,
+                        "Erreur HTTP SDK Groq", headers, None) from exc
+    except groq.APIConnectionError as exc:
+        raise URLError(exc.__cause__ or OSError("Connexion SDK Groq indisponible")) from exc
+    except groq.APIError as exc:
+        raise OSError("Erreur SDK Groq") from exc
+
+
 def post_json(provider, key, body, timeout):
-    auth = {"x-goog-api-key": key} if provider == "GEMINI" else {"Authorization": "Bearer " + key}
+    if provider == "GROQ":
+        return post_groq_sdk(key, body, timeout)
+    auth = {"x-goog-api-key": key}
     request = Request(PROVIDERS[provider][1],
                       data=json.dumps(body, ensure_ascii=False, allow_nan=False).encode("utf-8"),
                       headers={**auth, "Content-Type": "application/json"}, method="POST")
@@ -490,6 +524,7 @@ def run(spec, cases, timeout, retry_transient):
     keys = {provider: os.environ.get(values[2], "").strip() for provider, values in PROVIDERS.items()}
     if not all(keys.values()):
         raise ValidationError("Variables GEMINI_API_KEY et GROQ_API_KEY requises pour run")
+    load_groq_sdk()  # Preflight avant tout appel Gemini ou creation de resultat.
     for path in (RESULTS, ATTEMPTS, MANIFEST):
         if path.exists():
             raise ValidationError(f"Execution refusee : {path.name} existe deja. Archiver le run precedent.")

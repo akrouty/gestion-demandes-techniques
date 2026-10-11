@@ -248,16 +248,16 @@ class BenchmarkOfflineTests(unittest.TestCase):
         opener = MagicMock()
         opener.open.return_value = response
         with patch.object(b, "build_opener", return_value=opener):
-            result = b.post_json("GROQ", "test-only", {"texte": "échéance"}, 7)
+            result = b.post_json("GEMINI", "test-only", {"texte": "échéance"}, 7)
         self.assertEqual(json.loads(result[0]), {"ok": True})
         request = opener.open.call_args.args[0]
         self.assertEqual(request.get_method(), "POST")
         self.assertEqual(json.loads(request.data.decode("utf-8")), {"texte": "échéance"})
         self.assertEqual(opener.open.call_args.kwargs["timeout"], 7)
 
-    def test_gemini_auth_header_has_no_bearer_and_groq_has_bearer(self):
+    def test_gemini_urllib_auth_header_has_no_bearer(self):
         from unittest.mock import MagicMock
-        for provider in b.PROVIDERS:
+        for provider in ["GEMINI"]:
             response = MagicMock()
             response.__enter__.return_value.read.return_value = b'{}'
             response.__enter__.return_value.headers = {}
@@ -271,9 +271,6 @@ class BenchmarkOfflineTests(unittest.TestCase):
             if provider == "GEMINI":
                 self.assertEqual(headers["x-goog-api-key"], "test-only")
                 self.assertNotIn("authorization", headers)
-            else:
-                self.assertEqual(headers["authorization"], "Bearer test-only")
-                self.assertNotIn("x-goog-api-key", headers)
 
     def test_gemini_ignores_thought_but_only_reads_model_output(self):
         envelope = self.envelope("GEMINI")
@@ -317,6 +314,131 @@ class BenchmarkOfflineTests(unittest.TestCase):
         self.assertEqual(events[0]["rateLimitHeaders"]["retry-after"], "7")
         self.assertAlmostEqual(row["latenceMs"], 300)
         self.assertEqual(row["sortieValide"], "true")
+
+    def sdk_factory(self, handler):
+        # Vrai SDK et vrais types HTTP, transport entierement en memoire.
+        import groq
+        import httpx
+        actual_client = groq.Groq
+        def factory(**kwargs):
+            self.assertEqual(kwargs["max_retries"], 0)
+            self.assertEqual(kwargs["api_key"], "test-only")
+            return actual_client(**kwargs, http_client=httpx.Client(transport=httpx.MockTransport(handler)))
+        return patch.object(groq, "Groq", side_effect=factory)
+
+    def test_sdk_groq_receives_exact_payload_model_and_auth_with_raw_headers(self):
+        import httpx
+        captured = []
+        def handler(request):
+            captured.append(request)
+            return httpx.Response(200, json=self.envelope("GROQ"),
+                headers={"x-ratelimit-limit-tokens": "8000", "x-ratelimit-remaining-tokens": "7990"})
+        expected = b.payload("GROQ", self.cases[0], self.spec)
+        with self.sdk_factory(handler) as client, patch.object(b, "build_opener", side_effect=AssertionError("urllib interdit pour Groq")):
+            raw, headers = b.post_json("GROQ", "test-only", expected, 7)
+        self.assertEqual(len(captured), 1)
+        self.assertEqual(client.call_args.kwargs["timeout"], 7)
+        request = captured[0]
+        self.assertEqual(str(request.url), b.PROVIDERS["GROQ"][1])
+        self.assertEqual(request.headers["authorization"], "Bearer test-only")
+        self.assertEqual(json.loads(request.content), expected)
+        self.assertEqual(expected["model"], "qwen/qwen3.8-27b")
+        self.assertEqual(expected["messages"][0]["content"], b.render_prompt(self.cases[0], self.spec))
+        self.assertEqual(expected["reasoning_effort"], "none")
+        self.assertEqual(expected["n"], 1)
+        self.assertFalse(expected["stream"])
+        self.assertTrue(expected["response_format"]["json_schema"]["strict"])
+        self.assertEqual(expected["response_format"]["json_schema"]["schema"], self.spec["schema"])
+        self.assertEqual(json.loads(raw), self.envelope("GROQ"))
+        self.assertEqual(headers["x-ratelimit-limit-tokens"], "8000")
+
+    def test_sdk_success_preserves_model_tokens_validation_and_latency(self):
+        import httpx
+        envelope = self.envelope("GROQ")
+        envelope["model"] = "qwen/qwen3.8-27b-returned"
+        def handler(request):
+            return httpx.Response(200, json=envelope)
+        from types import SimpleNamespace
+        from unittest.mock import Mock
+        clock = SimpleNamespace(perf_counter=Mock(side_effect=[10, 10.25]),
+                                monotonic=b.time.monotonic, sleep=b.time.sleep)
+        # Horloge benchmark seule : ne pas remplacer aussi celle interne de httpx.
+        with self.sdk_factory(handler), patch.object(b, "time", clock):
+            row, fatal = b.perform_case("GROQ", self.cases[0], self.spec, "test-only", 7, False, io.StringIO())
+        self.assertEqual(row["sortieValide"], "true")
+        self.assertEqual(row["model"], envelope["model"])
+        self.assertEqual([row[x] for x in ["inputTokens", "outputTokens", "totalTokens"]], [10,4,14])
+        self.assertEqual(row["latenceMs"], 250)
+        self.assertIsNone(row["coutObserveUsd"])
+        self.assertFalse(fatal)
+
+    def test_sdk_http_errors_use_existing_mapping_and_do_not_retry_automatically(self):
+        import httpx
+        for code, expected, fatal in [(429,"HTTP_429",False), (500,"HTTP_5XX",False),
+                                      (503,"HTTP_5XX",False), (403,"OTHER",True)]:
+            requests = []
+            def handler(request):
+                requests.append(request)
+                return httpx.Response(code, json={"error": {"message": "offline test"}}, headers={"Retry-After": "3"})
+            with self.subTest(code=code), self.sdk_factory(handler):
+                log = io.StringIO()
+                row, is_fatal = b.perform_case("GROQ", self.cases[0], self.spec, "test-only", 7, False, log)
+            self.assertEqual(len(requests),1)
+            self.assertEqual(row["typeErreur"], expected)
+            self.assertEqual(is_fatal, fatal)
+            self.assertEqual(json.loads(log.getvalue())["rateLimitHeaders"]["retry-after"], "3")
+
+    def test_sdk_timeout_maps_to_timeout_and_optional_retry_is_limited(self):
+        import httpx
+        for retry, count in [(False,1),(True,2)]:
+            requests = []
+            def handler(request):
+                requests.append(request)
+                raise httpx.ReadTimeout("offline timeout", request=request)
+            with self.subTest(retry=retry), self.sdk_factory(handler):
+                log = io.StringIO()
+                row, _ = b.perform_case("GROQ", self.cases[0], self.spec, "test-only", 7, retry, log)
+            self.assertEqual(len(requests),count)
+            self.assertEqual(row["typeErreur"],"TIMEOUT")
+            self.assertEqual(len(log.getvalue().splitlines()), count)
+
+    def test_sdk_429_retry_is_traced_and_respects_pacing(self):
+        import httpx
+        requests = []
+        clock = [100.0]
+        def handler(request):
+            requests.append(request)
+            if len(requests) == 1:
+                return httpx.Response(429, json={"error": {"message": "offline rate limit"}}, headers={"Retry-After":"2"})
+            return httpx.Response(200, json=self.envelope("GROQ"))
+        def sleep(seconds):
+            clock[0] += seconds
+        with self.sdk_factory(handler), patch.object(b.time, "monotonic", side_effect=lambda:clock[0]), \
+             patch.object(b.time, "sleep", side_effect=sleep):
+            log = io.StringIO()
+            row, _ = b.perform_case("GROQ", self.cases[0], self.spec, "test-only", 7, True, log)
+        events = [json.loads(x) for x in log.getvalue().splitlines()]
+        self.assertEqual(len(requests),2)
+        self.assertEqual(events[0]["typeErreur"],"HTTP_429")
+        self.assertTrue(events[0]["retryNext"])
+        self.assertEqual(events[1]["pacingSeconds"],2)
+        self.assertEqual(row["sortieValide"],"true")
+
+    def test_sdk_does_not_repair_or_retry_invalid_or_incorrect_business_output(self):
+        import httpx
+        incorrect = json.dumps({"categorieProposee":"AUTRE","prioriteProposee":"BASSE"})
+        for content, expected in [("broken-json","INVALID_JSON"), (incorrect,"NONE")]:
+            requests = []
+            def handler(request):
+                requests.append(request)
+                return httpx.Response(200,json=self.envelope("GROQ",content))
+            with self.subTest(content=content), self.sdk_factory(handler):
+                row, _ = b.perform_case("GROQ", self.cases[0], self.spec, "test-only", 7, True, io.StringIO())
+            self.assertEqual(len(requests),1)
+            self.assertEqual(row["typeErreur"],expected)
+            if expected != "NONE":
+                self.assertEqual(row["categoriePredite"],"")
+                self.assertEqual(row["prioritePredite"],"")
 
     def test_run_missing_keys_fails_before_file_creation_or_network(self):
         with patch.dict(b.os.environ, {}, clear=True), patch.object(b, "post_json", side_effect=AssertionError("API interdite")):

@@ -1,6 +1,21 @@
 # Benchmark comparatif V1 exploratoire
 
-Python 3.10 ou supérieur ; bibliothèque standard uniquement, sans installation pip.
+Python 3.10 ou supérieur ; SDK Python officiel `groq` uniquement pour le transport Groq.
+Gemini conserve son transport `urllib`. Installation depuis la racine du dépôt :
+
+```powershell
+python -m pip install -r docs/ai/evaluation/requirements.txt
+```
+
+Le diagnostic réel rapporté par l’utilisateur est un HTTP 403 Cloudflare `error code: 1010`
+avec `urllib`, alors qu’un appel Groq valide avec un autre client répond HTTP 200.
+La correction porte uniquement sur le client HTTP, pas sur le modèle ni sur la clé.
+Le SDK appelle `chat.completions.create` via son wrapper officiel `with_raw_response`
+pour conserver le texte brut et les en-têtes rate-limit sans modifier la validation métier.
+Ses retries automatiques sont désactivés (`max_retries=0`) : seul le retry optionnel
+existant du benchmark s’applique. Le timeout de l’opérateur est transmis au SDK.
+Les exceptions SDK sont traduites vers les catégories existantes ; aucun résultat
+métier invalide n’est réparé ou rejoué. `validate` et `score` n’importent pas le SDK.
 Le script lit exclusivement le dataset voisin `dataset-v1.csv`. Il extrait le prompt,
 le JSON Schema, leurs enums et les en-têtes CSV de `../AI-DESIGN-V1.md`.
 Aucune règle de classification n’est recodée dans le script.
