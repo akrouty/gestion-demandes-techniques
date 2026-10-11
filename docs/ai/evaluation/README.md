@@ -19,7 +19,7 @@ Les tests utilisent uniquement des fixtures en mémoire, jamais un fichier de r�
 ## Exécution ultérieure réelle
 
 `.env.example` indique uniquement les deux noms de variables nécessaires.
-Le script lit `OPENAI_API_KEY` et `MISTRAL_API_KEY` dans l’environnement du processus ;
+Le script lit `GEMINI_API_KEY` et `GROQ_API_KEY` dans l’environnement du processus ;
 il ne charge pas automatiquement un `.env`. Ne committer aucune clé.
 
 Le timeout n’est pas une convention métier : l’opérateur doit choisir sa valeur
@@ -37,10 +37,27 @@ Sans cette option, aucun retry. Un timeout peut avoir été traité côté fourn
 la nouvelle tentative éventuelle est enregistrée comme telle, sans garantie d’unicité
 ni de déterminisme du fournisseur.
 
-OpenAI : `gpt-5.6-luna`, Responses, `reasoning.effort=none`, température omise.
-Mistral : `mistral-small-2603`, Chat Completions, `temperature=0`.
-Même prompt rendu en une seule substitution et même schéma strict, sans outils,
-recherche, RAG, historique ou information métier supplémentaire.
+Gemini : `gemini-3.8-flash`, Interactions API stable v1, `thinking_level=low`,
+`thinking_summaries=none`, `store=false`, sans temperature/top_p/top_k.
+Groq : `qwen/qwen3.8-27b`, Chat Completions, `reasoning_effort=none`,
+Structured Outputs avec `strict=true`, une seule choice et `stream=false`.
+Même prompt et schéma métier, sans outils, recherche, RAG ou historique.
+
+La contrainte du stage est coût API = 0 sans carte bancaire. Gemini Free Tier et
+Groq Free Plan permettent le benchmark prévu sans paiement tant que les comptes
+restent sur ces offres, dans leurs quotas et conditions d’éligibilité. Les conditions
+peuvent évoluer : les revérifier avant une exécution réelle. Le script ne peut pas
+certifier le plan de facturation d’un compte et ne code aucun coût financier.
+
+OpenAI/Mistral sont écartés pour la contrainte de facturation rapportée dans ce stage,
+sans jugement sur leur qualité. Les anciens artefacts restent conservés.
+
+Le pacing Groq respecte les headers Retry-After, remaining/reset et la limite TPM
+retournée, avec étalement basé sur les tokens réels. Aucun quota futur n’est codé en dur.
+Les headers requests décrivent les quotas par jour. Le délai volontaire est tracé
+séparément en `pacingSeconds`, exclu de `latenceMs`. Aucun pacing ne garantit zéro 429
+si le compte est utilisé ailleurs. Les retries restent désactivés par défaut et limités
+à une tentative technique supplémentaire, jamais pour une sortie métier.
 
 Le run réel crée seulement alors :
 
@@ -50,7 +67,7 @@ Le run réel crée seulement alors :
 - `benchmark-run.json` : date UTC, empreintes SHA-256 du dataset, du document, du
   prompt et du script, version Python et paramètres effectivement envoyés.
 
-La latence CSV couvre le traitement du cas, retries éventuels inclus. Les tokens
+La latence CSV additionne uniquement les durées HTTP des tentatives du cas ; le pacing volontaire est exclu. Les tokens
 CSV sont ceux de la dernière tentative et restent vides si indisponibles ; les
 réponses des tentatives antérieures sont conservées dans le journal. Le modèle
 CSV est celui retourné par le fournisseur, sinon le modèle demandé. Les coûts
@@ -85,11 +102,18 @@ rapportés séparément par type et sans priorité artificielle. Aucun Kappa ni 
 Ce benchmark de 24 cas synthétiques reste exploratoire et ne prouve pas une
 performance générale ou représentative de la production Safyron.
 
-Formats fournisseur vérifiés dans les documentations officielles :
-[OpenAI Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs),
-[GPT-5.6 Luna](https://developers.openai.com/api/docs/models/gpt-5.6-luna),
-[Mistral Chat](https://docs.mistral.ai/api/endpoint/chat),
-[Mistral Custom Structured Outputs](https://docs.mistral.ai/studio/conversations/structured-output/custom).
-La compatibilité effective avec les comptes/API n’a pas été testée : aucun appel réel
-n’a été exécuté lors de la préparation. Le support OpenAI de température reste non
-confirmé et ce paramètre est donc omis.
+Formats et conditions vérifiés le 2026-10-11 dans les documentations officielles :
+[Gemini Interactions v1](https://ai.google.dev/api/interactions-api-v1),
+[Gemini 3.8 Flash](https://ai.google.dev/gemini-api/docs/latest-model),
+[Gemini pricing](https://ai.google.dev/gemini-api/docs/pricing),
+[Groq Structured Outputs](https://console.groq.com/docs/structured-outputs),
+[Groq rate limits](https://console.groq.com/docs/rate-limits).
+La compatibilité effective des comptes/API n’est pas testée : aucun appel réel ici.
+La référence Interactions v1 ne liste pas encore gemini-3.8-flash dans son enum model,
+bien que le modèle soit documenté ailleurs : compatibilité effective v1 à confirmer.
+Aucun fallback v1beta ni réparation automatique n’est introduit.
+
+Les résultats/journaux/manifeste historiques actuellement présents ne sont pas
+modifiés. `run` refusera de les écraser ; archiver ces fichiers avant une future
+exécution explicite. `score` contrôle le manifeste et les empreintes et refuse de
+mélanger des résultats historiques avec la nouvelle conception/fournisseurs.

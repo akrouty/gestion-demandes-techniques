@@ -1,0 +1,28 @@
+{
+  "startedAtUtc": "2026-10-11T21:38:31.551870+00:00",
+  "status": "incomplete",
+  "python": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+  "datasetSha256": "abd51d581ec368fd6502a6b1a9a6181ae9f095e11542479892a43ebc7f10d78e",
+  "designSha256": "2878a574aab202df13bb6a008ac21ef2fc843684224073727305ad05c08b2ddd",
+  "scriptSha256": "12a53d42ce24c2b7e49a9e45340dcd1d13064817106c69e87a9b7f8c680b2707",
+  "promptVersion": "AI-QUALIFICATION-PROMPT-v1.0.0",
+  "promptSha256": "490c0d71023bd8491b2f54a1ba9915d015c0b028d874e2b5c5bf221b995a7b30",
+  "timeoutSeconds": 60.0,
+  "maxTechnicalRetries": 0,
+  "providers": {
+    "OPENAI": {
+      "model": "gpt-5.6-luna",
+      "endpoint": "https://api.openai.com/v1/responses"
+    },
+    "MISTRAL": {
+      "model": "mistral-small-2603",
+      "endpoint": "https://api.mistral.ai/v1/chat/completions"
+    }
+  },
+  "openaiReasoningEffort": "none",
+  "openaiTemperature": "omitted",
+  "mistralTemperature": 0,
+  "tokenAccounting": "final attempt only; earlier attempts preserved in JSONL",
+  "costAccounting": "unknown, empty CSV cells",
+  "finishedAtUtc": "2026-10-11T21:38:32.883732+00:00"
+}

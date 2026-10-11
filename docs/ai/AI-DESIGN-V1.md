@@ -336,14 +336,18 @@ Aucun fallback automatique de classification ou priorisation. Les timeouts doive
 
 Conformément à API-CONTRACT-V1, une indisponibilité temporaire de l’analyse IA peut produire HTTP 503 Service Unavailable lorsque cette cause s’applique.
 
-## 11. Fournisseurs et modèles candidats
+## 11. Fournisseurs et modèles candidats — contrainte de stage
 
-| Candidat | Position dans l’évaluation | Statut |
-|---|---|---|
-| GPT-5.6 Luna | Candidat principal à évaluer | Candidat uniquement ; non retenu définitivement. |
-| Mistral Small 4 | Challenger | Candidat uniquement ; non retenu définitivement. |
+OpenAI GPT-5.6 Luna et Mistral Small 4 avaient été préparés comme candidats. Dans la situation du stage rapportée par l’utilisateur, leur utilisation API réelle nécessite une activation de facturation. La contrainte V1 retenue est désormais **coût API = 0, sans carte bancaire**. Ils ne sont donc pas utilisés pour le benchmark V1. Cela n’est **PAS une conclusion sur leur qualité**. Les anciennes sources et les artefacts d’exécution restent conservés pour la traçabilité historique.
 
-Aucun fournisseur ou modèle final n’est encore retenu pour l’intégration. Le choix final devra être fait après benchmark sur notre propre dataset. Les identifiants techniques des deux candidats et les conditions du benchmark sont figés en section 16 ; ce gel ne constitue pas un choix de modèle final.
+| Fournisseur | provider CSV | Modèle candidat | Accès prévu |
+|---|---|---|---|
+| Google | `GEMINI` | Gemini 3.8 Flash — `gemini-3.8-flash` | Gemini API Free Tier |
+| Groq | `GROQ` | Qwen 3.8 27B — `qwen/qwen3.8-27b` | Groq Free Plan |
+
+Ces candidats sont retenus pour leur accessibilité actuelle sur les offres gratuites, suffisantes en principe pour ce benchmark exploratoire de 24 cas par modèle, sous réserve des quotas et de l’éligibilité des comptes. Aucun paiement n’est requis pour le benchmark prévu tant que les comptes restent sur leurs free tiers ; aucune permanence future de ces conditions n’est promise. Les comptes, quotas effectifs et l’absence de facturation n’ont pas été vérifiés par appel API.
+
+Aucun fournisseur ni modèle final n’est choisi pour l’intégration. Aucune décision métier, aucun cas, label, difficulté, prompt, JSON Schema ou métrique ne change à cause de cette contrainte.
 
 ## 12. Dataset d’évaluation V1 figé
 
@@ -1063,42 +1067,54 @@ Référence principale : Cohen (1968). Documentation technique éventuelle : `co
 
 ## 16. Protocole de benchmark V1 figé, non exécuté
 
-**Le benchmark comparatif V1 exploratoire n’est PAS encore exécuté.** Les conventions métier, les 24 cas P01–P24, les labels, les métriques, le prompt `AI-QUALIFICATION-PROMPT-v1.0.0` et le JSON Schema métier sont figés pour cette étape.
+**Le benchmark comparatif V1 exploratoire Gemini/Groq n’est PAS encore exécuté.** Les conventions métier, P01–P24, leurs labels et difficultés, leur provenance et statut, les métriques, le prompt `AI-QUALIFICATION-PROMPT-v1.0.0` et le JSON Schema métier restent strictement inchangés.
 
 ### Candidats et API
 
-| provider | Modèle | API | Paramètre spécifique retenu |
+| provider | Modèle | API et endpoint REST | Paramètre spécifique |
 |---|---|---|---|
-| `OPENAI` | `gpt-5.6-luna` | Responses API | `reasoning = none` ; champ fournisseur `reasoning.effort = none`. |
-| `MISTRAL` | `mistral-small-2603` | Chat Completions | Aucun alignement artificiel des paramètres spécifiques fournisseur. |
+| `GEMINI` | `gemini-3.8-flash` | Gemini Interactions API stable `v1` — `POST https://generativelanguage.googleapis.com/v1/interactions` | `generation_config.thinking_level = low` ; `thinking_summaries = none`. |
+| `GROQ` | `qwen/qwen3.8-27b` | Chat Completions — `POST https://api.groq.com/openai/v1/chat/completions` | `reasoning_effort = none`. |
 
-Ces candidats ne sont pas des modèles finaux retenus pour l’intégration.
+Gemini utilise `GEMINI_API_KEY` dans `x-goog-api-key` ; Groq utilise `GROQ_API_KEY` dans `Authorization: Bearer`. Aucune clé réelle n’est ajoutée au dépôt.
+
+Gemini 3.8 Flash supporte `low`, `medium`, `high` : `low` est son minimum documenté ; `none` et `minimal` ne sont pas disponibles pour ce modèle. Les thinking summaries sont désactivés via `generation_config.thinking_summaries = none`, documenté dans la référence v1. Aucun `temperature`, `top_p` ou `top_k` n’est envoyé à Gemini 3.8 Flash. Le mécanisme interne ne doit pas être artificiellement assimilé à `reasoning_effort = none` de Groq.
 
 ### Conditions communes
 
-- Exactement les mêmes 24 cas P01–P24, avec les mêmes titres et descriptions.
+- Exactement les mêmes 24 cas P01–P24, titres et descriptions.
 - Exactement `AI-QUALIFICATION-PROMPT-v1.0.0` et le même JSON Schema métier.
-- Structured Outputs pour les deux fournisseurs, avec validation obligatoire de la sortie.
-- `temperature = 0` lorsque ce paramètre est supporté conformément à la documentation fournisseur retenue.
-- Une seule réponse métier par cas.
-- Aucun historique conversationnel supplémentaire, aucun RAG, aucune recherche web.
-- Aucun tool/function calling métier.
-- Aucune donnée supplémentaire fournie à un modèle et pas à l’autre.
-- OpenAI utilise impérativement `reasoning = none`.
+- Structured Outputs pour les deux fournisseurs, puis validation stricte côté script.
+- Gemini : `input` contient uniquement le prompt rendu ; `response_format = {type: text, mime_type: application/json, schema: <schéma métier>}` ; `store = false`, `stream = false`.
+- Groq : une seule `choice`, `n = 1`, `stream = false`, `response_format.type = json_schema`, `json_schema.strict = true` et le même schéma métier. Aucun nouveau paramètre de sampling n’est fixé pour Groq.
+- Une seule réponse métier par cas ; aucun tool, search, RAG, historique conversationnel ou contexte supplémentaire.
+- Gemini : statut `completed` obligatoire ; texte extrait uniquement de l’unique `model_output` dans `steps`, sans utiliser les pensées.
+- Modèle retourné tracé lorsqu’il est présent ; sinon modèle demandé. Usage Gemini : `total_input_tokens`, `total_output_tokens`, `total_tokens` ; usage Groq : `prompt_tokens`, `completion_tokens`, `total_tokens`.
+- Aucune réparation du JSON, des enums ou d’une sortie invalide.
 
-Les paramètres d’inférence doivent être rendus aussi comparables que raisonnablement possible entre les fournisseurs. Lorsqu’un paramètre n’a pas d’équivalent exact ou possède une sémantique différente selon l’API, cette différence doit être documentée plutôt que masquée. Les paramètres spécifiques fournisseur restent documentés ; ils ne sont pas rendus artificiellement identiques.
+Les différences de paramètres et de sémantique fournisseur sont documentées plutôt que masquées. Les métriques et les règles de traitement des sorties invalides sont inchangées.
 
-Les pages officielles consultées confirment les identifiants des modèles, Responses pour Luna, Chat Completions pour Mistral Small 4, Structured Outputs et le support de `none` pour Luna. Mistral documente le paramètre `temperature`. Le support précis de `temperature = 0` pour Luna via Responses n’a pas été établi par les pages consultées : la condition de support ci-dessus demeure explicite, sans essai API. La documentation Mistral indique également une instruction de schéma ajoutée par le fournisseur lors des Custom Structured Outputs ; cette différence interne est documentée, sans ajout de données métier au prompt du projet.
+### Sources vérifiées et limite documentaire
 
-Sources effectivement consultées et limites de vérification : [SOURCES-LOG](../../report/bibliography/SOURCES-LOG.md), entrées SRC-008, SRC-009 et SRC-018 à SRC-022.
+Les documentations officielles consultées le 2026-10-11 confirment le Free Tier Gemini 3.8 Flash, le Free Plan et les limites Groq, les modèles, les sorties structurées, les paramètres de raisonnement et le format Interactions `v1`. Les sources sont consignées dans [SOURCES-LOG](../../report/bibliography/SOURCES-LOG.md), SRC-023 à SRC-033 ; les références OpenAI/Mistral restent historiques.
+
+La liste de valeurs du champ `model` dans la référence Interactions v1 consultée n’inclut pas encore `gemini-3.8-flash`, alors que la page officielle du modèle et les exemples Gemini le documentent. La compatibilité effective de ce modèle avec `v1` reste à confirmer ; aucune propriété manquante n’est inventée et aucun fallback vers v1beta n’est ajouté. Aucun accès de compte ni appel réel n’est testé ici.
 
 ### Volume prévu
 
-- 24 appels OpenAI.
-- 24 appels Mistral.
-- 48 appels métier au total, hors éventuels retries techniques tracés.
+- 24 appels Gemini.
+- 24 appels Groq.
+- 48 appels métier, hors au maximum un retry technique par cas si l’option existante est activée.
 
-Aucun appel réel n’est exécuté dans ce bloc.
+Benchmark comparatif et exploratoire, non statistiquement représentatif ; aucune preuve générale de performance ni décision de modèle final.
+
+### Rate limits et pacing Groq
+
+La page officielle consultée indique notamment 8K tokens/minute, 30 requêtes/minute, 1K requêtes/jour et 200K tokens/jour pour le Free Plan de `qwen/qwen3.8-27b`. Ces valeurs décrivent la consultation du 2026-10-11 ; les limites effectives du compte et les en-têtes retournés restent prioritaires, sans quota codé en dur.
+
+Le script conserve les en-têtes `Retry-After` et rate-limit utiles et attend avant le prochain appel ou retry lorsque nécessaire. Il étale aussi les appels à partir de l’usage réel de la tentative et de la limite TPM retournée. Les en-têtes de requêtes Groq décrivent les requêtes par jour ; ils ne sont pas interprétés comme un quota par minute.
+
+Le pacing volontaire est tracé séparément en `pacingSeconds` et **exclu de `latenceMs`**. Cette latence est la somme des durées HTTP mesurées côté script pour les tentatives du cas. Le pacing ne crée aucune prédiction, ne modifie pas la politique de retry et ne garantit pas l’absence de 429, notamment si d’autres usages partagent les quotas du compte.
 
 ### Structure du futur fichier de résultats
 
@@ -1106,7 +1122,7 @@ Aucun appel réel n’est exécuté dans ce bloc.
 caseId,provider,model,promptVersion,categorieReference,prioriteReference,categoriePredite,prioritePredite,sortieValide,typeErreur,latenceMs,inputTokens,outputTokens,totalTokens,coutObserveUsd
 ```
 
-Une ligne correspond à un couple `cas × modèle`. Les champs de coût/tokens peuvent rester vides si l’information n’est pas disponible ou n’est pas suffisamment fiable. Aucune valeur n’est fabriquée et aucun fichier de résultats n’est créé ici.
+Une ligne correspond à un couple `cas × modèle`, avec uniquement `GEMINI` ou `GROQ` comme provider pour cette nouvelle exécution. Les coûts restent nullables ; aucun tarif ni coût financier n’est codé en dur. Les tokens restent vides si indisponibles. Aucune ligne de résultat n’est créée dans ce bloc ; les artefacts historiques ne sont ni supprimés ni écrasés.
 
 ### Retries — règles versionnées dans le protocole V1
 
@@ -1132,7 +1148,7 @@ Aucun mécanisme complexe de retry n’est défini dans ce bloc.
 - **Technique :** types d’erreur, sorties invalides, latence, tokens/coûts disponibles et fiables.
 - **Optionnel :** Weighted Cohen’s Kappa uniquement s’il est validé ultérieurement.
 
-Aucun résultat, classement final, nouvelle métrique ou seuil d’acceptation n’est présenté. Les timeouts techniques n’ont pas de valeur chiffrée fixée dans ce bloc.
+Aucun résultat, classement final, nouvelle métrique ou seuil d’acceptation n’est présenté. Les timeouts restent un choix explicite de l’opérateur, sans convention métier chiffrée ajoutée.
 
 ## 17. Références méthodologiques et traçabilité
 
@@ -1174,7 +1190,7 @@ Restent ouverts :
 
 Les six conventions métier V1 sont fermées comme **CONVENTIONS V1 RETENUES**. Le dataset V1 P01–P24, sa provenance `IA_ASSISTE_RELU_HUMAINEMENT`, ses labels validés humainement, sa couverture, ses métriques et le protocole décrit en section 16 sont figés pour cette étape. Ils ne sont plus présentés comme des décisions ouvertes. L’absence de dataset historique exploitable chez Safyron est connue.
 
-Les éléments non fournis concernant l’identité ou le nombre des annotateurs et l’historique d’adjudication ne sont pas inventés. Le support précis de `temperature = 0` pour Luna via Responses demeure un point documentaire non vérifié, sans remise en cause des décisions métier ni exécution d’un appel API.
+Les éléments non fournis concernant l’identité ou le nombre des annotateurs et l’historique d’adjudication ne sont pas inventés. La compatibilité effective de `gemini-3.8-flash` avec Interactions v1 reste un point documentaire à confirmer, sans remise en cause des décisions métier ni exécution d’un appel API.
 
 ## 19. État final de la conception
 
@@ -1194,10 +1210,10 @@ Les éléments non fournis concernant l’identité ou le nombre des annotateurs
 ### Toujours non réalisé ou non décidé
 
 - Benchmark comparatif V1 exploratoire non exécuté ; aucune prédiction ni aucun résultat produit.
-- Fournisseur et modèle final non choisis ; GPT-5.6 Luna reste le candidat principal et Mistral Small 4 le challenger.
+- Fournisseur et modèle final non choisis ; les candidats du benchmark sont désormais Gemini 3.8 Flash et Qwen 3.8 27B via Groq, selon la contrainte de stage coût API = 0 sans carte bancaire.
 - IA non implémentée côté Spring Boot.
 - IA non implémentée côté Angular.
 - Weighted Cohen’s Kappa OPTIONNEL / À VALIDER, sans pondération choisie.
 - Aucun seuil d’acceptation chiffré validé.
 
-Aucun code applicatif, configuration, test, adaptateur, script de benchmark ou fichier de résultats n’est créé. Aucun appel OpenAI ou Mistral n’est exécuté. Les ADR, `functional-scope.md` et `API-CONTRACT-V1.md` ne sont pas modifiés.
+Aucune intégration applicative ni configuration Spring Boot/Angular n’est créée ; le script autonome de benchmark est préparé et vérifié hors ligne, sans création de résultats. Aucun appel fournisseur n’est exécuté dans ce bloc. Les ADR, `functional-scope.md` et `API-CONTRACT-V1.md` ne sont pas modifiés.

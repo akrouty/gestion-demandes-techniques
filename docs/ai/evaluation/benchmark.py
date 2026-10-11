@@ -14,6 +14,7 @@ import sys
 import time
 from collections import Counter
 from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 from urllib.error import HTTPError, URLError
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
@@ -24,8 +25,8 @@ RESULTS = BASE / "benchmark-results.csv"
 ATTEMPTS = BASE / "benchmark-attempts.jsonl"
 MANIFEST = BASE / "benchmark-run.json"
 PROVIDERS = {
-    "OPENAI": ("gpt-5.6-luna", "https://api.openai.com/v1/responses", "OPENAI_API_KEY"),
-    "MISTRAL": ("mistral-small-2603", "https://api.mistral.ai/v1/chat/completions", "MISTRAL_API_KEY"),
+    "GEMINI": ("gemini-3.8-flash", "https://generativelanguage.googleapis.com/v1/interactions", "GEMINI_API_KEY"),
+    "GROQ": ("qwen/qwen3.8-27b", "https://api.groq.com/openai/v1/chat/completions", "GROQ_API_KEY"),
 }
 ERRORS = {"NONE", "TIMEOUT", "HTTP_429", "HTTP_5XX", "INVALID_JSON",
           "INVALID_SCHEMA", "INVALID_ENUM", "EMPTY_RESPONSE", "OTHER"}
@@ -143,14 +144,13 @@ def render_prompt(case, spec):
 def payload(provider, case, spec):
     prompt = render_prompt(case, spec)
     model = PROVIDERS[provider][0]
-    output_format = {"type": "json_schema", "name": "qualification_v1",
-                     "strict": True, "schema": spec["schema"]}
-    if provider == "OPENAI":
-        return {"model": model, "input": [{"role": "user", "content": prompt}],
-                "reasoning": {"effort": "none"}, "text": {"format": output_format},
-                "tools": [], "store": False}
+    if provider == "GEMINI":
+        return {"model": model, "input": prompt,
+                "response_format": {"type": "text", "mime_type": "application/json", "schema": spec["schema"]},
+                "generation_config": {"thinking_level": "low", "thinking_summaries": "none"},
+                "stream": False, "store": False}
     return {"model": model, "messages": [{"role": "user", "content": prompt}],
-            "temperature": 0, "n": 1, "stream": False,
+            "reasoning_effort": "none", "n": 1, "stream": False,
             "response_format": {"type": "json_schema", "json_schema": {
                 "name": "qualification_v1", "strict": True, "schema": spec["schema"]}}}
 
@@ -179,21 +179,21 @@ def validate_business(text, spec):
 def extract_business(provider, response):
     """Refus, troncature, appels d'outils et multiples reponses ne sont jamais repares."""
     try:
-        if provider == "OPENAI":
+        if provider == "GEMINI":
             if response.get("status") != "completed":
                 return None, "INVALID_SCHEMA"
-            output = response.get("output", [])
-            if any(item.get("type") not in {"message", "reasoning"} for item in output):
+            steps = response.get("steps", [])
+            if any(item.get("type") not in {"model_output", "thought"} for item in steps):
                 return None, "INVALID_SCHEMA"
-            messages = [x for x in output if x.get("type") == "message"]
-            if not messages:
+            outputs = [item for item in steps if item.get("type") == "model_output"]
+            if not outputs:
                 return None, "EMPTY_RESPONSE"
-            if len(messages) != 1 or messages[0].get("role") != "assistant":
+            if len(outputs) != 1:
                 return None, "INVALID_SCHEMA"
-            parts = messages[0].get("content", [])
+            parts = outputs[0].get("content", [])
             if not parts:
                 return None, "EMPTY_RESPONSE"
-            if len(parts) != 1 or parts[0].get("type") != "output_text":
+            if len(parts) != 1 or parts[0].get("type") != "text":
                 return None, "INVALID_SCHEMA"
             return parts[0].get("text"), "NONE"
         choices = response.get("choices", [])
@@ -214,13 +214,73 @@ class NoRedirect(HTTPRedirectHandler):
         return None
 
 
-def post_json(url, key, body, timeout):
-    request = Request(url, data=json.dumps(body, ensure_ascii=False, allow_nan=False).encode("utf-8"),
-                      headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"},
-                      method="POST")
-    # Pas de SDK : aucun retry cache et aucun transfert d'Authorization sur redirection.
+RATE_HEADERS = ("retry-after", "x-ratelimit-limit-tokens", "x-ratelimit-remaining-tokens",
+                "x-ratelimit-reset-tokens", "x-ratelimit-remaining-requests", "x-ratelimit-reset-requests")
+
+
+def rate_headers(headers):
+    normalized = {str(key).lower(): str(value) for key, value in headers.items()} if headers is not None else {}
+    return {key: normalized[key] for key in RATE_HEADERS if key in normalized}
+
+
+def post_json(provider, key, body, timeout):
+    auth = {"x-goog-api-key": key} if provider == "GEMINI" else {"Authorization": "Bearer " + key}
+    request = Request(PROVIDERS[provider][1],
+                      data=json.dumps(body, ensure_ascii=False, allow_nan=False).encode("utf-8"),
+                      headers={**auth, "Content-Type": "application/json"}, method="POST")
     with build_opener(NoRedirect()).open(request, timeout=timeout) as response:
-        return response.read().decode("utf-8")
+        return response.read().decode("utf-8"), rate_headers(response.headers)
+
+
+def duration_seconds(value):
+    if not value:
+        return 0.0
+    try:
+        number = float(value)
+        return max(0.0, number) if math.isfinite(number) else 0.0
+    except ValueError:
+        pass
+    pieces = re.findall(r"(\d+(?:\.\d+)?)(ms|s|m|h)", value)
+    if pieces and "".join(n + unit for n, unit in pieces) == value:
+        return sum(float(n) * {"ms": .001, "s": 1, "m": 60, "h": 3600}[unit] for n, unit in pieces)
+    try:
+        date = parsedate_to_datetime(value)
+        if date.tzinfo is None:
+            date = date.replace(tzinfo=timezone.utc)
+        return max(0.0, (date - datetime.now(timezone.utc)).total_seconds())
+    except (ValueError, TypeError, OverflowError):
+        return 0.0
+
+
+class GroqPacer:
+    """Un delai partage entre appels, pilote par les headers et l'usage reel."""
+    def __init__(self):
+        self.ready_at = 0.0
+
+    def observe(self, headers, tokens):
+        delay = duration_seconds(headers.get("retry-after"))
+        try:
+            limit = float(headers.get("x-ratelimit-limit-tokens", "0"))
+            used = tokens[2]
+            if math.isfinite(limit) and limit > 0 and used is not None:
+                # Etalement au rythme TPM fourni par Groq, sans quota futur code en dur.
+                delay = max(delay, 60 * used / limit)
+            remaining = float(headers.get("x-ratelimit-remaining-tokens", "inf"))
+            if remaining <= 0 or (used is not None and remaining < used):
+                delay = max(delay, duration_seconds(headers.get("x-ratelimit-reset-tokens")))
+            if float(headers.get("x-ratelimit-remaining-requests", "inf")) <= 0:
+                delay = max(delay, duration_seconds(headers.get("x-ratelimit-reset-requests")))
+        except (ValueError, TypeError):
+            pass  # Header non interpretable conserve dans le journal, aucune valeur inventee.
+        self.ready_at = max(self.ready_at, time.monotonic() + delay)
+
+    def wait(self):
+        waited = 0.0
+        while (remaining := self.ready_at - time.monotonic()) > 0:
+            chunk = min(remaining, 60.0)
+            time.sleep(chunk)
+            waited += chunk
+        return waited
 
 
 def technical_error(exc):
@@ -242,7 +302,7 @@ def token_usage(provider, response):
     usage = response.get("usage") or {}
     if not isinstance(usage, dict):
         return [None, None, None]
-    keys = ("input_tokens", "output_tokens", "total_tokens") if provider == "OPENAI" else (
+    keys = ("total_input_tokens", "total_output_tokens", "total_tokens") if provider == "GEMINI" else (
         "prompt_tokens", "completion_tokens", "total_tokens")
     return [value if type(value := usage.get(key)) is int and value >= 0 else None for key in keys]
 
@@ -251,20 +311,24 @@ def utc_now():
     return datetime.now(timezone.utc).isoformat()
 
 
-def perform_case(provider, case, spec, key, timeout, retry_transient, log):
-    started = time.perf_counter()
+def perform_case(provider, case, spec, key, timeout, retry_transient, log, pacer=None):
+    model_latency_ms = 0.0
+    pacer = (pacer or GroqPacer()) if provider == "GROQ" else None
     body = payload(provider, case, spec)
     returned_model = PROVIDERS[provider][0]
     tokens = [None, None, None]
     result, error, fatal = None, "OTHER", False
     for attempt in range(1, 2 + int(retry_transient)):
+        pacing_seconds = pacer.wait() if pacer else 0.0
         attempt_start = time.perf_counter()
+        headers = {}
         record = {"caseId": case["id"], "provider": provider,
                   "requestedModel": PROVIDERS[provider][0], "attempt": attempt,
-                  "startedAtUtc": utc_now()}
+                  "startedAtUtc": utc_now(), "pacingSeconds": pacing_seconds}
         transient = False
         try:
-            raw = post_json(PROVIDERS[provider][1], key, body, timeout)
+            raw, headers = post_json(provider, key, body, timeout)
+            call_latency_ms = (time.perf_counter() - attempt_start) * 1000
             record["rawResponse"] = raw  # Sortie reelle seulement ; jamais de headers ni de cle.
             try:
                 response = strict_json(raw)
@@ -282,15 +346,22 @@ def perform_case(provider, case, spec, key, timeout, retry_transient, log):
                     if error == "NONE":
                         result, error = validate_business(content, spec)
         except (HTTPError, URLError, TimeoutError, OSError) as exc:
+            call_latency_ms = (time.perf_counter() - attempt_start) * 1000
             error, transient, status = technical_error(exc)
+            if isinstance(exc, HTTPError):
+                headers = rate_headers(exc.headers)
             record["httpStatus"] = status
             fatal = status in {400, 401, 403, 404, 422}
             if isinstance(exc, HTTPError):
                 exc.close()
         except UnicodeError:
+            call_latency_ms = (time.perf_counter() - attempt_start) * 1000
             error = "INVALID_JSON"
-        record.update({"typeErreur": error, "latenceMs": round(
-            (time.perf_counter() - attempt_start) * 1000, 3),
+        model_latency_ms += call_latency_ms
+        if pacer:
+            pacer.observe(headers, tokens)
+        record.update({"typeErreur": error, "latenceMs": round(call_latency_ms, 3),
+            "rateLimitHeaders": headers,
             "retryNext": transient and retry_transient and attempt == 1})
         log.write(json.dumps(record, ensure_ascii=False, allow_nan=False) + "\n")
         log.flush()
@@ -302,7 +373,7 @@ def perform_case(provider, case, spec, key, timeout, retry_transient, log):
            "categoriePredite": result["categorieProposee"] if result else "",
            "prioritePredite": result["prioriteProposee"] if result else "",
            "sortieValide": "true" if result else "false", "typeErreur": error,
-           "latenceMs": round((time.perf_counter() - started) * 1000, 3),
+           "latenceMs": round(model_latency_ms, 3),
            "inputTokens": tokens[0], "outputTokens": tokens[1], "totalTokens": tokens[2],
            "coutObserveUsd": None}
     return row, fatal
@@ -418,7 +489,7 @@ def sha256(path):
 def run(spec, cases, timeout, retry_transient):
     keys = {provider: os.environ.get(values[2], "").strip() for provider, values in PROVIDERS.items()}
     if not all(keys.values()):
-        raise ValidationError("Variables OPENAI_API_KEY et MISTRAL_API_KEY requises pour run")
+        raise ValidationError("Variables GEMINI_API_KEY et GROQ_API_KEY requises pour run")
     for path in (RESULTS, ATTEMPTS, MANIFEST):
         if path.exists():
             raise ValidationError(f"Execution refusee : {path.name} existe deja. Archiver le run precedent.")
@@ -428,7 +499,9 @@ def run(spec, cases, timeout, retry_transient):
         "promptSha256": hashlib.sha256(spec["prompt"].encode()).hexdigest(),
         "timeoutSeconds": timeout, "maxTechnicalRetries": int(retry_transient),
         "providers": {provider: {"model": values[0], "endpoint": values[1]} for provider, values in PROVIDERS.items()},
-        "openaiReasoningEffort": "none", "openaiTemperature": "omitted", "mistralTemperature": 0,
+        "geminiThinkingLevel": "low", "geminiThinkingSummaries": "none",
+        "geminiSamplingParameters": "omitted", "groqReasoningEffort": "none",
+        "groqPacing": "response rate-limit headers and actual token usage; excluded from model latency",
         "tokenAccounting": "final attempt only; earlier attempts preserved in JSONL", "costAccounting": "unknown, empty CSV cells"}
     with MANIFEST.open("x", encoding="utf-8") as file:
         json.dump(manifest, file, ensure_ascii=False, indent=2)
@@ -436,9 +509,10 @@ def run(spec, cases, timeout, retry_transient):
         with RESULTS.open("x", encoding="utf-8", newline="") as file, ATTEMPTS.open("x", encoding="utf-8") as log:
             writer = csv.DictWriter(file, fieldnames=spec["result_columns"])
             writer.writeheader()
+            pacer = GroqPacer()
             for provider in PROVIDERS:
                 for case in cases:
-                    row, fatal = perform_case(provider, case, spec, keys[provider], timeout, retry_transient, log)
+                    row, fatal = perform_case(provider, case, spec, keys[provider], timeout, retry_transient, log, pacer)
                     writer.writerow(row)
                     file.flush()
                     print(f"{provider} {case['id']} : {row['typeErreur']}", file=sys.stderr)

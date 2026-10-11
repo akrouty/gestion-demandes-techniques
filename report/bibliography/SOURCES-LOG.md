@@ -367,6 +367,171 @@
 
 ---
 
+## SRC-023 — Google : Gemini Developer API pricing
+
+- **Organisation :** Google
+- **Titre :** Gemini Developer API pricing
+- **Type :** documentation officielle du fournisseur
+- **URL consultée :** https://ai.google.dev/gemini-api/docs/pricing
+- **Date de consultation :** 2026-10-11
+- **Information utile :** La section Gemini 3.8 Flash Standard indique input et output gratuits en Free Tier ; les offres et limites peuvent évoluer.
+- **Usage potentiel dans le rapport :** préparation du benchmark comparatif V1 exploratoire gratuit Gemini/Groq.
+- **Statut :** CONDITIONNELLE
+- **Clé BibLaTeX proposée :** `ai-benchmark-src-023`
+- **Remarque :** consultation documentaire uniquement ; aucun accès de compte, aucune clé et aucun appel fournisseur. Conditions gratuites non garanties dans le futur ; aucun modèle final choisi.
+
+---
+
+## SRC-024 — Google : What's new in Gemini 3.8 Flash
+
+- **Organisation :** Google
+- **Titre :** What's new in Gemini 3.8 Flash
+- **Type :** documentation officielle du fournisseur
+- **URL consultée :** https://ai.google.dev/gemini-api/docs/latest-model
+- **Date de consultation :** 2026-10-11
+- **Information utile :** Le modèle gemini-3.8-flash est documenté comme GA. Les paramètres temperature, top_p et top_k sont à retirer pour cette génération.
+- **Usage potentiel dans le rapport :** préparation du benchmark comparatif V1 exploratoire gratuit Gemini/Groq.
+- **Statut :** CONDITIONNELLE
+- **Clé BibLaTeX proposée :** `ai-benchmark-src-024`
+- **Remarque :** consultation documentaire uniquement ; aucun accès de compte, aucune clé et aucun appel fournisseur. Conditions gratuites non garanties dans le futur ; aucun modèle final choisi.
+
+---
+
+## SRC-025 — Google : Using Gemini API keys
+
+- **Organisation :** Google
+- **Titre :** Using Gemini API keys
+- **Type :** documentation officielle du fournisseur
+- **URL consultée :** https://ai.google.dev/gemini-api/docs/api-key
+- **Date de consultation :** 2026-10-11
+- **Information utile :** La documentation décrit la configuration des clés Gemini. Aucune clé ni configuration de compte n’est consultée ou testée.
+- **Usage potentiel dans le rapport :** préparation du benchmark comparatif V1 exploratoire gratuit Gemini/Groq.
+- **Statut :** CONDITIONNELLE
+- **Clé BibLaTeX proposée :** `ai-benchmark-src-025`
+- **Remarque :** consultation documentaire uniquement ; aucun accès de compte, aucune clé et aucun appel fournisseur. Conditions gratuites non garanties dans le futur ; aucun modèle final choisi.
+
+---
+
+## SRC-026 — Google : Gemini Interactions API
+
+- **Organisation :** Google
+- **Titre :** Gemini Interactions API
+- **Type :** documentation officielle du fournisseur
+- **URL consultée :** https://ai.google.dev/api/interactions-api-v1
+- **Date de consultation :** 2026-10-11
+- **Information utile :** La référence v1 documente POST /v1/interactions, response_format text/application/json/schema, thinking_summaries=none, store, steps/model_output et usage total_input_tokens/total_output_tokens/total_tokens. Son enum model ne liste pas encore gemini-3.8-flash : compatibilité effective à confirmer sans appel.
+- **Usage potentiel dans le rapport :** préparation du benchmark comparatif V1 exploratoire gratuit Gemini/Groq.
+- **Statut :** CONDITIONNELLE
+- **Clé BibLaTeX proposée :** `ai-benchmark-src-026`
+- **Remarque :** consultation documentaire uniquement ; aucun accès de compte, aucune clé et aucun appel fournisseur. Conditions gratuites non garanties dans le futur ; aucun modèle final choisi.
+
+---
+
+## SRC-027 — Google : Gemini thinking
+
+- **Organisation :** Google
+- **Titre :** Gemini thinking
+- **Type :** documentation officielle du fournisseur
+- **URL consultée :** https://ai.google.dev/gemini-api/docs/thinking
+- **Date de consultation :** 2026-10-11
+- **Information utile :** Pour gemini-3.8-flash, la table documente low, medium et high ; low est le minimum, sans none/minimal.
+- **Usage potentiel dans le rapport :** préparation du benchmark comparatif V1 exploratoire gratuit Gemini/Groq.
+- **Statut :** CONDITIONNELLE
+- **Clé BibLaTeX proposée :** `ai-benchmark-src-027`
+- **Remarque :** consultation documentaire uniquement ; aucun accès de compte, aucune clé et aucun appel fournisseur. Conditions gratuites non garanties dans le futur ; aucun modèle final choisi.
+
+---
+
+## SRC-028 — Groq : Rate Limits
+
+- **Organisation :** Groq
+- **Titre :** Rate Limits
+- **Type :** documentation officielle du fournisseur
+- **URL consultée :** https://console.groq.com/docs/rate-limits
+- **Date de consultation :** 2026-10-11
+- **Information utile :** Le tableau Free Plan de qwen/qwen3.8-27b indique 30 RPM, 1K RPD, 8K TPM et 200K TPD. Retry-After est en secondes ; les headers requests concernent RPD et les headers tokens TPM. Les limites effectives du compte peuvent différer.
+- **Usage potentiel dans le rapport :** préparation du benchmark comparatif V1 exploratoire gratuit Gemini/Groq.
+- **Statut :** CONDITIONNELLE
+- **Clé BibLaTeX proposée :** `ai-benchmark-src-028`
+- **Remarque :** consultation documentaire uniquement ; aucun accès de compte, aucune clé et aucun appel fournisseur. Conditions gratuites non garanties dans le futur ; aucun modèle final choisi.
+
+---
+
+## SRC-029 — Groq : Supported Models
+
+- **Organisation :** Groq
+- **Titre :** Supported Models
+- **Type :** documentation officielle du fournisseur
+- **URL consultée :** https://console.groq.com/docs/models
+- **Date de consultation :** 2026-10-11
+- **Information utile :** Catalogue officiel des modèles Groq consulté pour les candidats disponibles ; aucune disponibilité effective du compte n’est testée.
+- **Usage potentiel dans le rapport :** préparation du benchmark comparatif V1 exploratoire gratuit Gemini/Groq.
+- **Statut :** CONDITIONNELLE
+- **Clé BibLaTeX proposée :** `ai-benchmark-src-029`
+- **Remarque :** consultation documentaire uniquement ; aucun accès de compte, aucune clé et aucun appel fournisseur. Conditions gratuites non garanties dans le futur ; aucun modèle final choisi.
+
+---
+
+## SRC-030 — Groq : Structured Outputs
+
+- **Organisation :** Groq
+- **Titre :** Structured Outputs
+- **Type :** documentation officielle du fournisseur
+- **URL consultée :** https://console.groq.com/docs/structured-outputs
+- **Date de consultation :** 2026-10-11
+- **Information utile :** qwen/qwen3.8-27b figure dans la liste des modèles supportant strict=true via constrained decoding.
+- **Usage potentiel dans le rapport :** préparation du benchmark comparatif V1 exploratoire gratuit Gemini/Groq.
+- **Statut :** CONDITIONNELLE
+- **Clé BibLaTeX proposée :** `ai-benchmark-src-030`
+- **Remarque :** consultation documentaire uniquement ; aucun accès de compte, aucune clé et aucun appel fournisseur. Conditions gratuites non garanties dans le futur ; aucun modèle final choisi.
+
+---
+
+## SRC-031 — Groq : Quickstart
+
+- **Organisation :** Groq
+- **Titre :** Quickstart
+- **Type :** documentation officielle du fournisseur
+- **URL consultée :** https://console.groq.com/docs/quickstart
+- **Date de consultation :** 2026-10-11
+- **Information utile :** La documentation décrit le démarrage de Chat Completions et l’utilisation de GROQ_API_KEY ; aucun appel exécuté.
+- **Usage potentiel dans le rapport :** préparation du benchmark comparatif V1 exploratoire gratuit Gemini/Groq.
+- **Statut :** CONDITIONNELLE
+- **Clé BibLaTeX proposée :** `ai-benchmark-src-031`
+- **Remarque :** consultation documentaire uniquement ; aucun accès de compte, aucune clé et aucun appel fournisseur. Conditions gratuites non garanties dans le futur ; aucun modèle final choisi.
+
+---
+
+## SRC-032 — Groq : Reasoning
+
+- **Organisation :** Groq
+- **Titre :** Reasoning
+- **Type :** documentation officielle du fournisseur
+- **URL consultée :** https://console.groq.com/docs/reasoning
+- **Date de consultation :** 2026-10-11
+- **Information utile :** Qwen 3.8 27B supporte reasoning_effort=none pour désactiver le raisonnement, ainsi que d’autres niveaux non retenus ici.
+- **Usage potentiel dans le rapport :** préparation du benchmark comparatif V1 exploratoire gratuit Gemini/Groq.
+- **Statut :** CONDITIONNELLE
+- **Clé BibLaTeX proposée :** `ai-benchmark-src-032`
+- **Remarque :** consultation documentaire uniquement ; aucun accès de compte, aucune clé et aucun appel fournisseur. Conditions gratuites non garanties dans le futur ; aucun modèle final choisi.
+
+---
+
+## SRC-033 — Groq : API Reference
+
+- **Organisation :** Groq
+- **Titre :** API Reference
+- **Type :** documentation officielle du fournisseur
+- **URL consultée :** https://console.groq.com/docs/api-reference
+- **Date de consultation :** 2026-10-11
+- **Information utile :** La référence documente Chat Completions, reasoning_effort, response_format/json_schema, n et stream. Aucun endpoint modèle n’est appelé.
+- **Usage potentiel dans le rapport :** préparation du benchmark comparatif V1 exploratoire gratuit Gemini/Groq.
+- **Statut :** CONDITIONNELLE
+- **Clé BibLaTeX proposée :** `ai-benchmark-src-033`
+- **Remarque :** consultation documentaire uniquement ; aucun accès de compte, aucune clé et aucun appel fournisseur. Conditions gratuites non garanties dans le futur ; aucun modèle final choisi.
+
+---
+
 # Sources à ajouter plus tard
 
 Ajouter ici, au moment où elles sont réellement consultées :

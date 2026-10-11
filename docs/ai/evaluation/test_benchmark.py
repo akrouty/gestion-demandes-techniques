@@ -27,11 +27,11 @@ class BenchmarkOfflineTests(unittest.TestCase):
 
     def envelope(self, provider, content=None):
         content = content if content is not None else json.dumps(self.business())
-        if provider == "OPENAI":
-            return {"model": "gpt-5.6-luna-snapshot", "status": "completed", "output": [
-                {"type": "message", "role": "assistant", "content": [{"type": "output_text", "text": content}]}],
-                "usage": {"input_tokens": 10, "output_tokens": 4, "total_tokens": 14}}
-        return {"model": "mistral-small-2603", "choices": [{"finish_reason": "stop",
+        if provider == "GEMINI":
+            return {"model": "gemini-3.8-flash-snapshot", "status": "completed", "steps": [
+                {"type": "model_output", "content": [{"type": "text", "text": content}]}],
+                "usage": {"total_input_tokens": 10, "total_output_tokens": 4, "total_tokens": 14}}
+        return {"model": "qwen/qwen3.8-27b", "choices": [{"finish_reason": "stop",
             "message": {"role": "assistant", "content": content}}],
             "usage": {"prompt_tokens": 10, "completion_tokens": 4, "total_tokens": 14}}
 
@@ -75,14 +75,20 @@ class BenchmarkOfflineTests(unittest.TestCase):
         self.assertIn("Titre :\n{{description}}", rendered)
         self.assertIn("Description :\ntexte brut", rendered)
         a, m = (b.payload(provider, self.cases[0], self.spec) for provider in b.PROVIDERS)
-        self.assertEqual(a["input"][0]["content"], m["messages"][0]["content"])
-        self.assertEqual(a["text"]["format"]["schema"], self.spec["schema"])
+        self.assertEqual(a["input"], m["messages"][0]["content"])
+        self.assertEqual(a["response_format"]["schema"], self.spec["schema"])
         self.assertEqual(m["response_format"]["json_schema"]["schema"], self.spec["schema"])
-        self.assertTrue(a["text"]["format"]["strict"])
+        self.assertEqual(a["response_format"]["type"], "text")
+        self.assertEqual(a["response_format"]["mime_type"], "application/json")
+        self.assertFalse(a["store"])
         self.assertTrue(m["response_format"]["json_schema"]["strict"])
-        self.assertEqual(a["reasoning"], {"effort": "none"})
+        self.assertEqual(a["generation_config"], {"thinking_level": "low", "thinking_summaries": "none"})
         self.assertNotIn("temperature", a)
-        self.assertEqual(m["temperature"], 0)
+        self.assertEqual(m["reasoning_effort"], "none")
+        self.assertEqual(m["n"], 1)
+        self.assertFalse(m["stream"])
+        for name in ["temperature", "top_p", "top_k"]:
+            self.assertNotIn(name, a)
         for request in (a, m):
             self.assertNotIn("previous_response_id", request)
             self.assertNotIn("conversation", request)
@@ -104,27 +110,27 @@ class BenchmarkOfflineTests(unittest.TestCase):
                 self.assertEqual(b.validate_business(text, self.spec), (None, error))
 
     def test_refusal_truncation_tools_multiple_outputs_are_rejected(self):
-        a = self.envelope("OPENAI")
+        a = self.envelope("GEMINI")
         a["status"] = "incomplete"
-        self.assertEqual(b.extract_business("OPENAI", a)[1], "INVALID_SCHEMA")
-        a = self.envelope("OPENAI")
-        a["output"][0]["content"][0] = {"type": "refusal", "refusal": "non"}
-        self.assertEqual(b.extract_business("OPENAI", a)[1], "INVALID_SCHEMA")
-        a = self.envelope("OPENAI")
-        a["output"].append({"type": "function_call"})
-        self.assertEqual(b.extract_business("OPENAI", a)[1], "INVALID_SCHEMA")
-        m = self.envelope("MISTRAL")
+        self.assertEqual(b.extract_business("GEMINI", a)[1], "INVALID_SCHEMA")
+        a = self.envelope("GEMINI")
+        a["steps"][0]["content"][0] = {"type": "refusal", "refusal": "non"}
+        self.assertEqual(b.extract_business("GEMINI", a)[1], "INVALID_SCHEMA")
+        a = self.envelope("GEMINI")
+        a["steps"].append({"type": "function_call"})
+        self.assertEqual(b.extract_business("GEMINI", a)[1], "INVALID_SCHEMA")
+        m = self.envelope("GROQ")
         m["choices"][0]["finish_reason"] = "length"
-        self.assertEqual(b.extract_business("MISTRAL", m)[1], "INVALID_SCHEMA")
-        m = self.envelope("MISTRAL")
+        self.assertEqual(b.extract_business("GROQ", m)[1], "INVALID_SCHEMA")
+        m = self.envelope("GROQ")
         m["choices"] *= 2
-        self.assertEqual(b.extract_business("MISTRAL", m)[1], "INVALID_SCHEMA")
+        self.assertEqual(b.extract_business("GROQ", m)[1], "INVALID_SCHEMA")
 
     def test_response_model_usage_and_nullable_cost_are_recorded(self):
         for provider in b.PROVIDERS:
             log = io.StringIO()
             envelope = self.envelope(provider)
-            with patch.object(b, "post_json", return_value=json.dumps(envelope)) as post:
+            with patch.object(b, "post_json", return_value=(json.dumps(envelope), {})) as post:
                 row, fatal = b.perform_case(provider, self.cases[0], self.spec, "test-only", 1, True, log)
             self.assertEqual(post.call_count, 1)
             self.assertEqual(row["model"], envelope["model"])
@@ -137,8 +143,8 @@ class BenchmarkOfflineTests(unittest.TestCase):
     def test_at_most_one_transient_retry_traced(self):
         log = io.StringIO()
         error = HTTPError("https://example.invalid", 429, "rate", {}, None)
-        with patch.object(b, "post_json", side_effect=[error, json.dumps(self.envelope("OPENAI"))]) as post:
-            row, _ = b.perform_case("OPENAI", self.cases[0], self.spec, "test-only", 1, True, log)
+        with patch.object(b, "post_json", side_effect=[error, (json.dumps(self.envelope("GEMINI")), {})]) as post:
+            row, _ = b.perform_case("GEMINI", self.cases[0], self.spec, "test-only", 1, True, log)
         events = [json.loads(line) for line in log.getvalue().splitlines()]
         self.assertEqual(post.call_count, 2)
         self.assertEqual([e["attempt"] for e in events], [1, 2])
@@ -147,22 +153,22 @@ class BenchmarkOfflineTests(unittest.TestCase):
         self.assertFalse(events[1]["retryNext"])
         self.assertEqual(row["sortieValide"], "true")
         with patch.object(b, "post_json", side_effect=TimeoutError()) as post:
-            row, _ = b.perform_case("OPENAI", self.cases[0], self.spec, "test-only", 1, True, io.StringIO())
+            row, _ = b.perform_case("GEMINI", self.cases[0], self.spec, "test-only", 1, True, io.StringIO())
         self.assertEqual(post.call_count, 2)
         self.assertEqual(row["typeErreur"], "TIMEOUT")
 
     def test_no_retry_by_default_or_for_http_auth(self):
         for retry, code, expected_fatal in [(False, 429, False), (True, 401, True), (True, 501, False)]:
             with self.subTest(code=code), patch.object(b, "post_json", side_effect=HTTPError("https://example.invalid", code, "err", {}, None)) as post:
-                _, fatal = b.perform_case("OPENAI", self.cases[0], self.spec, "test-only", 1, retry, io.StringIO())
+                _, fatal = b.perform_case("GEMINI", self.cases[0], self.spec, "test-only", 1, retry, io.StringIO())
                 self.assertEqual(post.call_count, 1)
                 self.assertEqual(fatal, expected_fatal)
 
     def test_invalid_or_valid_incorrect_prediction_never_retried(self):
         incorrect = json.dumps({"categorieProposee": "AUTRE", "prioriteProposee": "BASSE"})
         for content in ["broken-json", incorrect]:
-            with self.subTest(content=content), patch.object(b, "post_json", return_value=json.dumps(self.envelope("OPENAI", content))) as post:
-                row, _ = b.perform_case("OPENAI", self.cases[0], self.spec, "test-only", 1, True, io.StringIO())
+            with self.subTest(content=content), patch.object(b, "post_json", return_value=(json.dumps(self.envelope("GEMINI", content)), {})) as post:
+                row, _ = b.perform_case("GEMINI", self.cases[0], self.spec, "test-only", 1, True, io.StringIO())
                 self.assertEqual(post.call_count, 1)
                 if content == "broken-json":
                     self.assertEqual(row["categoriePredite"], "")
@@ -219,13 +225,13 @@ class BenchmarkOfflineTests(unittest.TestCase):
     def test_requested_model_fallback_and_one_snapshot_are_reported_without_loss(self):
         rows = self.metric_rows()
         for row in rows[1:24]:
-            row["model"] = "gpt-5.6-luna-snapshot"
+            row["model"] = "gemini-3.8-flash-snapshot"
         rows[0].update(sortieValide="false", typeErreur="TIMEOUT", categoriePredite="", prioritePredite="")
         b.validate_results(rows, self.cases, self.spec)
         report = b.calculate_metrics(rows, self.spec)[0]
-        self.assertEqual(report["model"], "gpt-5.6-luna-snapshot")
-        self.assertEqual(report["modelsRecorded"], ["gpt-5.6-luna", "gpt-5.6-luna-snapshot"])
-        rows[2]["model"] = "gpt-5.6-luna-other-snapshot"
+        self.assertEqual(report["model"], "gemini-3.8-flash-snapshot")
+        self.assertEqual(report["modelsRecorded"], ["gemini-3.8-flash", "gemini-3.8-flash-snapshot"])
+        rows[2]["model"] = "gemini-3.8-flash-other-snapshot"
         with self.assertRaises(b.ValidationError):
             b.validate_results(rows, self.cases, self.spec)
 
@@ -238,15 +244,79 @@ class BenchmarkOfflineTests(unittest.TestCase):
         from unittest.mock import MagicMock
         response = MagicMock()
         response.__enter__.return_value.read.return_value = b'{"ok": true}'
+        response.__enter__.return_value.headers = {}
         opener = MagicMock()
         opener.open.return_value = response
         with patch.object(b, "build_opener", return_value=opener):
-            result = b.post_json("https://example.invalid", "test-only", {"texte": "échéance"}, 7)
-        self.assertEqual(json.loads(result), {"ok": True})
+            result = b.post_json("GROQ", "test-only", {"texte": "échéance"}, 7)
+        self.assertEqual(json.loads(result[0]), {"ok": True})
         request = opener.open.call_args.args[0]
         self.assertEqual(request.get_method(), "POST")
         self.assertEqual(json.loads(request.data.decode("utf-8")), {"texte": "échéance"})
         self.assertEqual(opener.open.call_args.kwargs["timeout"], 7)
+
+    def test_gemini_auth_header_has_no_bearer_and_groq_has_bearer(self):
+        from unittest.mock import MagicMock
+        for provider in b.PROVIDERS:
+            response = MagicMock()
+            response.__enter__.return_value.read.return_value = b'{}'
+            response.__enter__.return_value.headers = {}
+            opener = MagicMock()
+            opener.open.return_value = response
+            with patch.object(b, "build_opener", return_value=opener):
+                b.post_json(provider, "test-only", {}, 1)
+            request = opener.open.call_args.args[0]
+            self.assertEqual(request.full_url, b.PROVIDERS[provider][1])
+            headers = {key.lower(): value for key, value in request.header_items()}
+            if provider == "GEMINI":
+                self.assertEqual(headers["x-goog-api-key"], "test-only")
+                self.assertNotIn("authorization", headers)
+            else:
+                self.assertEqual(headers["authorization"], "Bearer test-only")
+                self.assertNotIn("x-goog-api-key", headers)
+
+    def test_gemini_ignores_thought_but_only_reads_model_output(self):
+        envelope = self.envelope("GEMINI")
+        envelope["steps"].insert(0, {"type": "thought", "summary": [{"type": "text", "text": "ignored"}]})
+        self.assertEqual(b.extract_business("GEMINI", envelope), (json.dumps(self.business()), "NONE"))
+        envelope["steps"].append(copy.deepcopy(envelope["steps"][1]))
+        self.assertEqual(b.extract_business("GEMINI", envelope)[1], "INVALID_SCHEMA")
+
+    def test_rate_limit_duration_formats(self):
+        self.assertEqual(b.duration_seconds("2m59.56s"), 179.56)
+        self.assertEqual(b.duration_seconds("250ms"), .25)
+        self.assertEqual(b.duration_seconds("2"), 2)
+        self.assertEqual(b.duration_seconds("NaN"), 0)
+        self.assertEqual(b.duration_seconds("not-a-duration"), 0)
+
+    def test_groq_pacing_uses_tpm_usage_and_resets(self):
+        pacer = b.GroqPacer()
+        with patch.object(b.time, "monotonic", return_value=100):
+            pacer.observe({"x-ratelimit-limit-tokens": "8000"}, [1000, 0, 1000])
+            self.assertEqual(pacer.ready_at, 107.5)
+            pacer.observe({"x-ratelimit-remaining-tokens": "0", "x-ratelimit-reset-tokens": "20s"}, [None]*3)
+            self.assertEqual(pacer.ready_at, 120)
+            pacer.observe({"x-ratelimit-remaining-requests": "0", "x-ratelimit-reset-requests": "1m"}, [None]*3)
+            self.assertEqual(pacer.ready_at, 160)
+
+    def test_groq_retry_after_wait_is_traced_and_excluded_from_latency(self):
+        pacer = b.GroqPacer()
+        clock = [100.0]
+        def sleep(seconds):
+            clock[0] += seconds
+        error = HTTPError("https://example.invalid", 429, "rate", {"Retry-After": "7"}, None)
+        log = io.StringIO()
+        with patch.object(b.time, "monotonic", side_effect=lambda: clock[0]), \
+             patch.object(b.time, "sleep", side_effect=sleep), \
+             patch.object(b.time, "perf_counter", side_effect=[0, .1, 100, 100.2]), \
+             patch.object(b, "post_json", side_effect=[error, (json.dumps(self.envelope("GROQ")), {})]) as post:
+            row, _ = b.perform_case("GROQ", self.cases[0], self.spec, "test-only", 1, True, log, pacer)
+        events = [json.loads(line) for line in log.getvalue().splitlines()]
+        self.assertEqual(post.call_count, 2)
+        self.assertEqual(events[1]["pacingSeconds"], 7)
+        self.assertEqual(events[0]["rateLimitHeaders"]["retry-after"], "7")
+        self.assertAlmostEqual(row["latenceMs"], 300)
+        self.assertEqual(row["sortieValide"], "true")
 
     def test_run_missing_keys_fails_before_file_creation_or_network(self):
         with patch.dict(b.os.environ, {}, clear=True), patch.object(b, "post_json", side_effect=AssertionError("API interdite")):

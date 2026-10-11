@@ -1,0 +1,1 @@
+{"caseId": "P01", "provider": "OPENAI", "requestedModel": "gpt-5.6-luna", "attempt": 1, "startedAtUtc": "2026-10-11T21:38:31.552838+00:00", "httpStatus": 401, "typeErreur": "OTHER", "latenceMs": 1328.823, "retryNext": false}

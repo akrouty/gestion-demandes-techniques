@@ -1,0 +1,2 @@
+caseId,provider,model,promptVersion,categorieReference,prioriteReference,categoriePredite,prioritePredite,sortieValide,typeErreur,latenceMs,inputTokens,outputTokens,totalTokens,coutObserveUsd
+P01,OPENAI,gpt-5.6-luna,AI-QUALIFICATION-PROMPT-v1.0.0,ETUDE_DANGERS,HAUTE,,,false,OTHER,1329.652,,,,
