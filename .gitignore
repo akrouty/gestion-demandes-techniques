@@ -22,3 +22,5 @@ Desktop.ini
 *.vrb
 *.xdv
 *.dvi
+__pycache__/
+*.pyc
