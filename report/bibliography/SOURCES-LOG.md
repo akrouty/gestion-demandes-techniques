@@ -142,7 +142,7 @@
 - **Type :** documentation officielle du fournisseur
 - **URL :** https://developers.openai.com/api/docs/models/gpt-5.6-luna
 - **Date de consultation :** 2026-10-11
-- **Information utile :** disponibilité via API, caractéristiques du modèle et prise en charge des structured outputs.
+- **Information utile :** disponibilité via API, identifiant gpt-5.6-luna, endpoint Responses, Structured Outputs et support de reasoning.effort = none, revérifiés le 2026-10-11.
 - **Usage potentiel dans le rapport :** comparaison/benchmark des candidats IA et, uniquement s'il est retenu, description du modèle intégré.
 - **Statut :** CONDITIONNELLE
 - **Clé BibLaTeX proposée :** `openai-gpt-5-6-luna`
@@ -158,7 +158,7 @@
 - **URL :** https://docs.mistral.ai/models/mistral-small-4-0-26-03
 - **Date indiquée sur la page :** 16 mars 2026
 - **Date de consultation :** 2026-10-11
-- **Information utile :** caractéristiques du modèle, identifiant API, contexte, structured outputs et informations de tarification affichées par le fournisseur au moment de la consultation.
+- **Information utile :** caractéristiques du modèle, identifiant API mistral-small-2603, Chat Completions et Structured Outputs ; ces trois derniers éléments sont revérifiés le 2026-10-11. Les données de contexte et de tarification restent celles consignées lors de la consultation initiale.
 - **Usage potentiel dans le rapport :** comparaison/benchmark des candidats IA et, uniquement s'il est retenu, description du modèle intégré.
 - **Statut :** CONDITIONNELLE
 - **Clé BibLaTeX proposée :** `mistral-small-4`
@@ -289,6 +289,81 @@
 - **Statut :** CONDITIONNELLE
 - **Clé BibLaTeX proposée :** `sklearn-cohen-kappa-score`
 - **Remarque :** Métrique OPTIONNELLE / À VALIDER ; aucune pondération retenue et aucun calcul exécuté.
+
+---
+
+## SRC-018 — OpenAI — Responses API
+
+- **Organisation :** OpenAI
+- **Titre :** Text generation
+- **Type :** documentation officielle du fournisseur
+- **URL consultée :** https://developers.openai.com/api/docs/guides/text
+- **Date de consultation :** 2026-10-11
+- **Information utile :** Le guide présente la génération via Responses API et des exemples avec instructions, input et reasoning.effort.
+- **Usage potentiel dans le rapport :** Documentation du choix Responses API pour le benchmark.
+- **Statut :** CONDITIONNELLE
+- **Clé BibLaTeX proposée :** `ai-benchmark-src-018`
+- **Remarque :** Guide général consulté ; aucun appel ni accès au compte testé. Benchmark non exécuté ; aucun fournisseur ou modèle final retenu.
+
+---
+
+## SRC-019 — OpenAI — Structured Outputs
+
+- **Organisation :** OpenAI
+- **Titre :** Structured model outputs
+- **Type :** documentation officielle du fournisseur
+- **URL consultée :** https://developers.openai.com/api/docs/guides/structured-outputs
+- **Date de consultation :** 2026-10-11
+- **Information utile :** Le guide documente une sortie structurée via text.format, json_schema et strict dans Responses.
+- **Usage potentiel dans le rapport :** Format structuré du benchmark, sans modification du JSON Schema métier.
+- **Statut :** CONDITIONNELLE
+- **Clé BibLaTeX proposée :** `ai-benchmark-src-019`
+- **Remarque :** La documentation du format ne remplace pas la validation backend ni ne prouve la correction des labels. Benchmark non exécuté ; aucun fournisseur ou modèle final retenu.
+
+---
+
+## SRC-020 — OpenAI — paramètres de raisonnement
+
+- **Organisation :** OpenAI
+- **Titre :** Reasoning models
+- **Type :** documentation officielle du fournisseur
+- **URL consultée :** https://developers.openai.com/api/docs/guides/reasoning
+- **Date de consultation :** 2026-10-11
+- **Information utile :** reasoning.effort dans Responses est spécifique au modèle ; la page GPT-5.6 Luna déjà enregistrée en SRC-008 confirme le support de none.
+- **Usage potentiel dans le rapport :** Traçabilité du choix reasoning = none pour Luna et des différences de paramètres entre API.
+- **Statut :** CONDITIONNELLE
+- **Clé BibLaTeX proposée :** `ai-benchmark-src-020`
+- **Remarque :** Aucun alignement artificiel avec les paramètres Mistral. Le support précis de temperature = 0 pour Luna via Responses n’a pas été établi. La référence API Responses essayée n’a pas pu être ouverte ; elle n’est pas ajoutée comme source vérifiée. Benchmark non exécuté ; aucun fournisseur ou modèle final retenu.
+
+---
+
+## SRC-021 — Mistral — Chat Completions
+
+- **Organisation :** Mistral AI
+- **Titre :** Chat
+- **Type :** documentation officielle du fournisseur
+- **URL consultée :** https://docs.mistral.ai/api/endpoint/chat
+- **Date de consultation :** 2026-10-11
+- **Information utile :** La référence documente Chat Completions, response_format de type json_schema et le paramètre temperature, avec une plage recommandée incluant 0.0.
+- **Usage potentiel dans le rapport :** Paramètres et format du candidat mistral-small-2603, identifiant vérifié sur la page SRC-009.
+- **Statut :** CONDITIONNELLE
+- **Clé BibLaTeX proposée :** `ai-benchmark-src-021`
+- **Remarque :** Référence API consultée, sans appel de modèle ni validation effective d’une requête. Benchmark non exécuté ; aucun fournisseur ou modèle final retenu.
+
+---
+
+## SRC-022 — Mistral — Custom Structured Outputs
+
+- **Organisation :** Mistral AI
+- **Titre :** Custom
+- **Type :** documentation officielle du fournisseur
+- **URL consultée :** https://docs.mistral.ai/studio/conversations/structured-output/custom
+- **Date de consultation :** 2026-10-11
+- **Information utile :** Le guide décrit les sorties structurées à partir d’un JSON Schema et indique une instruction de schéma ajoutée au prompt système par le fournisseur.
+- **Usage potentiel dans le rapport :** Documentation de Structured Outputs et traçabilité des différences internes entre fournisseurs.
+- **Statut :** CONDITIONNELLE
+- **Clé BibLaTeX proposée :** `ai-benchmark-src-022`
+- **Remarque :** La différence fournisseur est documentée ; aucune donnée métier supplémentaire n’est ajoutée au prompt du projet. Benchmark non exécuté ; aucun fournisseur ou modèle final retenu.
 
 ---
 

@@ -4,7 +4,7 @@
 
 **DRAFT**
 
-Document de conception transcrit à partir des décisions retenues et des propositions explicitement marquées à valider dans la discussion. Les six conventions métier nécessaires avant la construction du dataset sont désormais retenues pour la V1. Les labels pilotes restent proposés et les décisions encore ouvertes ne sont pas validées par cette transcription. Aucune implémentation, aucun appel API IA et aucun benchmark ne sont réalisés à cette étape.
+Document de conception transcrit à partir des décisions retenues et des propositions explicitement marquées à valider dans la discussion. Les six conventions métier nécessaires avant la construction du dataset sont désormais retenues pour la V1. P01–P24 et leurs labels sont désormais fonctionnellement figés et validés humainement pour le benchmark comparatif V1 exploratoire. La conception globale reste DRAFT tant que le benchmark comparatif et le choix final du modèle ne sont pas terminés. Aucune implémentation, aucun appel API IA et aucun benchmark ne sont réalisés à cette étape.
 
 ## 1. Objectif et limites du module IA
 
@@ -343,91 +343,67 @@ Conformément à API-CONTRACT-V1, une indisponibilité temporaire de l’analyse
 | GPT-5.6 Luna | Candidat principal à évaluer | Candidat uniquement ; non retenu définitivement. |
 | Mistral Small 4 | Challenger | Candidat uniquement ; non retenu définitivement. |
 
-Aucun fournisseur ou modèle final n’est encore retenu. Le choix final devra être fait après benchmark sur notre propre dataset. Aucun identifiant technique fournisseur ni paramètre final n’est fixé ici.
+Aucun fournisseur ou modèle final n’est encore retenu pour l’intégration. Le choix final devra être fait après benchmark sur notre propre dataset. Les identifiants techniques des deux candidats et les conditions du benchmark sont figés en section 16 ; ce gel ne constitue pas un choix de modèle final.
 
-## 12. Constitution du dataset d’évaluation
+## 12. Dataset d’évaluation V1 figé
 
-Safyron ne dispose pas de dataset historique exploitable pour cette évaluation. Cette disponibilité n’est plus une question ouverte pour la V1 actuelle.
+Safyron ne dispose pas de dataset historique exploitable pour cette évaluation.
 
-### Stratégie retenue
+P01–P24 constituent désormais le dataset V1 fonctionnellement figé pour le benchmark. Il contient exactement 24 cas synthétiques proposés avec aide IA, relus et validés humainement. Tous ont `sourceType = IA_ASSISTE_RELU_HUMAINEMENT` et `statutValidation = VALIDE`. La validation humaine ne transforme pas leur provenance en `CONSTRUIT_MANUELLEMENT`.
 
-Le dataset d’évaluation sera constitué principalement de cas métier réalistes construits manuellement.
+Fichier de référence : [dataset-v1.csv](evaluation/dataset-v1.csv), encodé en UTF-8, avec les colonnes exactes suivantes :
 
-Processus prévu :
-
-```text
-conventions métier V1
-→ construction manuelle de cas réalistes
-→ couverture contrôlée des catégories et priorités
-→ validation humaine des labels
-→ revue des cas ambigus
-→ gel du dataset de référence
-→ benchmark ultérieur
+```csv
+id,titre,description,categorieReference,prioriteReference,difficulte,sourceType,statutValidation,justificationReference
 ```
 
-Principes :
+Ce dataset est le support d’un **benchmark comparatif V1 exploratoire**. Il n’est ni statistiquement représentatif, ni représentatif de la production réelle Safyron, ni une norme de taille de dataset, ni une preuve générale de performance. Les labels humains sont figés avant l’observation des prédictions des modèles ; aucune sortie IA ne constitue à elle seule une vérité de référence.
 
-- couvrir les sept catégories ;
-- représenter les quatre priorités ;
-- ne pas imposer artificiellement toutes les combinaisons catégorie × priorité ;
-- inclure des cas simples, ambigus et difficiles ;
-- varier la longueur et la formulation ;
-- ne pas construire uniquement des exemples basés sur des mots-clés évidents ;
-- fixer les labels humains avant d’observer les prédictions des modèles.
+### Couverture des catégories
 
-Une IA pourra éventuellement aider à proposer des formulations supplémentaires, uniquement avec relecture humaine et attribution/validation humaines des labels. Une sortie IA ne constitue jamais une vérité de référence.
+| Catégorie | Nombre de cas |
+|---|---|
+| ETUDE_DANGERS | 2 |
+| ANALYSE_RISQUES_INDUSTRIELS | 4 |
+| PROTECTION_INCENDIE | 4 |
+| NOTE_CALCUL | 3 |
+| DOSSIER_TECHNIQUE | 4 |
+| ASSISTANCE_REGLEMENTAIRE | 4 |
+| AUTRE | 3 |
+| **Total** | **24** |
 
-La taille finale du dataset et la répartition finale des cas ne sont **PAS encore décidées**. Le dataset final n’est pas encore construit.
+### Couverture des priorités
 
-P01–P12 constituent du matériel pilote synthétique de revue pour préparer la méthode. Ils ne constituent **PAS le dataset final ni le gold dataset** et ne sont pas des données historiques Safyron.
+| Priorité | Nombre de cas |
+|---|---|
+| BASSE | 5 |
+| MOYENNE | 7 |
+| HAUTE | 7 |
+| CRITIQUE | 5 |
+| **Total** | **24** |
 
-## 13. Provenance et annotation humaine
+### Couverture des difficultés
 
-Les labels de référence doivent être définis humainement **avant de regarder les prédictions des modèles**. La provenance des exemples et la validation humaine des labels doivent être traçables.
+| Difficulté | Nombre de cas |
+|---|---|
+| SIMPLE | 10 |
+| AMBIGU | 8 |
+| DIFFICILE | 6 |
+| **Total** | **24** |
 
-Traçabilité minimale proposée :
+Cette répartition est une couverture contrôlée pour une évaluation exploratoire. Elle n’a pas été créée pour imposer un équilibre statistique artificiel. Toutes les combinaisons catégorie × priorité ne sont pas imposées.
 
-```text
-id
-sourceType
-sourceReferenceInterne
-anonymise
-auteurOuCreateurCas
-categorieAnnotateur1
-prioriteAnnotateur1
-categorieAnnotateur2
-prioriteAnnotateur2
-categorieFinale
-prioriteFinale
-adjudicateur
-statutValidation
-justificationReference
-difficulte
-```
+## 13. Provenance et validation humaine de P01–P24
 
-Valeurs possibles de `sourceType` :
+Les 24 cas sont synthétiques, proposés avec aide IA, relus et validés humainement pour cette étape. Ils ne proviennent pas de demandes historiques Safyron. Leur provenance est conservée comme `IA_ASSISTE_RELU_HUMAINEMENT`, même après validation humaine ; leur statut est `VALIDE`.
 
-```text
-REEL_ANONYMISE
-CONSTRUIT_MANUELLEMENT
-IA_ASSISTE_RELU_HUMAINEMENT
-```
+La demande humaine qui fige cette étape établit les textes et labels de référence ci-dessous avant l’observation des prédictions. Le fichier CSV et cette section conservent les identifiants, textes complets, labels, difficultés, provenance, statut et justifications. Aucun nom d’annotateur, nombre d’annotateurs ou historique d’adjudication non fourni n’est inventé. La référence méthodologique reste Klie et al. (2024), détaillée en section 17.
 
-`CONSTRUIT_MANUELLEMENT` est le type de provenance prévu pour le dataset V1, avec éventuellement `IA_ASSISTE_RELU_HUMAINEMENT` sous les conditions humaines ci-dessus. `REEL_ANONYMISE` reste un type théorique de provenance ; il n’est pas utilisé pour le dataset V1 actuel, faute de dataset historique exploitable chez Safyron.
+`CONSTRUIT_MANUELLEMENT` et `REEL_ANONYMISE` restent des types théoriques de provenance, mais ne décrivent aucun des 24 cas V1 actuels. `REEL_ANONYMISE` n’est pas utilisé faute de dataset historique Safyron exploitable.
 
-Cette structure est proposée. La présence de champs pour deux annotateurs ne fixe pas le nombre final d’annotateurs. Ce nombre et la méthode concrète d’adjudication restent **NON VALIDÉS**. La référence méthodologique d’annotation est Klie et al. (2024), détaillée en section 17.
+**P14 corrigé définitivement :** `DOSSIER_TECHNIQUE`, `BASSE`, `AMBIGU`. Le livrable principal est documentaire ; son rattachement à une étude de dangers ne le classe pas en `ETUDE_DANGERS`.
 
-### Statut commun des cas P01–P12
-
-Tous les cas ci-dessous sont :
-
-- synthétiques ;
-- construits par ChatGPT pour préparer la méthode ;
-- non issus de demandes réelles ;
-- accompagnés de labels catégorie/priorité proposés par ChatGPT ;
-- **NON VALIDÉS HUMAINEMENT**.
-
-Les labels et justifications sont réévalués ci-dessous en cohérence avec les six conventions V1 retenues. Ils restent **PROPOSÉS / NON VALIDÉS HUMAINEMENT** comme labels de référence. Ces cas ne proviennent pas de demandes historiques Safyron et ne constituent ni le dataset final ni un gold dataset.
+### Cas de référence complets
 
 ### P01
 
@@ -435,15 +411,17 @@ Les labels et justifications sont réévalués ci-dessous en cohérence avec les
 
 **Description :** `Un nouveau réservoir GPL sera ajouté au site. Nous devons mettre à jour l'étude de dangers et les scénarios accidentels avant la revue prévue dans trois semaines.`
 
-**Catégorie finale proposée :** `ETUDE_DANGERS`.
+**Catégorie de référence :** `ETUDE_DANGERS`.
 
-**Priorité finale proposée :** `HAUTE`.
+**Priorité de référence :** `HAUTE`.
 
 **Difficulté :** `AMBIGU`.
 
-**Justification proposée :** L’étude de dangers est explicitement le livrable principal. Une échéance de revue est indiquée dans trois semaines et justifie ici une proposition prioritaire.
+**sourceType :** `IA_ASSISTE_RELU_HUMAINEMENT`.
 
-**Motif :** La catégorie est claire, mais l’appréciation d’une échéance comme « proche » reste dépendante du contexte du cas.
+**statutValidation :** `VALIDE`.
+
+**Justification de référence :** `L'étude de dangers est explicitement le livrable principal. Une échéance de revue est indiquée dans trois semaines et justifie ici un traitement prioritaire.`
 
 ### P02
 
@@ -451,13 +429,17 @@ Les labels et justifications sont réévalués ci-dessous en cohérence avec les
 
 **Description :** `Nous souhaitons identifier les défaillances possibles et les risques de procédé sur la nouvelle ligne avant sa mise en service.`
 
-**Catégorie finale proposée :** `ANALYSE_RISQUES_INDUSTRIELS`.
+**Catégorie de référence :** `ANALYSE_RISQUES_INDUSTRIELS`.
 
-**Priorité finale proposée :** `MOYENNE`.
+**Priorité de référence :** `MOYENNE`.
 
 **Difficulté :** `SIMPLE`.
 
-**Justification proposée :** HAZOP et analyse des défaillances/risques sans demande explicite d’étude de dangers. Aucune urgence, impact important ou échéance proche n’est indiqué.
+**sourceType :** `IA_ASSISTE_RELU_HUMAINEMENT`.
+
+**statutValidation :** `VALIDE`.
+
+**Justification de référence :** `HAZOP et analyse des défaillances et risques sans demande explicite d'étude de dangers. Aucune urgence, impact important ou échéance proche n'est indiqué.`
 
 ### P03
 
@@ -465,13 +447,17 @@ Les labels et justifications sont réévalués ci-dessous en cohérence avec les
 
 **Description :** `Le système de détection incendie du dépôt contenant des produits inflammables est hors service. Une analyse et des mesures immédiates sont nécessaires.`
 
-**Catégorie finale proposée :** `PROTECTION_INCENDIE`.
+**Catégorie de référence :** `PROTECTION_INCENDIE`.
 
-**Priorité finale proposée :** `CRITIQUE`.
+**Priorité de référence :** `CRITIQUE`.
 
 **Difficulté :** `SIMPLE`.
 
-**Justification proposée :** Défaillance du système de détection incendie avec demande explicite de mesures immédiates.
+**sourceType :** `IA_ASSISTE_RELU_HUMAINEMENT`.
+
+**statutValidation :** `VALIDE`.
+
+**Justification de référence :** `Défaillance du système de détection incendie avec demande explicite de mesures immédiates.`
 
 ### P04
 
@@ -479,13 +465,17 @@ Les labels et justifications sont réévalués ci-dessous en cohérence avec les
 
 **Description :** `Merci de vérifier les charges et de dimensionner le support métallique de la nouvelle tuyauterie.`
 
-**Catégorie finale proposée :** `NOTE_CALCUL`.
+**Catégorie de référence :** `NOTE_CALCUL`.
 
-**Priorité finale proposée :** `MOYENNE`.
+**Priorité de référence :** `MOYENNE`.
 
 **Difficulté :** `SIMPLE`.
 
-**Justification proposée :** Le calcul et le dimensionnement constituent explicitement le livrable principal. Aucun élément particulier d’urgence ou d’impact n’est indiqué.
+**sourceType :** `IA_ASSISTE_RELU_HUMAINEMENT`.
+
+**statutValidation :** `VALIDE`.
+
+**Justification de référence :** `Le calcul et le dimensionnement constituent explicitement le livrable principal. Aucun élément particulier d'urgence ou d'impact n'est indiqué.`
 
 ### P05
 
@@ -493,13 +483,17 @@ Les labels et justifications sont réévalués ci-dessous en cohérence avec les
 
 **Description :** `Nous souhaitons mettre à jour les plans et fiches techniques lors de la prochaine campagne documentaire. Aucun délai urgent.`
 
-**Catégorie finale proposée :** `DOSSIER_TECHNIQUE`.
+**Catégorie de référence :** `DOSSIER_TECHNIQUE`.
 
-**Priorité finale proposée :** `BASSE`.
+**Priorité de référence :** `BASSE`.
 
 **Difficulté :** `SIMPLE`.
 
-**Justification proposée :** Le besoin est une mise à jour documentaire et le texte indique explicitement qu’elle peut attendre une prochaine campagne.
+**sourceType :** `IA_ASSISTE_RELU_HUMAINEMENT`.
+
+**statutValidation :** `VALIDE`.
+
+**Justification de référence :** `Le besoin est une mise à jour documentaire et le texte indique explicitement qu'elle peut attendre une prochaine campagne.`
 
 ### P06
 
@@ -507,13 +501,17 @@ Les labels et justifications sont réévalués ci-dessous en cohérence avec les
 
 **Description :** `Pouvez-vous identifier les exigences réglementaires et normatives applicables à notre projet de stockage d'acide ?`
 
-**Catégorie finale proposée :** `ASSISTANCE_REGLEMENTAIRE`.
+**Catégorie de référence :** `ASSISTANCE_REGLEMENTAIRE`.
 
-**Priorité finale proposée :** `MOYENNE`.
+**Priorité de référence :** `MOYENNE`.
 
 **Difficulté :** `SIMPLE`.
 
-**Justification proposée :** L’objectif principal est d’identifier les exigences réglementaires et normatives. Aucun élément particulier d’urgence ou d’impact n’est indiqué.
+**sourceType :** `IA_ASSISTE_RELU_HUMAINEMENT`.
+
+**statutValidation :** `VALIDE`.
+
+**Justification de référence :** `L'objectif principal est d'identifier les exigences réglementaires et normatives. Aucun élément particulier d'urgence ou d'impact n'est indiqué.`
 
 ### P07
 
@@ -521,13 +519,17 @@ Les labels et justifications sont réévalués ci-dessous en cohérence avec les
 
 **Description :** `Nous voulons installer un nouveau système de badges à l'accueil pour gérer les visiteurs. La mise en place peut attendre le prochain trimestre.`
 
-**Catégorie finale proposée :** `AUTRE`.
+**Catégorie de référence :** `AUTRE`.
 
-**Priorité finale proposée :** `BASSE`.
+**Priorité de référence :** `BASSE`.
 
 **Difficulté :** `SIMPLE`.
 
-**Justification proposée :** Le système de badges visiteurs ne correspond à aucune des six catégories métier et peut explicitement attendre le prochain trimestre.
+**sourceType :** `IA_ASSISTE_RELU_HUMAINEMENT`.
+
+**statutValidation :** `VALIDE`.
+
+**Justification de référence :** `Le système de badges visiteurs ne correspond à aucune des six catégories métier et peut explicitement attendre le prochain trimestre.`
 
 ### P08
 
@@ -535,15 +537,17 @@ Les labels et justifications sont réévalués ci-dessous en cohérence avec les
 
 **Description :** `Nous devons calculer les débits, pertes de charge et diamètres du réseau RIA et recevoir une note de calcul hydraulique avant le dépôt du dossier vendredi prochain.`
 
-**Catégorie finale proposée :** `NOTE_CALCUL`.
+**Catégorie de référence :** `NOTE_CALCUL`.
 
-**Priorité finale proposée :** `HAUTE`.
+**Priorité de référence :** `HAUTE`.
 
 **Difficulté :** `AMBIGU`.
 
-**Justification proposée :** Le domaine est l’incendie, mais le livrable principal demandé est explicitement une note de calcul hydraulique. L’échéance est proche.
+**sourceType :** `IA_ASSISTE_RELU_HUMAINEMENT`.
 
-**Motif :** Le texte contient volontairement des signaux de deux catégories, même si la convention V1 permet maintenant de fixer le label de référence proposé.
+**statutValidation :** `VALIDE`.
+
+**Justification de référence :** `Le domaine est l'incendie, mais le livrable principal demandé est explicitement une note de calcul hydraulique. L'échéance est proche.`
 
 ### P09
 
@@ -551,13 +555,17 @@ Les labels et justifications sont réévalués ci-dessous en cohérence avec les
 
 **Description :** `L'étude de dangers est déjà rédigée. Nous voulons uniquement vérifier qu'elle répond aux exigences réglementaires avant son dépôt administratif la semaine prochaine.`
 
-**Catégorie finale proposée :** `ASSISTANCE_REGLEMENTAIRE`.
+**Catégorie de référence :** `ASSISTANCE_REGLEMENTAIRE`.
 
-**Priorité finale proposée :** `HAUTE`.
+**Priorité de référence :** `HAUTE`.
 
 **Difficulté :** `AMBIGU`.
 
-**Justification proposée :** L’étude de dangers existe déjà ; le besoin principal est uniquement de vérifier sa conformité réglementaire avant une échéance proche.
+**sourceType :** `IA_ASSISTE_RELU_HUMAINEMENT`.
+
+**statutValidation :** `VALIDE`.
+
+**Justification de référence :** `L'étude de dangers existe déjà ; le besoin principal est uniquement de vérifier sa conformité réglementaire avant une échéance proche.`
 
 ### P10
 
@@ -565,15 +573,17 @@ Les labels et justifications sont réévalués ci-dessous en cohérence avec les
 
 **Description :** `Identifier les principales situations dangereuses liées aux fuites de solvants, évaluer leur criticité et proposer des mesures de réduction. Aucune étude réglementaire complète n'est demandée.`
 
-**Catégorie finale proposée :** `ANALYSE_RISQUES_INDUSTRIELS`.
+**Catégorie de référence :** `ANALYSE_RISQUES_INDUSTRIELS`.
 
-**Priorité finale proposée :** `MOYENNE`.
+**Priorité de référence :** `MOYENNE`.
 
 **Difficulté :** `AMBIGU`.
 
-**Justification proposée :** Le besoin porte sur l’identification, la criticité et la réduction des risques, sans étude de dangers formelle demandée. Aucun élément particulier d’urgence ou d’impact n’est indiqué.
+**sourceType :** `IA_ASSISTE_RELU_HUMAINEMENT`.
 
-**Motif :** Le vocabulaire des dangers peut faire hésiter avec `ETUDE_DANGERS`, mais la convention V1 permet de fixer le label proposé.
+**statutValidation :** `VALIDE`.
+
+**Justification de référence :** `Le besoin porte sur l'identification, la criticité et la réduction des risques, sans étude de dangers formelle demandée. Aucun élément particulier d'urgence ou d'impact n'est indiqué.`
 
 ### P11
 
@@ -581,13 +591,17 @@ Les labels et justifications sont réévalués ci-dessous en cohérence avec les
 
 **Description :** `Nous avons une réunion demain et souhaitons un avis sur l'organisation de la protection incendie. Aucun équipement n'est signalé en panne et aucune situation dangereuse immédiate n'est connue.`
 
-**Catégorie finale proposée :** `PROTECTION_INCENDIE`.
+**Catégorie de référence :** `PROTECTION_INCENDIE`.
 
-**Priorité finale proposée :** `HAUTE`.
+**Priorité de référence :** `HAUTE`.
 
 **Difficulté :** `DIFFICILE`.
 
-**Justification proposée :** Le besoin concerne la protection incendie et l’échéance est proche, mais aucune situation nécessitant une prise en charge immédiate n’est décrite. Le mot `URGENT` seul ne suffit pas à produire `CRITIQUE`.
+**sourceType :** `IA_ASSISTE_RELU_HUMAINEMENT`.
+
+**statutValidation :** `VALIDE`.
+
+**Justification de référence :** `Le besoin concerne la protection incendie et l'échéance est proche, mais aucune situation nécessitant une prise en charge immédiate n'est décrite. Le mot URGENT seul ne suffit pas à produire CRITIQUE.`
 
 ### P12
 
@@ -595,13 +609,233 @@ Les labels et justifications sont réévalués ci-dessous en cohérence avec les
 
 **Description :** `La pompe principale a été remplacée. La production reste arrêtée jusqu'à validation immédiate du dossier technique mis à jour permettant la remise en service.`
 
-**Catégorie finale proposée :** `DOSSIER_TECHNIQUE`.
+**Catégorie de référence :** `DOSSIER_TECHNIQUE`.
 
-**Priorité finale proposée :** `CRITIQUE`.
+**Priorité de référence :** `CRITIQUE`.
 
 **Difficulté :** `DIFFICILE`.
 
-**Justification proposée :** Le besoin principal est la validation du dossier technique. La production est arrêtée et le texte exige une validation immédiate pour permettre la remise en service.
+**sourceType :** `IA_ASSISTE_RELU_HUMAINEMENT`.
+
+**statutValidation :** `VALIDE`.
+
+**Justification de référence :** `Le besoin principal est la validation du dossier technique. La production est arrêtée et le texte exige une validation immédiate pour permettre la remise en service.`
+
+### P13
+
+**Titre :** `Révision de l'étude de dangers après modification du stockage d'ammoniac`
+
+**Description :** `Un nouveau piquage sera ajouté au réseau d'ammoniac. L'étude de dangers doit être mise à jour pour intégrer la modification et réexaminer les scénarios concernés. Aucun délai particulier n'est imposé.`
+
+**Catégorie de référence :** `ETUDE_DANGERS`.
+
+**Priorité de référence :** `MOYENNE`.
+
+**Difficulté :** `SIMPLE`.
+
+**sourceType :** `IA_ASSISTE_RELU_HUMAINEMENT`.
+
+**statutValidation :** `VALIDE`.
+
+**Justification de référence :** `L'étude de dangers est explicitement le livrable principal ; aucune urgence particulière n'est indiquée.`
+
+### P14
+
+**Titre :** `Mise à jour des annexes de l'étude de dangers`
+
+**Description :** `Les plans et inventaires intégrés à l'étude de dangers doivent être actualisés avant la revue annuelle dans trois mois. Le travail peut être réalisé dans les prochaines semaines.`
+
+**Catégorie de référence :** `DOSSIER_TECHNIQUE`.
+
+**Priorité de référence :** `BASSE`.
+
+**Difficulté :** `AMBIGU`.
+
+**sourceType :** `IA_ASSISTE_RELU_HUMAINEMENT`.
+
+**statutValidation :** `VALIDE`.
+
+**Justification de référence :** `Le livrable principal est la mise à jour de plans et inventaires ; il s'agit donc d'un besoin documentaire, même si ces éléments appartiennent à une étude de dangers.`
+
+### P15
+
+**Titre :** `Planification de maintenance préventive du compresseur`
+
+**Description :** `Nous souhaitons organiser la prochaine maintenance préventive du compresseur et définir les opérations à effectuer. Aucun calcul, dossier réglementaire ou analyse de risques n'est demandé et il n'y a pas d'urgence particulière.`
+
+**Catégorie de référence :** `AUTRE`.
+
+**Priorité de référence :** `MOYENNE`.
+
+**Difficulté :** `SIMPLE`.
+
+**sourceType :** `IA_ASSISTE_RELU_HUMAINEMENT`.
+
+**statutValidation :** `VALIDE`.
+
+**Justification de référence :** `Aucune des six catégories spécialisées ne correspond au besoin ; le contexte relève du traitement normal.`
+
+### P16
+
+**Titre :** `Diagnostic de vibrations sur la pompe de transfert`
+
+**Description :** `La pompe présente des vibrations anormales. Nous souhaitons identifier l'origine du problème avant le redémarrage prévu demain. Aucun calcul formalisé ni étude de risques n'est demandé.`
+
+**Catégorie de référence :** `AUTRE`.
+
+**Priorité de référence :** `HAUTE`.
+
+**Difficulté :** `DIFFICILE`.
+
+**sourceType :** `IA_ASSISTE_RELU_HUMAINEMENT`.
+
+**statutValidation :** `VALIDE`.
+
+**Justification de référence :** `Le diagnostic est hors des six catégories métier et une échéance proche est indiquée, sans nécessité explicitement immédiate.`
+
+### P17
+
+**Titre :** `Analyse immédiate des risques après fuite de solvant`
+
+**Description :** `Une fuite a été détectée sur une ligne de solvant et la zone a été isolée. Une analyse immédiate des risques est demandée avant toute remise en service. Aucune étude de dangers formelle n'est demandée.`
+
+**Catégorie de référence :** `ANALYSE_RISQUES_INDUSTRIELS`.
+
+**Priorité de référence :** `CRITIQUE`.
+
+**Difficulté :** `DIFFICILE`.
+
+**sourceType :** `IA_ASSISTE_RELU_HUMAINEMENT`.
+
+**statutValidation :** `VALIDE`.
+
+**Justification de référence :** `Une analyse de risques est explicitement demandée sans étude de dangers formelle, avec nécessité de traitement immédiat avant remise en service.`
+
+### P18
+
+**Titre :** `APR préliminaire d'un projet futur`
+
+**Description :** `Nous souhaitons réaliser une analyse préliminaire des risques pour un projet encore en phase d'étude. La revue peut être réalisée durant le prochain trimestre.`
+
+**Catégorie de référence :** `ANALYSE_RISQUES_INDUSTRIELS`.
+
+**Priorité de référence :** `BASSE`.
+
+**Difficulté :** `SIMPLE`.
+
+**sourceType :** `IA_ASSISTE_RELU_HUMAINEMENT`.
+
+**statutValidation :** `VALIDE`.
+
+**Justification de référence :** `Analyse préliminaire des risques explicite et traitement clairement différable.`
+
+### P19
+
+**Titre :** `Vérification de l'implantation des extincteurs`
+
+**Description :** `Après le réaménagement d'un atelier, nous souhaitons vérifier si l'implantation actuelle des extincteurs reste adaptée. Aucun équipement n'est en panne et aucune échéance particulière n'est indiquée.`
+
+**Catégorie de référence :** `PROTECTION_INCENDIE`.
+
+**Priorité de référence :** `MOYENNE`.
+
+**Difficulté :** `SIMPLE`.
+
+**sourceType :** `IA_ASSISTE_RELU_HUMAINEMENT`.
+
+**statutValidation :** `VALIDE`.
+
+**Justification de référence :** `Le besoin est centré sur la protection incendie et aucune urgence particulière n'est indiquée.`
+
+### P20
+
+**Titre :** `Vérification urgente de la tenue d'un support métallique`
+
+**Description :** `Un support présente une fissure et la production est arrêtée. Une vérification chiffrée de sa résistance est nécessaire immédiatement avant toute remise en service.`
+
+**Catégorie de référence :** `NOTE_CALCUL`.
+
+**Priorité de référence :** `CRITIQUE`.
+
+**Difficulté :** `DIFFICILE`.
+
+**sourceType :** `IA_ASSISTE_RELU_HUMAINEMENT`.
+
+**statutValidation :** `VALIDE`.
+
+**Justification de référence :** `La vérification chiffrée constitue le livrable principal et le contexte exige une réponse immédiate avant remise en service.`
+
+### P21
+
+**Titre :** `Mise à jour des plans as-built de l'unité`
+
+**Description :** `Les plans as-built doivent être actualisés après plusieurs modifications mineures. Ils seront archivés lors de la prochaine campagne documentaire et le travail peut attendre.`
+
+**Catégorie de référence :** `DOSSIER_TECHNIQUE`.
+
+**Priorité de référence :** `BASSE`.
+
+**Difficulté :** `AMBIGU`.
+
+**sourceType :** `IA_ASSISTE_RELU_HUMAINEMENT`.
+
+**statutValidation :** `VALIDE`.
+
+**Justification de référence :** `Le besoin est une mise à jour documentaire explicitement différable.`
+
+### P22
+
+**Titre :** `Interprétation d'une exigence avant dépôt du dossier`
+
+**Description :** `Nous devons déterminer si une nouvelle exigence réglementaire s'applique à notre installation avant le dépôt administratif prévu demain.`
+
+**Catégorie de référence :** `ASSISTANCE_REGLEMENTAIRE`.
+
+**Priorité de référence :** `HAUTE`.
+
+**Difficulté :** `AMBIGU`.
+
+**sourceType :** `IA_ASSISTE_RELU_HUMAINEMENT`.
+
+**statutValidation :** `VALIDE`.
+
+**Justification de référence :** `L'objectif principal est l'interprétation réglementaire et une échéance proche est explicitement indiquée.`
+
+### P23
+
+**Titre :** `Adaptation de la détection incendie avant mise en service`
+
+**Description :** `Deux détecteurs doivent être repositionnés pour couvrir une nouvelle zone. La mise en service est prévue demain. Aucun équipement n'est actuellement en panne et aucune situation dangereuse immédiate n'est signalée.`
+
+**Catégorie de référence :** `PROTECTION_INCENDIE`.
+
+**Priorité de référence :** `HAUTE`.
+
+**Difficulté :** `AMBIGU`.
+
+**sourceType :** `IA_ASSISTE_RELU_HUMAINEMENT`.
+
+**statutValidation :** `VALIDE`.
+
+**Justification de référence :** `Le besoin concerne la protection incendie avec une échéance proche, sans nécessité immédiate explicitement signalée.`
+
+### P24
+
+**Titre :** `Avis réglementaire nécessaire avant remise en service`
+
+**Description :** `L'installation est arrêtée et sa remise en service est suspendue jusqu'à confirmation immédiate de l'applicabilité d'une exigence réglementaire à la configuration actuelle.`
+
+**Catégorie de référence :** `ASSISTANCE_REGLEMENTAIRE`.
+
+**Priorité de référence :** `CRITIQUE`.
+
+**Difficulté :** `DIFFICILE`.
+
+**sourceType :** `IA_ASSISTE_RELU_HUMAINEMENT`.
+
+**statutValidation :** `VALIDE`.
+
+**Justification de référence :** `L'objectif principal est réglementaire et une réponse immédiate conditionne la remise en service.`
 
 ## 14. Métriques retenues : formules, interprétation et limites
 
@@ -637,7 +871,7 @@ MacroF1 = (1/K) Σ F1_c
 
 `TP_c`, `FP_c` et `FN_c` désignent respectivement les vrais positifs, faux positifs et faux négatifs de la classe `c`. `K` est le nombre de classes. Catégorie et priorité sont évaluées séparément.
 
-**Interprétation :** F1 combine précision et rappel ; Macro-F1 donne le même poids à chaque classe. **Limites :** la moyenne ne montre pas quelles classes se confondent ; les formules comportent des dénominateurs pouvant être nuls. Aucun réglage technique définitif du benchmark n’est fixé ici. Références : Sokolova et Lapalme (2009), documentation `f1_score`.
+**Interprétation :** F1 combine précision et rappel ; Macro-F1 donne le même poids à chaque classe. **Limites :** la moyenne ne montre pas quelles classes se confondent ; les formules comportent des dénominateurs pouvant être nuls. Les règles de calcul du benchmark V1 sont figées ci-dessous ; aucun résultat n’est encore disponible. Références : Sokolova et Lapalme (2009), documentation `f1_score`.
 
 ### Matrice de confusion
 
@@ -666,6 +900,157 @@ Analyse métier complémentaire des cas où la priorité proposée est inférieu
 
 **Interprétation :** examiner les erreurs conduisant à proposer une priorité plus faible. **Limite :** l’interprétation métier dépend des conventions V1 de priorité et de labels validés humainement. Aucun coût, poids ou seuil d’acceptation chiffré n’est fixé.
 
+### Règles de calcul figées pour le benchmark comparatif V1 exploratoire
+
+#### Accuracy catégorie
+
+Pour chaque modèle :
+
+```text
+Accuracy catégorie =
+nombre de catégories correctement prédites
+/
+24
+```
+
+Toute sortie absente ou invalide compte comme incorrecte.
+
+Elle ne doit jamais être supprimée du dénominateur.
+
+#### Accuracy priorité
+
+```text
+Accuracy priorité =
+nombre de priorités correctement prédites
+/
+24
+```
+
+Toute sortie absente ou invalide compte comme incorrecte.
+
+#### Exact match
+
+Un cas est correct uniquement lorsque :
+
+```text
+categoriePredite == categorieReference
+ET
+prioritePredite == prioriteReference
+```
+
+Calcul :
+
+```text
+Exact match =
+nombre de cas avec catégorie ET priorité correctes
+/
+24
+```
+
+Toute sortie invalide ou absente compte comme incorrecte.
+
+#### Macro-F1 catégorie
+
+Calculer sur les 7 classes métier :
+
+- `ETUDE_DANGERS`
+- `ANALYSE_RISQUES_INDUSTRIELS`
+- `PROTECTION_INCENDIE`
+- `NOTE_CALCUL`
+- `DOSSIER_TECHNIQUE`
+- `ASSISTANCE_REGLEMENTAIRE`
+- `AUTRE`
+
+Utiliser les 24 cas.
+
+Une sortie invalide ou absente doit être traitée comme une prédiction ne correspondant à aucune classe métier correcte.
+
+Elle doit donc produire au minimum un faux négatif pour la classe réelle concernée.
+
+Elle ne doit jamais être supprimée du calcul.
+
+Calculer le F1 de chacune des 7 classes métier puis leur moyenne non pondérée.
+
+Ne pas ajouter la sortie invalide comme huitième classe métier dans le calcul du Macro-F1.
+
+#### Macro-F1 priorité
+
+Même principe avec les quatre classes :
+
+- `BASSE`
+- `MOYENNE`
+- `HAUTE`
+- `CRITIQUE`
+
+Utiliser les 24 cas.
+
+Une sortie invalide ou absente produit un faux négatif pour la priorité réelle et n'est jamais supprimée du calcul.
+
+Calculer les quatre F1 puis leur moyenne non pondérée.
+
+#### Matrices de confusion
+
+Conserver l'ordre fixe des classes métier.
+
+##### Catégories
+
+1. `ETUDE_DANGERS`
+2. `ANALYSE_RISQUES_INDUSTRIELS`
+3. `PROTECTION_INCENDIE`
+4. `NOTE_CALCUL`
+5. `DOSSIER_TECHNIQUE`
+6. `ASSISTANCE_REGLEMENTAIRE`
+7. `AUTRE`
+
+##### Priorités
+
+1. `BASSE`
+2. `MOYENNE`
+3. `HAUTE`
+4. `CRITIQUE`
+
+Les sorties invalides doivent être visibles et rapportées séparément ; elles ne doivent jamais être masquées ou supprimées.
+
+Une représentation technique supplémentaire telle que `__INVALID__` peut être utilisée uniquement pour rendre ces échecs visibles dans les données ou la matrice, mais elle ne constitue pas une nouvelle classe métier et n'entre pas comme classe supplémentaire dans le Macro-F1.
+
+#### Sous-priorisation
+
+Conserver uniquement l'analyse déjà retenue :
+
+```text
+BASSE < MOYENNE < HAUTE < CRITIQUE
+```
+
+Sous-priorisation si :
+
+```text
+prioritePredite < prioriteReference
+```
+
+Ne créer aucune nouvelle pondération, score ou métrique.
+
+Les sorties invalides restent rapportées comme sorties invalides ; ne pas leur attribuer artificiellement une priorité métier.
+
+#### Sorties invalides
+
+Continuer à enregistrer séparément :
+
+- nombre de sorties invalides ;
+- type d'erreur.
+
+Types prévus, à conserver sans inventer de résultat :
+
+- `NONE`
+- `TIMEOUT`
+- `HTTP_429`
+- `HTTP_5XX`
+- `INVALID_JSON`
+- `INVALID_SCHEMA`
+- `INVALID_ENUM`
+- `EMPTY_RESPONSE`
+- `OTHER`
+
+
 ## 15. Weighted Cohen’s Kappa : option uniquement
 
 **OPTIONNEL / À VALIDER.**
@@ -676,58 +1061,78 @@ Son utilisation n’est pas acquise. **Aucune pondération linéaire ou quadrati
 
 Référence principale : Cohen (1968). Documentation technique éventuelle : `cohen_kappa_score`.
 
-## 16. Protocole de benchmark prévu
+## 16. Protocole de benchmark V1 figé, non exécuté
 
-**Le benchmark n’est PAS encore exécuté.**
+**Le benchmark comparatif V1 exploratoire n’est PAS encore exécuté.** Les conventions métier, les 24 cas P01–P24, les labels, les métriques, le prompt `AI-QUALIFICATION-PROMPT-v1.0.0` et le JSON Schema métier sont figés pour cette étape.
 
-Avant son exécution devront être figés :
+### Candidats et API
 
-- taxonomie ;
-- définitions des priorités ;
-- version du prompt ;
-- JSON Schema ;
-- dataset ;
-- labels humains de référence.
+| provider | Modèle | API | Paramètre spécifique retenu |
+|---|---|---|---|
+| `OPENAI` | `gpt-5.6-luna` | Responses API | `reasoning = none` ; champ fournisseur `reasoning.effort = none`. |
+| `MISTRAL` | `mistral-small-2603` | Chat Completions | Aucun alignement artificiel des paramètres spécifiques fournisseur. |
 
-GPT-5.6 Luna et Mistral Small 4 devront recevoir :
+Ces candidats ne sont pas des modèles finaux retenus pour l’intégration.
 
-- le même dataset ;
-- le même prompt et la même version ;
-- les mêmes titres et descriptions ;
-- le même JSON Schema ;
-- les mêmes valeurs métier ;
-- aucun historique supplémentaire ;
-- aucun RAG ;
-- aucune recherche web ;
-- aucune donnée différente selon le fournisseur.
+### Conditions communes
 
-Pour chaque appel prévoir la traçabilité :
+- Exactement les mêmes 24 cas P01–P24, avec les mêmes titres et descriptions.
+- Exactement `AI-QUALIFICATION-PROMPT-v1.0.0` et le même JSON Schema métier.
+- Structured Outputs pour les deux fournisseurs, avec validation obligatoire de la sortie.
+- `temperature = 0` lorsque ce paramètre est supporté conformément à la documentation fournisseur retenue.
+- Une seule réponse métier par cas.
+- Aucun historique conversationnel supplémentaire, aucun RAG, aucune recherche web.
+- Aucun tool/function calling métier.
+- Aucune donnée supplémentaire fournie à un modèle et pas à l’autre.
+- OpenAI utilise impérativement `reasoning = none`.
+
+Les paramètres d’inférence doivent être rendus aussi comparables que raisonnablement possible entre les fournisseurs. Lorsqu’un paramètre n’a pas d’équivalent exact ou possède une sémantique différente selon l’API, cette différence doit être documentée plutôt que masquée. Les paramètres spécifiques fournisseur restent documentés ; ils ne sont pas rendus artificiellement identiques.
+
+Les pages officielles consultées confirment les identifiants des modèles, Responses pour Luna, Chat Completions pour Mistral Small 4, Structured Outputs et le support de `none` pour Luna. Mistral documente le paramètre `temperature`. Le support précis de `temperature = 0` pour Luna via Responses n’a pas été établi par les pages consultées : la condition de support ci-dessus demeure explicite, sans essai API. La documentation Mistral indique également une instruction de schéma ajoutée par le fournisseur lors des Custom Structured Outputs ; cette différence interne est documentée, sans ajout de données métier au prompt du projet.
+
+Sources effectivement consultées et limites de vérification : [SOURCES-LOG](../../report/bibliography/SOURCES-LOG.md), entrées SRC-008, SRC-009 et SRC-018 à SRC-022.
+
+### Volume prévu
+
+- 24 appels OpenAI.
+- 24 appels Mistral.
+- 48 appels métier au total, hors éventuels retries techniques tracés.
+
+Aucun appel réel n’est exécuté dans ce bloc.
+
+### Structure du futur fichier de résultats
 
 ```text
-caseId
-provider
-model
-promptVersion
-categoriePredite
-prioritePredite
-sortieValide
-typeErreur
-latenceObservee
-coutObserve
+caseId,provider,model,promptVersion,categorieReference,prioriteReference,categoriePredite,prioritePredite,sortieValide,typeErreur,latenceMs,inputTokens,outputTokens,totalTokens,coutObserveUsd
 ```
 
-Résultats à comparer :
+Une ligne correspond à un couple `cas × modèle`. Les champs de coût/tokens peuvent rester vides si l’information n’est pas disponible ou n’est pas suffisamment fiable. Aucune valeur n’est fabriquée et aucun fichier de résultats n’est créé ici.
 
-- **Catégorie :** Accuracy, Macro-F1, matrice de confusion ;
-- **Priorité :** Accuracy, Macro-F1, matrice de confusion ;
-- **Secondaire :** exact match catégorie + priorité ;
-- **Analyse métier :** sous-priorisation ;
-- **Technique :** erreurs fournisseur, sorties invalides, temps de réponse, coût ;
-- **Optionnel :** Weighted Cohen’s Kappa uniquement s’il est validé plus tard.
+### Retries — règles versionnées dans le protocole V1
 
-Les paramètres d’inférence doivent être rendus aussi comparables que raisonnablement possible entre les fournisseurs. Lorsqu’un paramètre n’a pas d’équivalent exact ou possède une sémantique différente selon l’API, cette différence doit être documentée plutôt que masquée.
+Règles de retries techniques du protocole V1 :
 
-Les paramètres définitifs du benchmark restent non validés. Aucun résultat, classement final ou seuil d’acceptation n’est présenté.
+- aucun retry pour modifier une prédiction métier ;
+- aucune prédiction métier valide mais incorrecte ne doit être rejouée ;
+- aucun retry pour tenter d'obtenir une catégorie ou priorité « meilleure » ;
+- retry éventuel uniquement lorsqu'une erreur technique transitoire clairement identifiable s'est produite ;
+- tout retry doit être tracé ;
+- une sortie métier invalide ne doit jamais être remplacée silencieusement par un nouvel appel ;
+- aucun mécanisme d'auto-correction du JSON ou des enums ne doit transformer une sortie invalide en sortie valide.
+
+Aucun mécanisme complexe de retry n’est défini dans ce bloc.
+
+
+### Résultats à comparer ultérieurement
+
+- **Catégorie :** Accuracy, Macro-F1, matrice de confusion.
+- **Priorité :** Accuracy, Macro-F1, matrice de confusion.
+- **Secondaire :** exact match catégorie + priorité.
+- **Analyse métier :** sous-priorisation.
+- **Technique :** types d’erreur, sorties invalides, latence, tokens/coûts disponibles et fiables.
+- **Optionnel :** Weighted Cohen’s Kappa uniquement s’il est validé ultérieurement.
+
+Aucun résultat, classement final, nouvelle métrique ou seuil d’acceptation n’est présenté. Les timeouts techniques n’ont pas de valeur chiffrée fixée dans ce bloc.
 
 ## 17. Références méthodologiques et traçabilité
 
@@ -760,42 +1165,39 @@ Klie, J.-C., Eckart de Castilho, R., & Gurevych, I. (2024). *Analyzing Dataset A
 
 ## 18. Décisions restant ouvertes
 
-Toutes les décisions ci-dessous sont **NON VALIDÉES** :
+Restent ouverts :
 
-- fournisseur final ;
-- modèle final ;
-- validation humaine des labels de référence P01–P12 ;
-- taille finale du dataset ;
-- répartition finale des cas ;
-- nombre d’annotateurs ;
-- processus humain exact de validation et méthode concrète d’adjudication ;
-- utilisation ou non du Weighted Cohen’s Kappa ;
-- pondération éventuelle du Weighted Cohen’s Kappa ;
-- timeouts techniques ;
-- paramètres définitifs du benchmark ;
+- fournisseur final et modèle final pour l’intégration ;
+- utilisation ou non du Weighted Cohen’s Kappa et pondération éventuelle ;
+- valeurs des timeouts techniques ;
 - tout seuil d’acceptation éventuel.
 
-Les trois frontières de catégories, la règle du livrable principal pour `NOTE_CALCUL`, l’utilisation de `AUTRE`, la proposition `MOYENNE` en l’absence d’indication particulière d’urgence, d’impact important ou d’échéance proche, et la frontière `HAUTE / CRITIQUE` avec la règle du mot « urgent » sont fermées comme **CONVENTIONS V1 RETENUES**. L’absence de dataset historique exploitable chez Safyron est connue ; elle n’est plus une décision ouverte.
+Les six conventions métier V1 sont fermées comme **CONVENTIONS V1 RETENUES**. Le dataset V1 P01–P24, sa provenance `IA_ASSISTE_RELU_HUMAINEMENT`, ses labels validés humainement, sa couverture, ses métriques et le protocole décrit en section 16 sont figés pour cette étape. Ils ne sont plus présentés comme des décisions ouvertes. L’absence de dataset historique exploitable chez Safyron est connue.
+
+Les éléments non fournis concernant l’identité ou le nombre des annotateurs et l’historique d’adjudication ne sont pas inventés. Le support précis de `temperature = 0` pour Luna via Responses demeure un point documentaire non vérifié, sans remise en cause des décisions métier ni exécution d’un appel API.
 
 ## 19. État final de la conception
 
-**DRAFT.** La conception intègre les six conventions métier désormais fermées pour la V1, sans transformer les autres décisions ouvertes en décisions acquises.
+**DRAFT.** `AI-DESIGN-V1.md` reste globalement DRAFT tant que le benchmark comparatif et le choix final du modèle ne sont pas terminés.
 
-### Retenu pour la V1
+### Figé pour cette étape V1
 
-- Six conventions métier : frontière `ETUDE_DANGERS / ANALYSE_RISQUES_INDUSTRIELS` ; frontière `PROTECTION_INCENDIE / NOTE_CALCUL` fondée sur le livrable principal ; frontière `DOSSIER_TECHNIQUE / ASSISTANCE_REGLEMENTAIRE` fondée sur l’objectif principal ; utilisation de `AUTRE` ; proposition `MOYENNE` en l’absence d’indication particulière d’urgence, d’impact important ou d’échéance proche ; frontière `HAUTE / CRITIQUE`, le mot « urgent » seul ne suffisant pas à imposer `CRITIQUE`.
-- Stratégie de dataset principalement manuel faute de données historiques exploitables.
-- P01–P12 réévalués comme cas pilotes synthétiques ; labels et justifications restent proposés et non validés humainement comme références. Ils ne sont ni des données historiques Safyron, ni le dataset final, ni un gold dataset.
-- Accuracy, Macro-F1 et matrices de confusion restent les métriques principales pour catégorie et priorité ; exact match est secondaire ; sous-priorisation est complémentaire.
-- Weighted Cohen’s Kappa reste OPTIONNEL / À VALIDER, sans pondération choisie.
+- Six conventions métier V1 fermées, conservées comme **CONVENTIONS V1 RETENUES**.
+- Dataset V1 P01–P24 fonctionnellement figé et validé humainement pour le benchmark ; 24 cas synthétiques de provenance `IA_ASSISTE_RELU_HUMAINEMENT`, tous `VALIDE`.
+- P14 définitivement `DOSSIER_TECHNIQUE`, `BASSE`, `AMBIGU`.
+- Absence de dataset historique Safyron exploitable.
+- Couverture contrôlée : 24 cas ; sept catégories, quatre priorités et trois niveaux de difficulté.
+- Benchmark comparatif V1 exploratoire : ce dataset ne représente pas statistiquement la production réelle et ne prouve aucune performance générale.
+- Accuracy, Macro-F1 et matrices de confusion restent les métriques principales ; exact match reste secondaire et sous-priorisation complémentaire. Les échecs restent inclus dans les calculs et visibles.
+- Protocole comparatif, modèles candidats, API, structure future des résultats et règles de retries documentés ; prompt et JSON Schema métier inchangés.
 
-### Toujours non réalisé
+### Toujours non réalisé ou non décidé
 
-- Dataset final non encore construit.
-- Benchmark non exécuté.
-- Fournisseur et modèle final non choisis ; GPT-5.6 Luna reste le candidat principal à évaluer et Mistral Small 4 le challenger.
-- Intégration Spring Boot non commencée.
-- Intégration Angular non commencée.
-- Aucun seuil d’acceptation chiffré n’est validé.
+- Benchmark comparatif V1 exploratoire non exécuté ; aucune prédiction ni aucun résultat produit.
+- Fournisseur et modèle final non choisis ; GPT-5.6 Luna reste le candidat principal et Mistral Small 4 le challenger.
+- IA non implémentée côté Spring Boot.
+- IA non implémentée côté Angular.
+- Weighted Cohen’s Kappa OPTIONNEL / À VALIDER, sans pondération choisie.
+- Aucun seuil d’acceptation chiffré validé.
 
-Aucun code, adaptateur, configuration, test, appel API IA ou benchmark n’est créé ou exécuté. `functional-scope.md`, `API-CONTRACT-V1.md`, les ADR existants et `PROJECT_TRUTH.md` ne sont pas modifiés.
+Aucun code applicatif, configuration, test, adaptateur, script de benchmark ou fichier de résultats n’est créé. Aucun appel OpenAI ou Mistral n’est exécuté. Les ADR, `functional-scope.md` et `API-CONTRACT-V1.md` ne sont pas modifiés.
