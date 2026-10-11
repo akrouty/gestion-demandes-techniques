@@ -96,6 +96,7 @@ ADR-006 et FRONTEND-DESIGN-V1 retiennent une organisation Angular SPA feature-ba
 - Vérification technique de la correction F3 : 19 tests API utilisateurs ciblés réussis ; clean test et clean verify réussis avec 220 tests backend sur H2 isolé, sans échec, erreur ni test ignoré. Le refus HTTP direct 409 préserve le compte actif et son accès protégé ; activation/désactivation des autres comptes, y compris un autre ADM, conservées. Aucun serveur démarré pour ces vérifications ; retest navigateur humain confirmé : auto-désactivation refusée, action absente dans Angular et désactivation d’un autre utilisateur conservée.
 - F4 — finition UI/UX, responsive et accessibilité : implémenté et validé (IMPLEMENTED + VALIDATED ; validation humaine finale sur plusieurs tailles et appareils confirmée par l’utilisateur, sans problème fonctionnel, responsive ou UX bloquant).
 - IA : non implémentée.
+- Conception IA V1 : DRAFT ; document `docs/ai/AI-DESIGN-V1.md` existant, accepté comme transcription DRAFT. Les règles métier À VALIDER conservent leur statut.
 - Frontière architecturale IA : décidée ; fournisseur et modèle IA non encore choisis.
 
 ## Vérification technique F4

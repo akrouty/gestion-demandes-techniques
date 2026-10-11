@@ -181,6 +181,117 @@
 
 ---
 
+## SRC-011 — Sokolova & Lapalme : mesures de classification
+
+- **Auteurs :** Marina Sokolova et Guy Lapalme
+- **Titre :** A systematic analysis of performance measures for classification tasks
+- **Type :** article scientifique ; notice et résumé consultés sur OpenAIRE
+- **URL consultée :** https://explore.openaire.eu/search/result?pid=10.1016/j.ipm.2009.03.002
+- **DOI :** `10.1016/j.ipm.2009.03.002`
+- **Publication vérifiée :** Information Processing & Management, volume 45, pages 427–437, 2009.
+- **Date de consultation :** 2026-10-11
+- **Information utile :** le résumé décrit une analyse des mesures de classification et de leur invariance face à des changements de la matrice de confusion et de la distribution des labels.
+- **Usage potentiel dans le rapport :** cadre méthodologique des métriques de classification de `docs/ai/AI-DESIGN-V1.md`.
+- **Statut :** À REVERIFIER
+- **Clé BibLaTeX proposée :** `sokolova-lapalme-2009`
+- **Remarque :** métadonnées et résumé vérifiés sur OpenAIRE ; texte intégral non consulté (ScienceDirect : HTTP 403 ; copie universitaire : accès refusé). Le numéro 4 fourni dans la conception n'a pas été revérifié sur la notice ouverte. Consulter le texte avant toute attribution méthodologique détaillée ; cette vérification ne valide aucun benchmark du projet.
+
+---
+
+## SRC-012 — Cohen : weighted kappa
+
+- **Auteur :** J. Cohen
+- **Titre :** Weighted kappa: Nominal scale agreement with provision for scaled disagreement or partial credit
+- **Type :** article scientifique ; notice bibliographique PubMed consultée
+- **URL consultée :** https://pubmed.ncbi.nlm.nih.gov/19673146/
+- **DOI :** `10.1037/h0026256`
+- **Publication vérifiée :** Psychological Bulletin, 70(4), 213–220, octobre 1968.
+- **Date de consultation :** 2026-10-11
+- **Information utile :** identité bibliographique de la référence retenue pour le weighted kappa.
+- **Usage potentiel dans le rapport :** référence historique de l'option Weighted Cohen's Kappa dans la conception IA.
+- **Statut :** À REVERIFIER
+- **Clé BibLaTeX proposée :** `cohen-1968-weighted-kappa`
+- **Remarque :** PubMed ne fournit pas de résumé ; le texte intégral n'a pas été consulté. Vérifier le texte avant toute attribution détaillée. La métrique reste OPTIONNELLE / À VALIDER, sans pondération choisie.
+
+---
+
+## SRC-013 — Klie et al. : qualité de l'annotation
+
+- **Auteurs :** Jan-Christoph Klie, Richard Eckart de Castilho et Iryna Gurevych
+- **Titre :** Analyzing Dataset Annotation Quality Management in the Wild
+- **Type :** article scientifique ; notice et résumé officiels ACL Anthology consultés
+- **URL consultée :** https://aclanthology.org/2024.cl-3.1/
+- **DOI :** `10.1162/coli_a_00516`
+- **Publication vérifiée :** Computational Linguistics, 50(3), 817–866, septembre 2024 ; MIT Press.
+- **Date de consultation :** 2026-10-11
+- **Information utile :** le résumé traite de la gestion des annotateurs, de l'accord, de l'adjudication et de la validation des données ; il signale des erreurs dans l'utilisation des mesures d'accord et des taux d'erreur d'annotation.
+- **Usage potentiel dans le rapport :** méthode de provenance et d'annotation humaine du futur dataset d'évaluation IA.
+- **Statut :** UTILISABLE
+- **Clé BibLaTeX proposée :** `klie-etal-2024-analyzing`
+- **Remarque :** vérification limitée à la notice et au résumé ; aucune lecture intégrale revendiquée. Les labels P01–P12 restent proposés et non validés humainement ; le nombre d'annotateurs et l'adjudication restent ouverts.
+
+---
+
+## SRC-014 — scikit-learn : accuracy_score
+
+- **Organisation :** scikit-learn
+- **Titre :** accuracy_score
+- **Type :** documentation officielle
+- **URL consultée :** https://scikit-learn.org/stable/modules/generated/sklearn.metrics.accuracy_score.html
+- **Date de consultation :** 2026-10-11
+- **Information utile :** la sortie normalisée représente la fraction des observations correctement classées.
+- **Usage potentiel dans le rapport :** Accuracy pour la catégorie et la priorité.
+- **Statut :** UTILISABLE
+- **Clé BibLaTeX proposée :** `sklearn-accuracy-score`
+- **Remarque :** Source méthodologique de la conception DRAFT ; aucun benchmark exécuté ni seuil d'acceptation validé.
+
+---
+
+## SRC-015 — scikit-learn : f1_score
+
+- **Organisation :** scikit-learn
+- **Titre :** f1_score
+- **Type :** documentation officielle
+- **URL consultée :** https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html
+- **Date de consultation :** 2026-10-11
+- **Information utile :** le mode macro calcule la moyenne non pondérée des scores par label ; il ne tient pas compte du déséquilibre des effectifs des labels.
+- **Usage potentiel dans le rapport :** Macro-F1 pour la catégorie et la priorité.
+- **Statut :** UTILISABLE
+- **Clé BibLaTeX proposée :** `sklearn-f1-score`
+- **Remarque :** Source méthodologique de la conception DRAFT ; aucun benchmark exécuté ni seuil d'acceptation validé.
+
+---
+
+## SRC-016 — scikit-learn : confusion_matrix
+
+- **Organisation :** scikit-learn
+- **Titre :** confusion_matrix
+- **Type :** documentation officielle
+- **URL consultée :** https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html
+- **Date de consultation :** 2026-10-11
+- **Information utile :** la cellule C(i, j) compte les observations de classe réelle i et de classe prédite j.
+- **Usage potentiel dans le rapport :** Interprétation des matrices de confusion de catégorie et de priorité.
+- **Statut :** UTILISABLE
+- **Clé BibLaTeX proposée :** `sklearn-confusion-matrix`
+- **Remarque :** Source méthodologique de la conception DRAFT ; aucun benchmark exécuté ni seuil d'acceptation validé.
+
+---
+
+## SRC-017 — scikit-learn : cohen_kappa_score
+
+- **Organisation :** scikit-learn
+- **Titre :** cohen_kappa_score
+- **Type :** documentation officielle
+- **URL consultée :** https://scikit-learn.org/stable/modules/generated/sklearn.metrics.cohen_kappa_score.html
+- **Date de consultation :** 2026-10-11
+- **Information utile :** le paramètre weights distingue absence de pondération, pondération linéaire et pondération quadratique.
+- **Usage potentiel dans le rapport :** Documentation technique de l'option Weighted Cohen's Kappa.
+- **Statut :** CONDITIONNELLE
+- **Clé BibLaTeX proposée :** `sklearn-cohen-kappa-score`
+- **Remarque :** Métrique OPTIONNELLE / À VALIDER ; aucune pondération retenue et aucun calcul exécuté.
+
+---
+
 # Sources à ajouter plus tard
 
 Ajouter ici, au moment où elles sont réellement consultées :
