@@ -2,7 +2,7 @@
 
 ## Phase actuelle
 
-Implémentation frontend en cours.
+Frontend V1 implémenté et validé.
 
 ## État des livrables
 
@@ -82,7 +82,7 @@ ADR-006 et FRONTEND-DESIGN-V1 retiennent une organisation Angular SPA feature-ba
 - Validation PostgreSQL réelle du Bloc 3 : connexion réussie, migration Flyway V1
   appliquée, `Hibernate validate` réussi, backend démarré et workflow API V1
   vérifié par appels HTTP réels.
-- Frontend : implémentation en cours.
+- Frontend V1 : implémenté et validé (IMPLEMENTED + VALIDATED ; validation humaine finale F4 confirmée par l’utilisateur).
 - F1 — fondation Angular + Angular Material + thème Safyron + shell + authentification : implémenté et validé (IMPLEMENTED + VALIDATED ; validation humaine autorisée).
 - Tests frontend F1 : 24 tests réussis ; `npm ci`, `npm run build` et `npm test -- --watch=false` réussis avant intégration, sans démarrage de serveur.
 - F2 — demandes frontend : implémenté et validé (IMPLEMENTED + VALIDATED ; validation humaine explicitement confirmée par l’utilisateur).
@@ -94,7 +94,7 @@ ADR-006 et FRONTEND-DESIGN-V1 retiennent une organisation Angular SPA feature-ba
 - Tests frontend F1 + F2 + F3 après correction : 165 tests réussis (24 F1 + 66 F2 + 75 F3), répartis dans 15 fichiers ; npm run build et npm test -- --watch=false réussis, sans démarrage de serveur. L’installation npm ci avait été vérifiée à la livraison initiale.
 - Audit initial d’intégration F3 : compatibilité des API constatée. La validation navigateur a ensuite révélé l’auto-désactivation administrative ; correction backend imposant le refus 409 et UX Angular correspondante, validation humaine de la correction désormais confirmée.
 - Vérification technique de la correction F3 : 19 tests API utilisateurs ciblés réussis ; clean test et clean verify réussis avec 220 tests backend sur H2 isolé, sans échec, erreur ni test ignoré. Le refus HTTP direct 409 préserve le compte actif et son accès protégé ; activation/désactivation des autres comptes, y compris un autre ADM, conservées. Aucun serveur démarré pour ces vérifications ; retest navigateur humain confirmé : auto-désactivation refusée, action absente dans Angular et désactivation d’un autre utilisateur conservée.
-- F4 — finition UI/UX, responsive et accessibilité : implémenté techniquement ; validation humaine finale navigateur en attente.
+- F4 — finition UI/UX, responsive et accessibilité : implémenté et validé (IMPLEMENTED + VALIDATED ; validation humaine finale sur plusieurs tailles et appareils confirmée par l’utilisateur, sans problème fonctionnel, responsive ou UX bloquant).
 - IA : non implémentée.
 - Frontière architecturale IA : décidée ; fournisseur et modèle IA non encore choisis.
 
@@ -102,7 +102,7 @@ ADR-006 et FRONTEND-DESIGN-V1 retiennent une organisation Angular SPA feature-ba
 
 - Écrans revus : login, shell/navigation desktop et drawer mobile, demandes (liste/filtres/pagination, création/recherche client, détail/actions RT et AT), administration (liste, création, modification, rôles, état et interdiction d’auto-désactivation).
 - Finitions : couleurs Safyron conservées, espacement et feedback cohérents, champs Material outline harmonisés avec zone d’erreur de hauteur adaptable, états loading/empty partagés avec F2, actions secondaires moins dominantes, annulation/désactivation signalées comme sensibles, solution et actions du détail distinguées des données de lecture.
-- Responsive : revue conceptuelle des règles à 1440, 1024, 768 et environ 390 px ; seuil de listes en cards commun à 1100 px, formulaires verticaux à 600 px, drawer à 767 px, textes longs et pagination adaptés. Aucun rendu navigateur à ces tailles n’est prétendu.
+- Responsive : revue conceptuelle des règles à 1440, 1024, 768 et environ 390 px ; seuil de listes en cards commun à 1100 px, formulaires verticaux à 600 px, drawer à 767 px, textes longs et pagination adaptés. Cette vérification technique a été complétée par la validation humaine finale sur plusieurs tailles et appareils, sans problème bloquant constaté.
 - Accessibilité : labels conservés, champs déjà obligatoires explicitement indiqués, aria-busy sur les formulaires, libellé du menu suivant son état, focus visible et lien de saut fonctionnel vérifié, sélection client visible au clavier, actions d’au moins 44 px et états textuels conservés.
 - Validation automatique : npm ci réussi (0 vulnérabilité signalée), npm run build réussi, npm test -- --watch=false réussi : 170 tests dans 15 fichiers, dont 5 vérifications F4 supplémentaires ; tous les tests antérieurs conservés. npm ci signale les avertissements existants de politique allowScripts pour quatre dépendances ; le build et les tests aboutissent.
-- Aucun backend, contrat API, ADR, règle métier ou mécanisme de sécurité modifié ; aucune fonctionnalité métier ajoutée. Aucun serveur démarré pour F4. F1/F2/F3 restent IMPLEMENTED + VALIDATED ; F4 et la validation finale globale du frontend restent soumis à la revue humaine navigateur.
+- Aucun backend, contrat API, ADR, règle métier ou mécanisme de sécurité modifié ; aucune fonctionnalité métier ajoutée. Aucun serveur démarré pour F4. F1/F2/F3/F4 sont IMPLEMENTED + VALIDATED ; le Frontend V1 est implémenté et validé après confirmation de la revue humaine finale navigateur.
