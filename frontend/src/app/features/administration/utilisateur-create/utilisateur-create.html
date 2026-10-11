@@ -10,7 +10,7 @@
     <p>
       {{ failure.message }}
       @if (failure.code) {
-        ({{ failure.code }})
+        <span class="api-code">({{ failure.code }})</span>
       }
     </p>
     @for (field of failure.fieldErrors; track $index) {
@@ -21,30 +21,37 @@
 @if (success()) {
   <p role="status" class="feedback feedback-success">{{ success() }}</p>
 }
-<form [formGroup]="form" (ngSubmit)="submit()">
+<form [attr.aria-busy]="loading()" [formGroup]="form" (ngSubmit)="submit()">
   <section class="surface">
     <h2>Informations générales</h2>
     <div class="form-grid">
-      <mat-form-field
+      <mat-form-field appearance="outline" subscriptSizing="dynamic"
         ><mat-label>Nom</mat-label
-        ><input matInput formControlName="nom" autocomplete="name" /><mat-error>{{
+        ><input matInput formControlName="nom" autocomplete="name" required /><mat-error>{{
           form.controls.nom.getError('server') ?? 'Renseignez le nom.'
         }}</mat-error></mat-form-field
       >
-      <mat-form-field
+      <mat-form-field appearance="outline" subscriptSizing="dynamic"
         ><mat-label>Email</mat-label
-        ><input matInput type="email" formControlName="email" autocomplete="email" /><mat-error>{{
+        ><input
+          matInput
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          required
+        /><mat-error>{{
           form.controls.email.getError('server') ?? 'Renseignez un email valide.'
         }}</mat-error></mat-form-field
       >
     </div>
-    <mat-form-field
+    <mat-form-field appearance="outline" subscriptSizing="dynamic"
       ><mat-label>Mot de passe initial</mat-label
       ><input
         matInput
         type="password"
         formControlName="password"
         autocomplete="new-password"
+        required
       /><mat-hint>La politique minimale est vérifiée par le serveur.</mat-hint
       ><mat-error>{{
         form.controls.password.getError('server') ?? 'Renseignez un mot de passe non vide.'

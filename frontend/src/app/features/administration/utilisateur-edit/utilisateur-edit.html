@@ -54,7 +54,7 @@
         <p>
           {{ failure.message }}
           @if (failure.code) {
-            ({{ failure.code }})
+            <span class="api-code">({{ failure.code }})</span>
           }
         </p>
         @for (field of failure.fieldErrors; track $index) {
@@ -65,20 +65,20 @@
     @if (identitySuccess()) {
       <p class="feedback feedback-success" role="status">{{ identitySuccess() }}</p>
     }
-    <form [formGroup]="identity" (ngSubmit)="saveIdentity()">
+    <form [attr.aria-busy]="identityBusy()" [formGroup]="identity" (ngSubmit)="saveIdentity()">
       <div class="form-grid">
-        <mat-form-field
-          ><mat-label>Nom</mat-label><input matInput formControlName="nom" /><mat-error>{{
+        <mat-form-field appearance="outline" subscriptSizing="dynamic"
+          ><mat-label>Nom</mat-label><input matInput formControlName="nom" required /><mat-error>{{
             identity.controls.nom.getError('server') ?? 'Renseignez le nom.'
           }}</mat-error></mat-form-field
-        ><mat-form-field
+        ><mat-form-field appearance="outline" subscriptSizing="dynamic"
           ><mat-label>Email</mat-label
-          ><input matInput type="email" formControlName="email" /><mat-error>{{
+          ><input matInput type="email" formControlName="email" required /><mat-error>{{
             identity.controls.email.getError('server') ?? 'Renseignez un email valide.'
           }}</mat-error></mat-form-field
         >
       </div>
-      <button mat-flat-button type="submit" [disabled]="identityBusy() || identityReload()">
+      <button mat-stroked-button type="submit" [disabled]="identityBusy() || identityReload()">
         {{ identityBusy() ? 'Enregistrement…' : 'Enregistrer le nom et l’email' }}
       </button>
     </form>
@@ -92,7 +92,7 @@
       <p class="feedback feedback-error" role="alert">
         {{ failure.message }}
         @if (failure.code) {
-          ({{ failure.code }})
+          <span class="api-code">({{ failure.code }})</span>
         }
       </p>
     }
@@ -119,6 +119,7 @@
         mat-stroked-button
         type="button"
         (click)="changeState()"
+        [class.danger-action]="detail.actif"
         [disabled]="stateBusy() || stateReload()"
       >
         {{
@@ -145,7 +146,7 @@
         <p>
           {{ failure.message }}
           @if (failure.code) {
-            ({{ failure.code }})
+            <span class="api-code">({{ failure.code }})</span>
           }
         </p>
         @for (field of failure.fieldErrors; track $index) {
@@ -156,7 +157,7 @@
     @if (rolesSuccess()) {
       <p class="feedback feedback-success" role="status">{{ rolesSuccess() }}</p>
     }
-    <form [formGroup]="rolesForm" (ngSubmit)="saveRoles()">
+    <form [attr.aria-busy]="rolesBusy()" [formGroup]="rolesForm" (ngSubmit)="saveRoles()">
       <h3>Rôles métier modifiables</h3>
       <div formGroupName="rolesMetier" class="role-checkboxes">
         <mat-checkbox formControlName="responsable">Responsable technique</mat-checkbox
@@ -166,7 +167,7 @@
         L’enregistrement remplace l’ensemble des rôles métier. Vous pouvez aussi ne sélectionner
         aucun rôle métier.
       </p>
-      <button mat-flat-button type="submit" [disabled]="rolesBusy() || rolesReload()">
+      <button mat-stroked-button type="submit" [disabled]="rolesBusy() || rolesReload()">
         {{ rolesBusy() ? 'Enregistrement…' : 'Enregistrer les rôles métier' }}
       </button>
     </form>

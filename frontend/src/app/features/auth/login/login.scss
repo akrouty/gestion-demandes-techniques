@@ -78,3 +78,15 @@ button {
     width: 240px;
   }
 }
+
+@media (max-width: 600px) and (max-height: 700px) {
+  .login-page {
+    justify-content: flex-start;
+  }
+  .login-panel {
+    padding: 24px;
+  }
+  .login-logo {
+    margin-bottom: 24px;
+  }
+}

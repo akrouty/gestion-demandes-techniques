@@ -132,3 +132,40 @@ main {
     min-width: 48px;
   }
 }
+
+.account {
+  min-width: 0;
+}
+.account-name {
+  overflow-wrap: anywhere;
+  max-width: 20rem;
+}
+.context {
+  min-width: 0;
+}
+.skip-link {
+  border: 2px solid var(--safyron-navy);
+  border-radius: 6px;
+  color: var(--safyron-navy);
+}
+@media (min-width: 768px) and (max-width: 1100px) {
+  .topbar {
+    padding: 12px 24px;
+    flex-wrap: wrap;
+  }
+  main {
+    padding: 24px;
+  }
+}
+@media (max-width: 767px) {
+  .account-name {
+    min-width: 0;
+    flex: 1;
+  }
+  .account button {
+    flex-shrink: 0;
+  }
+  mat-sidenav {
+    max-width: calc(100vw - 48px);
+  }
+}

@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { Subject, catchError, of, skip, startWith, switchMap, takeUntil, tap, timer } from 'rxjs';
+import { PageState } from '../../../shared/ui/page-state/page-state';
 import { SessionService } from '../../../core/session/session';
 import { DemandesApi } from '../demandes-api';
 import { apiError, frenchPaginator } from '../demande-feedback';
@@ -25,6 +26,7 @@ import {
   selector: 'app-demandes-list',
   providers: [{ provide: MatPaginatorIntl, useFactory: frenchPaginator }],
   imports: [
+    PageState,
     DatePipe,
     KeyValuePipe,
     ReactiveFormsModule,

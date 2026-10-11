@@ -10,7 +10,7 @@
     <p>
       {{ failure.message }}
       @if (failure.code) {
-        ({{ failure.code }})
+        <span class="api-code">({{ failure.code }})</span>
       }
     </p>
     @for (field of failure.fieldErrors; track $index) {
@@ -18,20 +18,20 @@
     }
   </div>
 }
-<form [formGroup]="form" (ngSubmit)="submit()">
+<form [attr.aria-busy]="loading()" [formGroup]="form" (ngSubmit)="submit()">
   <fieldset class="surface" [disabled]="loading()">
     <legend>Informations générales</legend>
-    <mat-form-field
-      ><mat-label>Titre</mat-label><input matInput formControlName="titre" />
+    <mat-form-field appearance="outline" subscriptSizing="dynamic"
+      ><mat-label>Titre</mat-label><input matInput formControlName="titre" required />
       @if (form.controls.titre.invalid) {
         <mat-error>{{
           form.controls.titre.getError('server') ?? 'Renseignez un titre.'
         }}</mat-error>
       }
     </mat-form-field>
-    <mat-form-field
+    <mat-form-field appearance="outline" subscriptSizing="dynamic"
       ><mat-label>Description du besoin</mat-label
-      ><textarea matInput rows="5" formControlName="description"></textarea>
+      ><textarea matInput rows="5" formControlName="description" required></textarea>
       @if (form.controls.description.invalid) {
         <mat-error>{{
           form.controls.description.getError('server') ?? 'Renseignez une description.'
@@ -39,9 +39,9 @@
       }
     </mat-form-field>
     <div class="form-grid">
-      <mat-form-field
+      <mat-form-field appearance="outline" subscriptSizing="dynamic"
         ><mat-label>Catégorie</mat-label
-        ><mat-select formControlName="categorie">
+        ><mat-select formControlName="categorie" required>
           @for (item of categories | keyvalue; track item.key) {
             <mat-option [value]="item.key">{{ item.value }}</mat-option>
           }</mat-select
@@ -49,9 +49,9 @@
           form.controls.categorie.getError('server') ?? 'Choisissez une catégorie.'
         }}</mat-error></mat-form-field
       >
-      <mat-form-field
+      <mat-form-field appearance="outline" subscriptSizing="dynamic"
         ><mat-label>Priorité</mat-label
-        ><mat-select formControlName="priorite">
+        ><mat-select formControlName="priorite" required>
           @for (item of priorites | keyvalue; track item.key) {
             <mat-option [value]="item.key">{{ item.value }}</mat-option>
           }</mat-select
@@ -72,7 +72,7 @@
       ><mat-radio-button value="new">Nouveau client</mat-radio-button></mat-radio-group
     >
     @if (form.controls.clientMode.value === 'existing') {
-      <mat-form-field
+      <mat-form-field appearance="outline" subscriptSizing="dynamic"
         ><mat-label>Rechercher un client</mat-label
         ><input matInput [formControl]="search" placeholder="Nom, email ou téléphone"
       /></mat-form-field>
@@ -130,21 +130,22 @@
       }
     } @else {
       <div formGroupName="nouveauClient" class="form-grid">
-        <mat-form-field
-          ><mat-label>Nom du client</mat-label><input matInput formControlName="nom" /><mat-error>{{
+        <mat-form-field appearance="outline" subscriptSizing="dynamic"
+          ><mat-label>Nom du client</mat-label
+          ><input matInput formControlName="nom" required /><mat-error>{{
             form.controls.nouveauClient.controls.nom.getError('server') ?? 'Renseignez le nom.'
           }}</mat-error></mat-form-field
         >
-        <mat-form-field
+        <mat-form-field appearance="outline" subscriptSizing="dynamic"
           ><mat-label>Email du client</mat-label
-          ><input matInput type="email" formControlName="email" /><mat-error>{{
+          ><input matInput type="email" formControlName="email" required /><mat-error>{{
             form.controls.nouveauClient.controls.email.getError('server') ??
               'Renseignez un email valide.'
           }}</mat-error></mat-form-field
         >
-        <mat-form-field
+        <mat-form-field appearance="outline" subscriptSizing="dynamic"
           ><mat-label>Téléphone du client</mat-label
-          ><input matInput type="tel" formControlName="telephone" /><mat-error>{{
+          ><input matInput type="tel" formControlName="telephone" required /><mat-error>{{
             form.controls.nouveauClient.controls.telephone.getError('server') ??
               'Renseignez le téléphone.'
           }}</mat-error></mat-form-field

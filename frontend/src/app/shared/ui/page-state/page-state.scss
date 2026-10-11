@@ -33,3 +33,17 @@ p {
   background: #e5f3ec;
   color: #226047;
 }
+
+:host {
+  display: block;
+  margin-bottom: 20px;
+}
+h2,
+p {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 600px) {
+  .page-state {
+    padding: 32px 16px;
+  }
+}

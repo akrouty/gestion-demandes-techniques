@@ -315,15 +315,13 @@ describe('Détail et actions de demande', () => {
     it('GET ' + status + ' remplace contenu et préserve session', async () => {
       login();
       harness = await RouterTestingHarness.create('/demandes/DT-42');
-      http
-        .expectOne(base)
-        .flush(
-          {
-            code: status === 404 ? 'DEMANDE_INTROUVABLE' : 'ACCES_INTERDIT',
-            message: status === 404 ? 'Demande absente' : 'Accès refusé',
-          },
-          { status, statusText: 'Error' },
-        );
+      http.expectOne(base).flush(
+        {
+          code: status === 404 ? 'DEMANDE_INTROUVABLE' : 'ACCES_INTERDIT',
+          message: status === 404 ? 'Demande absente' : 'Accès refusé',
+        },
+        { status, statusText: 'Error' },
+      );
       harness.detectChanges();
       expect(harness.routeNativeElement?.textContent).toContain(
         status === 404 ? 'Demande introuvable' : 'Accès refusé',
@@ -383,5 +381,30 @@ describe('Détail et actions de demande', () => {
       .expectOne(environment.apiBaseUrl + '/demandes/DT-43')
       .flush(fixtureData({ reference: 'DT-43' }));
     expect(page.demande()?.reference).toBe('DT-43');
+  });
+  it('la zone des actions est nommée et expose la soumission sans mélanger les données', async () => {
+    await setup();
+    const area = harness.routeNativeElement!.querySelector(
+      '[aria-labelledby="demande-actions-title"]',
+    )!;
+    expect(area.querySelector('#demande-actions-title')?.textContent).toContain(
+      'Actions sur la demande',
+    );
+    expect(area.querySelector('.danger-action')?.textContent).toContain('Annuler la demande');
+    expect(area.textContent).not.toContain('Diagnostic enregistré');
+    page.start(); // EN_COURS : aucune mutation de démarrage.
+    http.expectNone(base + '/demarrage-traitement');
+    page.traitement.controls.solution.setValue('Solution saisie');
+    page.saveTreatment();
+    harness.detectChanges();
+    expect(area.getAttribute('aria-busy')).toBe('true');
+    action('traitement').flush(fixtureData({ solution: 'Solution saisie' }));
+    harness.detectChanges();
+    expect(area.getAttribute('aria-busy')).toBe('false');
+  });
+  it('une demande terminale ne présente pas de zone actions vide', async () => {
+    await setup({ statut: 'CLOTUREE' });
+    expect(harness.routeNativeElement!.querySelector('.action-area')).toBeNull();
+    expect(harness.routeNativeElement!.textContent).toContain('Diagnostic enregistré');
   });
 });

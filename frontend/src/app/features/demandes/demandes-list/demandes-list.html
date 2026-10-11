@@ -10,11 +10,11 @@
 <section class="surface" aria-label="Filtres des demandes">
   <form [formGroup]="filters">
     <div class="filters">
-      <mat-form-field
+      <mat-form-field appearance="outline" subscriptSizing="dynamic"
         ><mat-label>Rechercher</mat-label
         ><input matInput formControlName="recherche" placeholder="Référence, titre ou description"
       /></mat-form-field>
-      <mat-form-field
+      <mat-form-field appearance="outline" subscriptSizing="dynamic"
         ><mat-label>Statut</mat-label
         ><mat-select formControlName="statut"
           ><mat-option value="">Tous les statuts</mat-option>
@@ -23,7 +23,7 @@
           }
         </mat-select></mat-form-field
       >
-      <mat-form-field
+      <mat-form-field appearance="outline" subscriptSizing="dynamic"
         ><mat-label>Priorité</mat-label
         ><mat-select formControlName="priorite"
           ><mat-option value="">Toutes les priorités</mat-option>
@@ -32,7 +32,7 @@
           }
         </mat-select></mat-form-field
       >
-      <mat-form-field
+      <mat-form-field appearance="outline" subscriptSizing="dynamic"
         ><mat-label>Catégorie</mat-label
         ><mat-select formControlName="categorie"
           ><mat-option value="">Toutes les catégories</mat-option>
@@ -43,7 +43,7 @@
       >
     </div>
     <div class="actions">
-      <mat-form-field
+      <mat-form-field appearance="outline" subscriptSizing="dynamic"
         ><mat-label>Trier par</mat-label
         ><mat-select formControlName="sort">
           @for (item of sortOptions; track item.value) {
@@ -55,14 +55,18 @@
   </form>
 </section>
 @if (loading()) {
-  <p role="status" aria-live="polite">Chargement des demandes…</p>
+  <app-page-state
+    kind="loading"
+    title="Chargement des demandes"
+    message="La liste est en cours de chargement."
+  />
 }
 @if (error(); as failure) {
   <div class="feedback feedback-error" role="alert">
     <p>
       {{ failure.message }}
       @if (failure.code) {
-        ({{ failure.code }})
+        <span class="api-code">({{ failure.code }})</span>
       }
     </p>
     <button mat-button (click)="retry()">Réessayer</button>
@@ -70,12 +74,11 @@
 }
 @if (result(); as page) {
   @if (!page.items.length) {
-    <section class="surface">
-      <h2>Aucune demande</h2>
-      <p class="muted">
-        Aucune demande accessible ne correspond à cette vue. Vous pouvez ajuster les filtres.
-      </p>
-    </section>
+    <app-page-state
+      kind="empty"
+      title="Aucune demande"
+      message="Aucune demande accessible ne correspond à cette vue. Vous pouvez ajuster les filtres."
+    />
   } @else {
     <div class="desktop-list">
       <table>

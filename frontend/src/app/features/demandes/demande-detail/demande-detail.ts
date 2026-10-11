@@ -20,6 +20,7 @@ import {
   switchMap,
   takeUntil,
 } from 'rxjs';
+import { PageState } from '../../../shared/ui/page-state/page-state';
 import { SessionService } from '../../../core/session/session';
 import { DemandesApi } from '../demandes-api';
 import { apiError, nonBlank } from '../demande-feedback';
@@ -37,6 +38,7 @@ import {
 @Component({
   selector: 'app-demande-detail',
   imports: [
+    PageState,
     DatePipe,
     KeyValuePipe,
     ReactiveFormsModule,
