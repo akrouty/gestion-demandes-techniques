@@ -14,11 +14,10 @@ skinparam ranksep 75
 rectangle "Système de gestion des demandes techniques" as SYSTEM {
   component "Angular SPA" as SPA
   rectangle "Spring Boot — monolithe modulaire" as BACKEND {
-    component "Security" as SECURITY
-    component "Request" as REQUEST
-    component "Identity / Administration" as IDENTITY
-    interface "AnalyseIaPort" as AI_CONTRACT
-    component "ai.groq" as AI
+    component "Sécurité" as SECURITY
+    component "Gestion des demandes" as REQUEST
+    component "Identité / Administration" as IDENTITY
+    component "Adaptateur IA Groq" as AI
   }
   database "PostgreSQL" as POSTGRES
 }
@@ -28,19 +27,20 @@ SPA .right.> REQUEST : fonctions métier
 SPA .right.> IDENTITY : administration
 SECURITY .right.> IDENTITY : identités et rôles
 REQUEST .right.> IDENTITY : utilisateurs liés
-REQUEST .down.> AI_CONTRACT : assistance IA
-AI .left.|> AI_CONTRACT
+' Interface requise côté demandes, fournie par GroqAnalyseIaAdapter.
+REQUEST -(0 AI : AnalyseIaPort
 AI .down.> GROQ
 REQUEST .down.> POSTGRES
 IDENTITY .down.> POSTGRES
 ' Contraintes graphiques uniquement.
-SPA -[hidden]right-> SECURITY
+REQUEST -[hidden]right-> AI
+SPA -[hidden]down-> SECURITY
 SECURITY -[hidden]right-> IDENTITY
 
-SECURITY -[hidden]down- REQUEST
-REQUEST -[hidden]right-> IDENTITY
+SPA -[hidden]right-> REQUEST
+REQUEST -[hidden]down-> IDENTITY
 IDENTITY -[hidden]down-> POSTGRES
 
-SYSTEM -[hidden]right-> GROQ
+AI -[hidden]right-> GROQ
 
 @enduml
