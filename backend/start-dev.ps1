@@ -5,7 +5,8 @@ $path = Join-Path $PSScriptRoot '.env'
 if (-not (Test-Path -LiteralPath $path)) {
     throw 'Fichier backend/.env absent : copier .env.example et renseigner la configuration locale.'
 }
-$allowed = @('JAVA_HOME','DB_URL','DB_USERNAME','DB_PASSWORD','JWT_SECRET','JWT_ISSUER','JWT_TTL','JWT_ALGORITHM','PASSWORD_MIN_LENGTH','BCRYPT_STRENGTH','CORS_ALLOWED_ORIGINS')
+$required = @('DB_URL','DB_USERNAME','DB_PASSWORD','JWT_SECRET','JWT_ISSUER','JWT_TTL','JWT_ALGORITHM','PASSWORD_MIN_LENGTH','BCRYPT_STRENGTH','CORS_ALLOWED_ORIGINS')
+$allowed = @('JAVA_HOME') + $required + @('GROQ_API_KEY','GROQ_TIMEOUT')
 $values = @{}
 $lineNumber = 0
 foreach ($line in Get-Content -LiteralPath $path -Encoding UTF8) {
@@ -18,7 +19,7 @@ foreach ($line in Get-Content -LiteralPath $path -Encoding UTF8) {
     if ($value.Length -ge 2 -and (($value.StartsWith('"') -and $value.EndsWith('"')) -or ($value.StartsWith("'") -and $value.EndsWith("'")))) { $value = $value.Substring(1, $value.Length - 2) }
     $values[$name] = $value
 }
-foreach ($name in $allowed | Where-Object { $_ -ne 'JAVA_HOME' }) {
+foreach ($name in $required) {
     if ([string]::IsNullOrWhiteSpace($values[$name])) { throw "Variable $name absente ou vide dans .env (valeur non affichee)." }
 }
 if ($values['JAVA_HOME']) {
@@ -41,7 +42,7 @@ try {
     $process.WaitForExit()
     if ($process.ExitCode -ne 0 -or $version -notmatch 'version "21\.') { throw 'Java 21 est requis : renseigner JAVA_HOME dans .env.' }
 } finally { $process.Dispose() }
-if ($CheckOnly) { Write-Output 'Configuration locale lisible et complete ; Java 21 disponible. Aucun serveur demarre.'; return }
+if ($CheckOnly) { Write-Output 'Configuration locale obligatoire lisible ; Java 21 disponible. Aucun serveur demarre.'; return }
 foreach ($name in $allowed) {
     if ($values.ContainsKey($name) -and $values[$name] -ne '') { [Environment]::SetEnvironmentVariable($name, $values[$name], 'Process') }
 }
