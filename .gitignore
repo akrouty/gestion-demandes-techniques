@@ -24,3 +24,6 @@ Desktop.ini
 *.dvi
 __pycache__/
 *.pyc
+docs/ai/evaluation/benchmark-results.csv
+docs/ai/evaluation/benchmark-attempts.jsonl
+docs/ai/evaluation/benchmark-run.json

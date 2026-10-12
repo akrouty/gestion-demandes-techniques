@@ -1,7 +1,8 @@
 /**
- * Module IA : aucune implémentation dans le Bloc 1.
+ * Module IA V1 backend implémenté via AnalyseIaPort et l'adaptateur Groq
+ * utilisant le modèle qwen/qwen3.8-27b.
  *
- * <p>Le port d'intégration, le fournisseur et le modèle IA sont différés à
- * l'étape dédiée.</p>
+ * <p>Propositions temporaires, validation humaine obligatoire et aucune persistance
+ * automatique. Une panne IA ne bloque pas la qualification manuelle.</p>
  */
 package com.akrouty.gestiondemandes.ai;
