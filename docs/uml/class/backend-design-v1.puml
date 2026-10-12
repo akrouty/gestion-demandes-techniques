@@ -13,6 +13,7 @@ skinparam linetype ortho
 skinparam nodesep 22
 skinparam ranksep 30
 hide empty members
+hide circle
 package request as REQUEST_MODULE {
   class CreationDemandeRequest <<DTO>>
   class DemandeController <<Controller>>

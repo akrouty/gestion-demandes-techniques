@@ -3,14 +3,14 @@
 ' Statut : DRAFT
 ' Vue logique limitée ; aucun détail de déploiement.
 title Composants applicatifs V1 — DRAFT
-left to right direction
+top to bottom direction
 skinparam monochrome true
 skinparam shadowing false
 skinparam backgroundColor white
 skinparam componentStyle uml2
-skinparam linetype ortho
-skinparam nodesep 50
-skinparam ranksep 65
+skinparam linetype polyline
+skinparam nodesep 60
+skinparam ranksep 75
 rectangle "Système de gestion des demandes techniques" as SYSTEM {
   component "Angular SPA" as SPA
   rectangle "Spring Boot — monolithe modulaire" as BACKEND {
@@ -23,19 +23,24 @@ rectangle "Système de gestion des demandes techniques" as SYSTEM {
   database "PostgreSQL" as POSTGRES
 }
 rectangle "Groq API\n« système externe »" as GROQ
-SPA .down.> SECURITY
-SPA .down.> REQUEST
-SPA .down.> IDENTITY
-SECURITY .down.> IDENTITY
-REQUEST .down.> IDENTITY
-REQUEST .down.> AI_CONTRACT
-AI .up.|> AI_CONTRACT
+SPA .right.> SECURITY : authentification
+SPA .right.> REQUEST : fonctions métier
+SPA .right.> IDENTITY : administration
+SECURITY .right.> IDENTITY : identités et rôles
+REQUEST .right.> IDENTITY : utilisateurs liés
+REQUEST .down.> AI_CONTRACT : assistance IA
+AI .left.|> AI_CONTRACT
 AI .down.> GROQ
 REQUEST .down.> POSTGRES
 IDENTITY .down.> POSTGRES
 ' Contraintes graphiques uniquement.
-BACKEND -[hidden]down-> POSTGRES
-SECURITY -[hidden]right- REQUEST
-IDENTITY -[hidden]right- AI_CONTRACT
-POSTGRES -[hidden]right- GROQ
+SPA -[hidden]right-> SECURITY
+SECURITY -[hidden]right-> IDENTITY
+
+SECURITY -[hidden]down- REQUEST
+REQUEST -[hidden]right-> IDENTITY
+IDENTITY -[hidden]down-> POSTGRES
+
+SYSTEM -[hidden]right-> GROQ
+
 @enduml

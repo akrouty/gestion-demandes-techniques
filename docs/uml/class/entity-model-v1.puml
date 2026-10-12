@@ -11,6 +11,7 @@ skinparam nodesep 50
 skinparam ranksep 140
 skinparam linetype ortho
 hide methods
+hide circle
 class Utilisateur <<entité JPA>> {
   id : Long {PK, SEQUENCE}
   nom : String
@@ -49,6 +50,7 @@ class HistoriqueDemande <<entité JPA>> {
   ancienneValeur : String [0..1]
   nouvelleValeur : String [0..1]
 }
+together {
 enum Role {
   RESPONSABLE_TECHNIQUE
   AGENT_TECHNIQUE
@@ -77,20 +79,16 @@ enum StatutDemande {
   CLOTUREE
   ANNULEE
 }
+}
 Role -[hidden]down-> Categorie
-Role -[hidden]right-> Priorite
-Categorie -[hidden]right-> StatutDemande
+Categorie -[hidden]down-> Priorite
+Priorite -[hidden]down-> StatutDemande
 DemandeTechnique "0..*" -up-> "1" Client : client
 DemandeTechnique "0..*" -down-> "1" Utilisateur : \ncreateur
-DemandeTechnique "0..*" -down-> "0..1" Utilisateur : agentAffecte
-HistoriqueDemande "0..*" -down-> "1" Utilisateur : auteur
-DemandeTechnique "1" -right- "0..*" HistoriqueDemande : historique / demande\n
-note bottom of Utilisateur
-  roles : @ElementCollection
-  Table utilisateur_role :
-  table technique, pas une entité JPA.
-end note
+DemandeTechnique "0..*" -down-> "0..1" Utilisateur : \nagentAffecte
+HistoriqueDemande "0..*" -down-> "1" Utilisateur : \nauteur
+DemandeTechnique "1" -right- "0..*" HistoriqueDemande :   historique / demande\n
 
 ' Placement des enums uniquement, sans dépendance sémantique.
-Utilisateur -[hidden]down-> Role
+Client -[hidden]right-> Role
 @enduml
