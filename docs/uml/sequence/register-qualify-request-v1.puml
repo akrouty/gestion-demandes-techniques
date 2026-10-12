@@ -1,9 +1,10 @@
 @startuml
 
-' Statut : VALIDATED
-title Enregistrer et qualifier une demande - V1\nVALIDATED
+' Statut : DRAFT
+title Enregistrer et qualifier une demande - V1\nDRAFT
 
 hide footbox
+' PlantUML affiche nativement les gardes des fragments entre crochets.
 skinparam monochrome true
 skinparam shadowing false
 skinparam backgroundColor white
@@ -32,6 +33,8 @@ deactivate SYSTEM
 RT -> SYSTEM : Rechercher le client
 activate SYSTEM
 
+' Garde UML : [Client existant]
+
 alt Client existant
   SYSTEM --> RT : Présenter le client trouvé
   deactivate SYSTEM
@@ -39,27 +42,32 @@ alt Client existant
   activate SYSTEM
   SYSTEM --> RT : Client sélectionné
   deactivate SYSTEM
+' Garde UML : [Client non enregistré]
 else Client non enregistré
   SYSTEM --> RT : Aucun client trouvé
   deactivate SYSTEM
   RT -> SYSTEM : Renseigner les informations minimales du client
   activate SYSTEM
-  SYSTEM --> RT : Nouveau client conservé
+  SYSTEM --> RT : Informations du nouveau client saisies\n(temporairement, sans persistance)
   deactivate SYSTEM
 end
 
 RT -> SYSTEM : Définir ou valider la catégorie
 activate SYSTEM
-SYSTEM --> RT : Catégorie retenue
+SYSTEM --> RT : Catégorie retenue dans le formulaire
 deactivate SYSTEM
 
 RT -> SYSTEM : Définir ou valider la priorité
 activate SYSTEM
-SYSTEM --> RT : Priorité retenue
+SYSTEM --> RT : Priorité retenue dans le formulaire
 deactivate SYSTEM
 
 RT -> SYSTEM : Enregistrer la demande
 activate SYSTEM
+note right of SYSTEM
+  Transaction finale : nouveau Client si nécessaire,
+  demande et événement de création persistés ensemble.
+end note
 SYSTEM --> RT : Demande enregistrée ; statut NOUVELLE
 deactivate SYSTEM
 

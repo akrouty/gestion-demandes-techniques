@@ -10,7 +10,7 @@ Frontend V1 implémenté et validé.
 - Diagramme Use Case global : validé.
 - Diagramme d'activité du cycle de vie : validé.
 - Fiches détaillées des cas d'utilisation : DRAFT.
-- Diagrammes de séquence : validés.
+- Cinq diagrammes de séquence V1 : DRAFT après correction contre le code actuel de main ; nouvelle validation humaine requise.
 - Diagramme de classes métier : validé.
 - Conventions de conception technique : DRAFT.
 - ADR-001 architecture applicative V1 : DRAFT.
@@ -22,14 +22,15 @@ Frontend V1 implémenté et validé.
 - Conception sécurité V1 : validée.
 - ADR-006 architecture frontend V1 : validé.
 - Conception frontend V1 : validée.
-- Diagramme de composants V1 : validé.
-- Diagramme de classes de conception backend V1 : DRAFT (préliminaire, non validable tant que les conceptions backend, persistance, API REST et sécurité ne sont pas suffisamment définies).
+- Diagramme de composants V1 : DRAFT après synchronisation avec l’implémentation réelle et Groq externe.
+- Diagramme de classes de conception backend V1 : DRAFT, reconstruit à partir des classes réellement présentes dans main après le commit 7a6438d.
+- Diagramme des entités persistantes / modèle de données V1 : DRAFT, fondé sur les quatre entités JPA, enums, mappings et migration V1 actuels.
 
 ## Décisions d'architecture retenues
 
 - Frontend : Angular SPA.
 - Backend : API REST Spring Boot sous forme de monolithe modulaire organisé module-first autour de `request`, `identity / administration`, `security` et `ai`.
-- Responsabilités internes du backend : `presentation`, `application`, `domain` et `persistence`, sans figer les packages Java exacts.
+- Responsabilités internes du backend : `presentation`, `application`, `domain` et `persistence`, avec les packages Java réalisés dans main.
 - La responsabilité `application` orchestre les cas d'utilisation et porte les transactions ; le `domain` porte les invariants intrinsèques.
 - Les dépendances inter-modules passent par les responsabilités publiques des modules fournisseurs, sans accès direct à leurs repositories internes.
 - Une modification métier et son historisation associée sont atomiques.
@@ -51,20 +52,20 @@ Frontend V1 implémenté et validé.
 - Autorisation : RBAC complété par les contrôles métier contextuels.
 - IA : frontière architecturale définie par un port abstrait réalisé par un adaptateur ; fonctionnement non bloquant et validation humaine obligatoire.
 
-Ces décisions portent sur l'architecture générale, l'architecture backend, la persistance, l'API REST, la sécurité et le frontend. Les classes techniques exactes et leurs dépendances détaillées ne sont pas encore décidées.
+Ces décisions portent sur l'architecture générale, l'architecture backend, la persistance, l'API REST, la sécurité et le frontend. Les classes techniques et leurs dépendances sont désormais implémentées dans main ; les vues UML de conception corrigées restent DRAFT jusqu’à leur validation humaine.
 
 ## Conception frontend validée
 
-ADR-006 et FRONTEND-DESIGN-V1 retiennent une organisation Angular SPA feature-based avec responsabilités `core`, `shared` et `features` (authentification, demandes, administration). Ces décisions sont validées humainement et ne constituent pas une implémentation.
+ADR-006 et FRONTEND-DESIGN-V1 retiennent une organisation Angular SPA feature-based avec responsabilités `core`, `shared` et `features` (authentification, demandes, administration). Ces décisions sont validées humainement ; leur implémentation frontend V1 est réalisée et validée, comme détaillé ci-dessous.
 
 - Session : JWT, expiration et utilisateur courant conservés uniquement en mémoire, conformément à la sécurité validée ; snapshot de rôles réservé à l'UX.
 - Guards comme aides à la navigation, interceptor pour le transport du token et la fin de session ; backend autoritatif pour RBAC et contrôles contextuels.
 - État principalement local, services API par feature, Reactive Forms et détail de demande centralisant les actions ; navigation par union des rôles.
-- Bibliothèque UI, framework CSS, version exacte Angular et détails d'implémentation différés ; aucun NgRx/Redux ou endpoint supplémentaire introduit.
+- Implémentation frontend : Angular 22 et Angular Material 22 avec thème Safyron ; aucun NgRx/Redux introduit.
 
 ## État de l'implémentation
 
-- Backend : implémentation en cours.
+- Backend V1 : implémenté et validé dans les blocs documentés ci-dessous ; vues UML techniques en relecture DRAFT.
 - Bloc 1 — fondation Spring Boot + persistance V1 : implémenté et validé.
 - Bloc 2 — Identity + Sécurité V1 : implémenté et validé.
 - Bloc 3 — Module Demandes + API + historique : implémenté et validé.

@@ -1,9 +1,10 @@
 @startuml
 
-' Statut : VALIDATED
-title Affecter et réaffecter une demande - V1\nVALIDATED
+' Statut : DRAFT
+title Affecter et réaffecter une demande - V1\nDRAFT
 
 hide footbox
+' PlantUML affiche nativement les gardes des fragments entre crochets.
 skinparam monochrome true
 skinparam shadowing false
 skinparam backgroundColor white
@@ -32,11 +33,15 @@ activate SYSTEM
 SYSTEM --> RT : Demande affectée ; statut ASSIGNEE
 deactivate SYSTEM
 
+' Garde UML : [L'Agent initial commence le traitement]
+
 alt L'Agent initial commence le traitement
   AGENT -> SYSTEM : Commencer le traitement
   activate SYSTEM
   SYSTEM --> AGENT : Traitement commencé ; statut EN_COURS
   deactivate SYSTEM
+
+  ' Garde UML : [Réaffectation pendant EN_COURS]
 
   opt Réaffectation pendant EN_COURS
     RT -> SYSTEM : Réaffecter la demande au nouvel Agent technique
@@ -49,6 +54,7 @@ alt L'Agent initial commence le traitement
     SYSTEM --> NEW_AGENT : Traitement commencé ; statut EN_COURS
     deactivate SYSTEM
   end
+' Garde UML : [Réaffectation pendant ASSIGNEE]
 else Réaffectation pendant ASSIGNEE
   RT -> SYSTEM : Réaffecter la demande au nouvel Agent technique
   activate SYSTEM

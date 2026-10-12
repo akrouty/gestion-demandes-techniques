@@ -1,17 +1,17 @@
 @startuml
 
-' Statut : VALIDATED
+' Statut : DRAFT
 ' Niveau : conception logique
 ' Type de vue : architecture logique limitée
 ' Objectif : montrer les composants logiques décidés et leurs dépendances importantes
-title Diagramme de composants applicatifs - V1\nVALIDATED\nVue d'architecture logique limitée
+title Diagramme de composants applicatifs - V1\nDRAFT\nVue d'architecture logique limitée
 
 left to right direction
 skinparam monochrome true
 skinparam shadowing false
 skinparam backgroundColor white
 skinparam componentStyle uml2
-skinparam linetype ortho
+skinparam linetype polyline
 skinparam nodesep 50
 skinparam ranksep 65
 
@@ -24,16 +24,20 @@ rectangle "Système de gestion des demandes techniques" as SYSTEM {
       component "Request" as REQUEST
       component "Identity / Administration" as IDENTITY
     }
-    interface "Contrat d'analyse IA" as AI_CONTRACT
-    component "AI" as AI
+    interface "AnalyseIaPort" as AI_CONTRACT
+    component "ai.groq" as AI
   }
 
   database "PostgreSQL\n« SGBD / système de persistance »" as POSTGRES
 }
 
+rectangle "Groq API\n« système externe »" as GROQ
+AI ..> GROQ : appel API
+
 SPA -[hidden]right- SECURITY
 BACKEND -[hidden]down- POSTGRES
 
+SPA ..> SECURITY : authentification
 SPA ..> REQUEST : fonctions métier
 SPA ..> IDENTITY : administration
 

@@ -1,9 +1,10 @@
 @startuml
 
-' Statut : VALIDATED
-title Traiter et résoudre une demande - V1\nVALIDATED
+' Statut : DRAFT
+title Traiter et résoudre une demande - V1\nDRAFT
 
 hide footbox
+' PlantUML affiche nativement les gardes des fragments entre crochets.
 skinparam monochrome true
 skinparam shadowing false
 skinparam backgroundColor white
@@ -35,16 +36,19 @@ activate SYSTEM
 SYSTEM --> AGENT : Présenter la demande et son statut
 deactivate SYSTEM
 
+' Garde UML : [Demande ASSIGNEE]
+
 alt Demande ASSIGNEE
   AGENT -> SYSTEM : Commencer le traitement
   activate SYSTEM
   SYSTEM --> AGENT : Traitement commencé ; statut EN_COURS
   deactivate SYSTEM
+' Garde UML : [Demande EN_COURS]
 else Demande EN_COURS
-  AGENT -> SYSTEM : Poursuivre ou reprendre le traitement
-  activate SYSTEM
-  SYSTEM --> AGENT : Traitement repris ; statut EN_COURS
-  deactivate SYSTEM
+  note over AGENT, SYSTEM
+    Aucune transition de statut nécessaire.
+    Continuer avec la mise à jour du traitement / solution.
+  end note
 end
 
 AGENT -> SYSTEM : Renseigner la description du traitement
@@ -60,9 +64,12 @@ deactivate SYSTEM
 AGENT -> SYSTEM : Déclarer la demande résolue
 activate SYSTEM
 
+' Garde UML : [Solution renseignée]
+
 alt Solution renseignée
   SYSTEM --> AGENT : Demande déclarée résolue ; statut RESOLUE
   deactivate SYSTEM
+' Garde UML : [Solution absente]
 else Solution absente
   SYSTEM --> AGENT : Résolution refusée ; statut maintenu EN_COURS
   deactivate SYSTEM

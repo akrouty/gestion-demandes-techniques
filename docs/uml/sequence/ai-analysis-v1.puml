@@ -1,9 +1,10 @@
 @startuml
 
-' Statut : VALIDATED
-title Analyser une demande avec l'IA - V1\nVALIDATED
+' Statut : DRAFT
+title Analyser une demande avec l'IA - V1\nDRAFT
 
 hide footbox
+' PlantUML affiche nativement les gardes des fragments entre crochets.
 skinparam monochrome true
 skinparam shadowing false
 skinparam backgroundColor white
@@ -25,30 +26,38 @@ skinparam sequence {
 actor "Responsable technique" as RT
 participant "Système de gestion\ndes demandes techniques" as SYSTEM
 
-RT -> SYSTEM : Demander « Analyser avec l'IA »
-activate SYSTEM
-
-alt Analyse réussie
-  SYSTEM --> RT : Catégorie et priorité proposées
-  deactivate SYSTEM
-  alt Propositions validées
-    RT -> SYSTEM : Valider la catégorie et la priorité
-    activate SYSTEM
-    SYSTEM --> RT : Catégorie et priorité enregistrées
-    deactivate SYSTEM
-  else Propositions modifiées
-    RT -> SYSTEM : Modifier puis valider la catégorie et la priorité
-    activate SYSTEM
-    SYSTEM --> RT : Catégorie et priorité enregistrées
-    deactivate SYSTEM
+RT -> SYSTEM : Saisir titre et description dans le formulaire
+note over RT, SYSTEM : Données temporaires ; aucune demande créée.
+RT -> SYSTEM : Cliquer « Analyser avec l’IA » (titre + description)
+' Garde UML : [titre ou description modifié pendant l’appel]
+alt titre ou description modifié pendant l’appel
+  RT -> SYSTEM : Modifier titre ou description
+  SYSTEM --> RT : Appel annulé ; inviter à relancer volontairement
+' Garde UML : [else]
+else else
+  ' Garde UML : [analyse réussie]
+  alt analyse réussie
+    SYSTEM --> RT : Catégorie et priorité proposées temporairement
+    ' Garde UML : [suggestions reçues et informations inchangées]
+    opt suggestions reçues et informations inchangées
+      RT -> SYSTEM : Cliquer « Appliquer les suggestions »
+      SYSTEM --> RT : Champs catégorie / priorité renseignés, toujours modifiables
+    end
+    ' Garde UML : [titre ou description modifié après réception ou application]
+    opt titre ou description modifié après réception ou application
+      RT -> SYSTEM : Modifier titre ou description
+      SYSTEM --> RT : Suggestion invalidée ; inviter à relancer volontairement
+      note over RT, SYSTEM : Les valeurs déjà appliquées restent éditables.
+    end
+  ' Garde UML : [else]
+  else else
+    SYSTEM --> RT : Analyse indisponible (503) ; mode manuel disponible
   end
-else Analyse échouée ou indisponible
-  SYSTEM --> RT : Analyse indisponible ; qualification manuelle possible
-  deactivate SYSTEM
-  RT -> SYSTEM : Définir et valider la catégorie et la priorité
-  activate SYSTEM
-  SYSTEM --> RT : Catégorie et priorité enregistrées
-  deactivate SYSTEM
 end
-
+RT -> SYSTEM : Vérifier ou modifier manuellement catégorie et priorité
+note over RT, SYSTEM
+  Validation humaine explicite ; valeurs temporaires du formulaire.
+  Aucune nouvelle analyse automatique, aucune persistance ici.
+  Création par une action séparée ; mode manuel toujours disponible.
+end note
 @enduml

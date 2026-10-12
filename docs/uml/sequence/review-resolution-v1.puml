@@ -1,9 +1,10 @@
 @startuml
 
-' Statut : VALIDATED
-title Examiner une demande résolue - V1\nVALIDATED
+' Statut : DRAFT
+title Examiner une demande résolue - V1\nDRAFT
 
 hide footbox
+' PlantUML affiche nativement les gardes des fragments entre crochets.
 skinparam monochrome true
 skinparam shadowing false
 skinparam backgroundColor white
@@ -30,11 +31,14 @@ activate SYSTEM
 SYSTEM --> RT : Présenter la demande et sa solution
 deactivate SYSTEM
 
+' Garde UML : [Résolution acceptée]
+
 alt Résolution acceptée
   RT -> SYSTEM : Accepter la résolution
   activate SYSTEM
   SYSTEM --> RT : Demande clôturée ; statut CLOTUREE
   deactivate SYSTEM
+' Garde UML : [Résolution refusée]
 else Résolution refusée
   RT -> SYSTEM : Refuser la résolution
   activate SYSTEM

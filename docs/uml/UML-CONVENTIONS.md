@@ -25,6 +25,7 @@ La sémantique des diagrammes suit la spécification OMG Unified Modeling Langua
 - Codex ne doit jamais passer de lui-même un nouveau diagramme à `VALIDATED`.
 - Les diagrammes existants restent `DRAFT` tant qu'ils n'ont pas été relus selon la version actuelle de ces conventions.
 - Une compilation PlantUML réussie vérifie la syntaxe, pas la correction UML.
+- Lorsqu’un diagramme représente une implémentation réalisée, sa validation doit être effectuée contre le code actuel de `main` ; aucun élément absent du code ne doit être présenté comme implémenté.
 
 ## 2. Règles sémantiques UML
 
@@ -81,6 +82,7 @@ La sémantique des diagrammes suit la spécification OMG Unified Modeling Langua
 - Ne pas utiliser `opt` pour un comportement obligatoire.
 - Utiliser une barre d'activation uniquement pendant une exécution réelle ; ne pas l'étendre parce qu'un participant reste visible.
 - Éviter de dupliquer le même scénario dans plusieurs diagrammes sans justification.
+- Pour une séquence décrivant un système implémenté, les messages doivent correspondre à des interactions observables ou étapes métier réelles ; une donnée temporaire frontend ne doit jamais être représentée comme persistée.
 
 ### 2.4 Diagrammes de classes
 
@@ -111,6 +113,8 @@ La sémantique des diagrammes suit la spécification OMG Unified Modeling Langua
 - La décision d'utiliser des DTO séparés, des repositories ou des mappers ne suffit pas à déterminer leurs classes exactes ; celles-ci doivent découler des contrats et cas d'utilisation étudiés.
 - Ne pas recopier systématiquement tout le diagramme de classes métier dans un diagramme technique ; ne montrer que les classes métier nécessaires à son objectif et conserver le diagramme métier `VALIDATED` comme référence du modèle complet.
 - Éviter un diagramme unique couvrant tout le backend lorsqu'il devient dense ou ambigu. Préférer des diagrammes focalisés, par exemple sur `request`, `identity / administration`, `security` ou la frontière IA. Ne conserver un diagramme global que s'il reste réellement lisible.
+
+- Les diagrammes d’entités/modèles de données doivent correspondre aux mappings JPA et migrations actuels, distinguer entité persistante, enum et table technique de collection/association, et ne jamais transformer automatiquement une table en entité métier.
 
 ### 2.5 Diagrammes de composants
 

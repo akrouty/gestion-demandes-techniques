@@ -1,0 +1,105 @@
+@startuml
+' Statut : DRAFT
+' Niveau : modèle de données ; mappings JPA et V1__initial_schema.sql (main 7a6438d)
+title Diagramme des entités persistantes / modèle de données V1 — DRAFT
+left to right direction
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam classAttributeIconSize 0
+skinparam nodesep 35
+skinparam ranksep 45
+hide methods
+class Utilisateur <<entité JPA>> {
+  id : Long {PK, SEQUENCE}
+  nom : String
+  email : String {unique, normalisé}
+  actif : boolean
+  passwordHash : String
+  roles : Role [0..*] {unique}
+}
+class Client <<entité JPA>> {
+  id : Long {PK, SEQUENCE}
+  nom : String
+  email : String
+  telephone : String
+}
+class DemandeTechnique <<entité JPA>> {
+  id : Long {PK, SEQUENCE}
+  reference : String {unique, immuable}
+  titre : String
+  description : String
+  categorie : Categorie
+  priorite : Priorite
+  statut : StatutDemande
+  descriptionTraitement : String [0..1]
+  solution : String [0..1]
+  motifAnnulation : String [0..1]
+  dateCreation : Instant
+  dateModification : Instant
+  dateResolution : Instant [0..1]
+  dateCloture : Instant [0..1]
+  dateAnnulation : Instant [0..1]
+}
+class HistoriqueDemande <<entité JPA>> {
+  id : Long {PK, SEQUENCE}
+  dateEvenement : Instant
+  typeEvenement : String
+  ancienneValeur : String [0..1]
+  nouvelleValeur : String [0..1]
+}
+together {
+enum Role {
+  RESPONSABLE_TECHNIQUE
+  AGENT_TECHNIQUE
+  ADMINISTRATEUR
+}
+enum Categorie {
+  ETUDE_DANGERS
+  ANALYSE_RISQUES_INDUSTRIELS
+  PROTECTION_INCENDIE
+  NOTE_CALCUL
+  DOSSIER_TECHNIQUE
+  ASSISTANCE_REGLEMENTAIRE
+  AUTRE
+}
+enum Priorite {
+  BASSE
+  MOYENNE
+  HAUTE
+  CRITIQUE
+}
+enum StatutDemande {
+  NOUVELLE
+  ASSIGNEE
+  EN_COURS
+  RESOLUE
+  CLOTUREE
+  ANNULEE
+}
+}
+Role -[hidden]right- Categorie
+Categorie -[hidden]right- Priorite
+Priorite -[hidden]right- StatutDemande
+DemandeTechnique "0..*" --> "1" Client : client
+DemandeTechnique "0..*" --> "1" Utilisateur : createur
+DemandeTechnique "0..*" --> "0..1" Utilisateur : agentAffecte
+HistoriqueDemande "0..*" --> "1" Utilisateur : auteur
+DemandeTechnique "1" -- "0..*" HistoriqueDemande : historique / demande
+Utilisateur ..> Role
+DemandeTechnique ..> Categorie
+DemandeTechnique ..> Priorite
+DemandeTechnique ..> StatutDemande
+note bottom of Utilisateur
+  roles : @ElementCollection LAZY, EnumType.STRING
+  Table technique utilisateur_role (utilisateur_id, role) :
+  aucune entité Java supplémentaire.
+  passwordHash : donnée technique persistée, aucune valeur affichée.
+end note
+legend bottom
+  Sans [0..1] : valeur obligatoire après persistance ; id généré par séquence.
+  Associations LAZY ; historique : cascade PERSIST, orphanRemoval=false.
+  Associations simples : aucune suppression cascade SQL ni composition déduite de JPA.
+  Instant → timestamptz ; enums → codes textuels. Pas de collections inverses inventées.
+endlegend
+@enduml
