@@ -44,7 +44,11 @@ try {
 } finally { $process.Dispose() }
 if ($CheckOnly) { Write-Output 'Configuration locale obligatoire lisible ; Java 21 disponible. Aucun serveur demarre.'; return }
 foreach ($name in $allowed) {
-    if ($values.ContainsKey($name) -and $values[$name] -ne '') { [Environment]::SetEnvironmentVariable($name, $values[$name], 'Process') }
+    if ($values.ContainsKey($name) -and $values[$name] -ne '') {
+        [Environment]::SetEnvironmentVariable($name, $values[$name], 'Process')
+    } elseif ($name -in @('GROQ_API_KEY','GROQ_TIMEOUT')) {
+        [Environment]::SetEnvironmentVariable($name, $null, 'Process')
+    }
 }
 if ($values['JAVA_HOME']) { $env:Path = "$($values['JAVA_HOME'])\bin;$env:Path" }
 Push-Location $PSScriptRoot
