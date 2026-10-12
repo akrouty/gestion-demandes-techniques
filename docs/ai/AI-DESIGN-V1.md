@@ -4,7 +4,7 @@
 
 **DRAFT**
 
-Document de conception transcrit à partir des décisions retenues et des propositions explicitement marquées à valider dans la discussion. Les six conventions métier nécessaires avant la construction du dataset sont désormais retenues pour la V1. P01–P24 et leurs labels sont désormais fonctionnellement figés et validés humainement pour le benchmark comparatif V1 exploratoire. La conception globale reste DRAFT en l’absence de validation humaine explicite de son statut global. Le benchmark exploratoire Groq et le choix Groq/Qwen V1 sont validés humainement ; Gemini est incomplet. Le Bloc IA-1 backend est implémenté et validé par les tests automatisés ; Angular IA-2 reste non implémenté. Aucun appel fournisseur réel ni benchmark n’est exécuté pendant cette implémentation.
+Document de conception transcrit à partir des décisions retenues et des propositions explicitement marquées à valider dans la discussion. Les six conventions métier nécessaires avant la construction du dataset sont désormais retenues pour la V1. P01–P24 et leurs labels sont désormais fonctionnellement figés et validés humainement pour le benchmark comparatif V1 exploratoire. La conception globale reste DRAFT en l’absence de validation humaine explicite de son statut global. Le benchmark exploratoire Groq et le choix Groq/Qwen V1 sont validés humainement ; Gemini est incomplet. Le Bloc IA-1 backend est implémenté et validé par les tests automatisés ; le Bloc IA-2 Angular est techniquement implémenté et validé par les tests automatisés ; validation humaine navigateur encore à effectuer. Aucun appel fournisseur réel ni benchmark n’est exécuté pendant cette implémentation.
 
 ## 1. Objectif et limites du module IA
 
@@ -21,7 +21,7 @@ Décisions déjà retenues :
 - aucun auto-assignment ni aucune décision métier automatique ;
 - aucun fallback déterministe de classification/priorisation présenté comme de l’IA ;
 - aucun résumé IA en V1 ;
-- Bloc IA-1 Spring Boot implémenté et validé techniquement ; Angular IA-2 non implémenté ; comparaison Gemini/Groq incomplète, sans conclusion de supériorité.
+- Bloc IA-1 Spring Boot implémenté et validé techniquement ; Bloc IA-2 Angular techniquement implémenté et validé par les tests automatisés, validation humaine navigateur encore à effectuer ; comparaison Gemini/Groq incomplète, sans conclusion de supériorité.
 
 ## 2. Entrée
 
@@ -1233,7 +1233,7 @@ Les éléments non fournis concernant l’identité ou le nombre des annotateurs
 - Benchmark Gemini incomplet à cause des limites du Free Tier ; aucune conclusion de supériorité entre modèles.
 - Aucun résultat brut final manquant n’est fabriqué ; les observations de benchmark sont attribuées à la validation humaine.
 - Validation réelle du nouvel endpoint backend avec Groq sur l’environnement cible non effectuée pendant IA-1.
-- Angular IA-2 : **NON IMPLÉMENTÉ** ; aucune affirmation que la fonctionnalité complète frontend + backend est terminée.
+- Bloc IA-2 Angular : **IMPLEMENTED + VALIDATED par les tests automatisés** ; build production et suite frontend réussis (184 tests réussis, 0 échoué, 15 fichiers). Dans /demandes/nouvelle, le RT déclenche manuellement l’analyse du titre et de la description via le backend, sans appel Angular direct au fournisseur. Les propositions sont affichées sans application automatique ; un clic humain explicite les applique, puis les valeurs finales restent modifiables. Une modification du titre ou de la description invalide la suggestion et nécessite une nouvelle analyse volontaire, sans réinitialiser les valeurs déjà appliquées. Panne IA non bloquante, aucune persistance automatique des suggestions. Validation humaine navigateur IA-2 encore à effectuer ; aucune affirmation que la fonctionnalité complète frontend + backend est humainement validée.
 - Weighted Cohen’s Kappa OPTIONNEL / À VALIDER, sans pondération choisie.
 - Aucun seuil d’acceptation chiffré validé.
 
