@@ -17,12 +17,15 @@ import {
   finalize,
   of,
   switchMap,
+  takeUntil,
+  merge,
 } from 'rxjs';
 import { SessionService } from '../../../core/session/session';
 import { DemandesApi } from '../demandes-api';
 import { apiError, frenchPaginator, nonBlank } from '../demande-feedback';
 import {
   ApiError,
+  AnalyseIaResponse,
   Categorie,
   ClientSummaryResponse,
   CreationDemandeRequest,
@@ -55,6 +58,12 @@ export class DemandeCreate {
   private readonly session = inject(SessionService);
   private readonly fb = inject(FormBuilder);
   private readonly clientRequests = new Subject<{ recherche: string; page: number } | null>();
+  private readonly cancelAnalysis = new Subject<void>();
+  readonly canAnalyse = () => this.session.hasAnyRole(['RESPONSABLE_TECHNIQUE']);
+  readonly analysing = signal(false);
+  readonly suggestions = signal<AnalyseIaResponse | null>(null);
+  readonly analysisError = signal<string | null>(null);
+  readonly analysisApplied = signal(false);
   readonly categories = categories;
   readonly priorites = priorites;
   readonly loading = signal(false);
@@ -116,7 +125,67 @@ export class DemandeCreate {
           this.searchClients();
         }
       });
+    merge(this.form.controls.titre.valueChanges, this.form.controls.description.valueChanges)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.cancelAnalysis.next();
+        this.suggestions.set(null);
+        this.analysisError.set(null);
+        this.analysisApplied.set(false);
+      });
     this.searchClients();
+  }
+  analyse(): void {
+    if (this.analysing() || this.loading() || !this.canAnalyse()) return;
+    const { titre, description } = this.form.controls;
+    if (titre.invalid || description.invalid) {
+      titre.markAsTouched();
+      description.markAsTouched();
+      return;
+    }
+    this.suggestions.set(null);
+    this.analysisError.set(null);
+    this.analysisApplied.set(false);
+    this.analysing.set(true);
+    this.api
+      .analyseIa({ titre: titre.value.trim(), description: description.value.trim() })
+      .pipe(
+        takeUntil(this.cancelAnalysis),
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.analysing.set(false)),
+      )
+      .subscribe({
+        next: (result) => {
+          if (
+            !result ||
+            Object.keys(result).length !== 2 ||
+            !Object.hasOwn(categories, result.categorieProposee) ||
+            !Object.hasOwn(priorites, result.prioriteProposee)
+          ) {
+            this.analysisError.set(
+              'La réponse IA est inutilisable. Vous pouvez qualifier la demande manuellement.',
+            );
+            return;
+          }
+          this.suggestions.set(result);
+        },
+        error: () =>
+          this.analysisError.set(
+            'L’analyse IA n’est pas disponible. Vous pouvez qualifier la demande manuellement ou relancer l’analyse.',
+          ),
+      });
+  }
+  applySuggestions(): void {
+    const result = this.suggestions();
+    if (!result || this.loading() || !this.canAnalyse()) return;
+    this.form.patchValue({
+      categorie: result.categorieProposee,
+      priorite: result.prioriteProposee,
+    });
+    this.form.controls.categorie.markAsDirty();
+    this.form.controls.priorite.markAsDirty();
+    this.suggestions.set(null);
+    this.analysisApplied.set(true);
   }
   searchClients(page = 0): void {
     if (
@@ -165,6 +234,8 @@ export class DemandeCreate {
       };
     else if (value.clientId !== null) body = { ...common, clientId: value.clientId };
     else return;
+    this.cancelAnalysis.next();
+    this.suggestions.set(null);
     this.loading.set(true);
     this.error.set(null);
     this.form.disable({ emitEvent: false });

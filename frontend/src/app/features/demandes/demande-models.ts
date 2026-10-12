@@ -79,6 +79,14 @@ export type CreationDemandeRequest = {
   | { clientId: number; nouveauClient?: never }
   | { nouveauClient: NouveauClientRequest; clientId?: never }
 );
+export interface AnalyseIaRequest {
+  titre: string;
+  description: string;
+}
+export interface AnalyseIaResponse {
+  categorieProposee: Categorie;
+  prioriteProposee: Priorite;
+}
 export interface QualificationDemandeRequest {
   categorie: Categorie;
   priorite: Priorite;

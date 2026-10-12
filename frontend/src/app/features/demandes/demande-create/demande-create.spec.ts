@@ -207,6 +207,112 @@ describe('Création de demande', () => {
     });
     fixture = TestBed.createComponent(DemandeCreate);
     fixture.componentInstance.submit();
+    fixture.componentInstance.analyse();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).not.toContain('Analyser avec');
     http.expectNone(() => true);
+  });
+  function analyseRequest() {
+    return http.expectOne(base + '/demandes/analyse-ia');
+  }
+  const suggestion = { categorieProposee: 'NOTE_CALCUL', prioriteProposee: 'HAUTE' };
+  it('analyse uniquement sur clic et applique les suggestions sur un second clic humain', () => {
+    const page = setup();
+    http.expectNone(base + '/demandes/analyse-ia');
+    fixture.detectChanges();
+    const button = [...fixture.nativeElement.querySelectorAll('button')].find((b: any) =>
+      b.textContent.includes('Analyser avec'),
+    ) as HTMLButtonElement;
+    button.click();
+    const r = analyseRequest();
+    expect(r.request.method).toBe('POST');
+    expect(r.request.body).toEqual({ titre: 'Titre', description: 'Description' });
+    expect(r.request.headers.get('Authorization')).toBe('Bearer test');
+    expect(page.form.enabled).toBe(true);
+    page.analyse();
+    http.expectNone(base + '/demandes/analyse-ia');
+    r.flush(suggestion);
+    expect(page.form.controls.categorie.value).toBe('AUTRE');
+    expect(page.form.controls.priorite.value).toBe('MOYENNE');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Note de calcul');
+    const apply = [...fixture.nativeElement.querySelectorAll('button')].find((b: any) =>
+      b.textContent.includes('Appliquer les suggestions'),
+    ) as HTMLButtonElement;
+    expect(apply.type).toBe('button');
+    apply.click();
+    expect(page.form.controls.categorie.value).toBe('NOTE_CALCUL');
+    expect(page.form.controls.priorite.value).toBe('HAUTE');
+    http.expectNone(base + '/demandes');
+    page.form.controls.priorite.setValue('BASSE');
+    page.form.controls.clientId.setValue(7);
+    vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    page.submit();
+    const created = creation();
+    expect(created.request.body.priorite).toBe('BASSE');
+    expect(created.request.body.categorie).toBe('NOTE_CALCUL');
+    created.flush({ reference: 'DT-IA' });
+  });
+  it('analyse avec titre et description seuls sans client ni qualification', () => {
+    const page = setup();
+    page.form.controls.categorie.setValue(null);
+    page.form.controls.priorite.setValue(null);
+    page.analyse();
+    analyseRequest().flush(suggestion);
+    expect(page.suggestions()).toEqual(suggestion);
+  });
+  it('ne lance pas l’analyse avec des champs vides', () => {
+    const page = setup();
+    page.form.controls.description.setValue('   ');
+    page.analyse();
+    http.expectNone(base + '/demandes/analyse-ia');
+  });
+  for (const field of ['titre', 'description'] as const)
+    it('invalide la suggestion et annule l’appel si ' + field + ' change', () => {
+      const page = setup();
+      page.analyse();
+      analyseRequest().flush(suggestion);
+      page.form.controls[field].setValue('Nouveau texte');
+      expect(page.suggestions()).toBeNull();
+      page.applySuggestions();
+      expect(page.form.controls.categorie.value).toBe('AUTRE');
+      page.analyse();
+      const pending = analyseRequest();
+      page.form.controls[field].setValue('Autre texte');
+      expect(pending.cancelled).toBe(true);
+      expect(page.analysing()).toBe(false);
+    });
+  for (const status of [503, 403, 0])
+    it('échec IA ' + status + ' conserve la saisie et la création manuelle', () => {
+      const page = setup();
+      page.form.controls.clientId.setValue(7);
+      page.analyse();
+      const r = analyseRequest();
+      if (status === 0) r.error(new ProgressEvent('error'));
+      else r.flush({}, { status, statusText: 'Error' });
+      expect(page.analysing()).toBe(false);
+      expect(page.suggestions()).toBeNull();
+      expect(page.analysisError()).toBeTruthy();
+      expect(page.form.controls.titre.value).toBe('Titre');
+      expect(page.form.enabled).toBe(true);
+      expect(TestBed.inject(SessionService).token()).toBe('test');
+      vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+      page.submit();
+      creation().flush({ reference: 'DT-MANUEL' });
+    });
+  it('ne répare pas une sortie invalide', () => {
+    const page = setup();
+    page.analyse();
+    analyseRequest().flush({ categorieProposee: 'INCONNUE', prioriteProposee: 'HAUTE' });
+    expect(page.suggestions()).toBeNull();
+    expect(page.form.controls.categorie.value).toBe('AUTRE');
+    expect(page.analysisError()).toBeTruthy();
+  });
+  it('annule une analyse à la destruction de la page', () => {
+    const page = setup();
+    page.analyse();
+    const r = analyseRequest();
+    fixture.destroy();
+    expect(r.cancelled).toBe(true);
   });
 });

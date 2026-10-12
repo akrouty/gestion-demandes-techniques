@@ -3,6 +3,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import {
   AgentAssignableResponse,
+  AnalyseIaRequest,
+  AnalyseIaResponse,
   ClientSummaryResponse,
   CreationDemandeRequest,
   DemandeDetailResponse,
@@ -27,6 +29,9 @@ export class DemandesApi {
   }
   create(body: CreationDemandeRequest) {
     return this.http.post<DemandeDetailResponse>(this.base + '/demandes', body);
+  }
+  analyseIa(body: AnalyseIaRequest) {
+    return this.http.post<AnalyseIaResponse>(this.base + '/demandes/analyse-ia', body);
   }
   clients(recherche: string, page = 0) {
     return this.http.get<PageResponse<ClientSummaryResponse>>(this.base + '/clients', {

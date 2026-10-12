@@ -38,6 +38,57 @@
         }}</mat-error>
       }
     </mat-form-field>
+    @if (canAnalyse()) {
+      <section aria-labelledby="analysis-heading" [attr.aria-busy]="analysing()">
+        <h2 id="analysis-heading">Assistance IA facultative</h2>
+        <p class="muted">
+          Les suggestions doivent être vérifiées avant de les appliquer. La saisie manuelle reste
+          disponible.
+        </p>
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="analyse()"
+          [disabled]="
+            loading() ||
+            analysing() ||
+            form.controls.titre.invalid ||
+            form.controls.description.invalid
+          "
+        >
+          Analyser avec l’IA
+        </button>
+        @if (analysing()) {
+          <p role="status">Analyse en cours… Vous pouvez continuer la saisie manuelle.</p>
+        }
+        @if (analysisError(); as message) {
+          <p class="feedback feedback-error" role="alert">{{ message }}</p>
+        }
+        @if (suggestions(); as result) {
+          <div aria-live="polite">
+            <dl>
+              <dt>Catégorie proposée</dt>
+              <dd>{{ categories[result.categorieProposee] }}</dd>
+              <dt>Priorité proposée</dt>
+              <dd>{{ priorites[result.prioriteProposee] }}</dd>
+            </dl>
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="applySuggestions()"
+              [disabled]="loading()"
+            >
+              Appliquer les suggestions
+            </button>
+          </div>
+        }
+        @if (analysisApplied()) {
+          <p role="status">
+            Suggestions appliquées. Vous pouvez encore modifier la catégorie et la priorité.
+          </p>
+        }
+      </section>
+    }
     <div class="form-grid">
       <mat-form-field appearance="outline" subscriptSizing="dynamic"
         ><mat-label>Catégorie</mat-label
