@@ -1,52 +1,41 @@
 @startuml
-
+!pragma horizontalLineBetweenDifferentPackageAllowed
 ' Statut : DRAFT
-' Niveau : conception logique
-' Type de vue : architecture logique limitée
-' Objectif : montrer les composants logiques décidés et leurs dépendances importantes
-title Diagramme de composants applicatifs - V1\nDRAFT\nVue d'architecture logique limitée
-
+' Vue logique limitée ; aucun détail de déploiement.
+title Composants applicatifs V1 — DRAFT
 left to right direction
 skinparam monochrome true
 skinparam shadowing false
 skinparam backgroundColor white
 skinparam componentStyle uml2
-skinparam linetype polyline
+skinparam linetype ortho
 skinparam nodesep 50
 skinparam ranksep 65
-
 rectangle "Système de gestion des demandes techniques" as SYSTEM {
   component "Angular SPA" as SPA
-
-  rectangle "Backend Spring Boot — monolithe modulaire\n« frontière logique »" as BACKEND {
-    together {
-      component "Security" as SECURITY
-      component "Request" as REQUEST
-      component "Identity / Administration" as IDENTITY
-    }
+  rectangle "Spring Boot — monolithe modulaire" as BACKEND {
+    component "Security" as SECURITY
+    component "Request" as REQUEST
+    component "Identity / Administration" as IDENTITY
     interface "AnalyseIaPort" as AI_CONTRACT
     component "ai.groq" as AI
   }
-
-  database "PostgreSQL\n« SGBD / système de persistance »" as POSTGRES
+  database "PostgreSQL" as POSTGRES
 }
-
 rectangle "Groq API\n« système externe »" as GROQ
-AI ..> GROQ : appel API
-
-SPA -[hidden]right- SECURITY
-BACKEND -[hidden]down- POSTGRES
-
-SPA ..> SECURITY : authentification
-SPA ..> REQUEST : fonctions métier
-SPA ..> IDENTITY : administration
-
-SECURITY ..> IDENTITY : identités et rôles
-REQUEST ..> IDENTITY : utilisateurs liés
-REQUEST ..> AI_CONTRACT : assistance IA
-AI ..|> AI_CONTRACT : réalise
-
-REQUEST ..> POSTGRES : données des demandes
-IDENTITY ..> POSTGRES : utilisateurs et rôles
-
+SPA .down.> SECURITY
+SPA .down.> REQUEST
+SPA .down.> IDENTITY
+SECURITY .down.> IDENTITY
+REQUEST .down.> IDENTITY
+REQUEST .down.> AI_CONTRACT
+AI .up.|> AI_CONTRACT
+AI .down.> GROQ
+REQUEST .down.> POSTGRES
+IDENTITY .down.> POSTGRES
+' Contraintes graphiques uniquement.
+BACKEND -[hidden]down-> POSTGRES
+SECURITY -[hidden]right- REQUEST
+IDENTITY -[hidden]right- AI_CONTRACT
+POSTGRES -[hidden]right- GROQ
 @enduml

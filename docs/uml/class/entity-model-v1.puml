@@ -7,8 +7,9 @@ skinparam monochrome true
 skinparam shadowing false
 skinparam backgroundColor white
 skinparam classAttributeIconSize 0
-skinparam nodesep 35
-skinparam ranksep 45
+skinparam nodesep 50
+skinparam ranksep 140
+skinparam linetype ortho
 hide methods
 class Utilisateur <<entité JPA>> {
   id : Long {PK, SEQUENCE}
@@ -48,7 +49,6 @@ class HistoriqueDemande <<entité JPA>> {
   ancienneValeur : String [0..1]
   nouvelleValeur : String [0..1]
 }
-together {
 enum Role {
   RESPONSABLE_TECHNIQUE
   AGENT_TECHNIQUE
@@ -77,29 +77,20 @@ enum StatutDemande {
   CLOTUREE
   ANNULEE
 }
-}
-Role -[hidden]right- Categorie
-Categorie -[hidden]right- Priorite
-Priorite -[hidden]right- StatutDemande
-DemandeTechnique "0..*" --> "1" Client : client
-DemandeTechnique "0..*" --> "1" Utilisateur : createur
-DemandeTechnique "0..*" --> "0..1" Utilisateur : agentAffecte
-HistoriqueDemande "0..*" --> "1" Utilisateur : auteur
-DemandeTechnique "1" -- "0..*" HistoriqueDemande : historique / demande
-Utilisateur ..> Role
-DemandeTechnique ..> Categorie
-DemandeTechnique ..> Priorite
-DemandeTechnique ..> StatutDemande
+Role -[hidden]down-> Categorie
+Role -[hidden]right-> Priorite
+Categorie -[hidden]right-> StatutDemande
+DemandeTechnique "0..*" -up-> "1" Client : client
+DemandeTechnique "0..*" -down-> "1" Utilisateur : \ncreateur
+DemandeTechnique "0..*" -down-> "0..1" Utilisateur : agentAffecte
+HistoriqueDemande "0..*" -down-> "1" Utilisateur : auteur
+DemandeTechnique "1" -right- "0..*" HistoriqueDemande : historique / demande\n
 note bottom of Utilisateur
-  roles : @ElementCollection LAZY, EnumType.STRING
-  Table technique utilisateur_role (utilisateur_id, role) :
-  aucune entité Java supplémentaire.
-  passwordHash : donnée technique persistée, aucune valeur affichée.
+  roles : @ElementCollection
+  Table utilisateur_role :
+  table technique, pas une entité JPA.
 end note
-legend bottom
-  Sans [0..1] : valeur obligatoire après persistance ; id généré par séquence.
-  Associations LAZY ; historique : cascade PERSIST, orphanRemoval=false.
-  Associations simples : aucune suppression cascade SQL ni composition déduite de JPA.
-  Instant → timestamptz ; enums → codes textuels. Pas de collections inverses inventées.
-endlegend
+
+' Placement des enums uniquement, sans dépendance sémantique.
+Utilisateur -[hidden]down-> Role
 @enduml
