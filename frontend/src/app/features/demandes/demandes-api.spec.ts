@@ -15,6 +15,21 @@ describe('Demandes API — contrat HTTP réel', () => {
     http = TestBed.inject(HttpTestingController);
   });
   afterEach(() => http.verify());
+  it('POST analyse IA transmet uniquement titre et description et retourne les propositions', () => {
+    const body = {
+      titre: 'Calcul support',
+      description: 'Dimensionner le support métallique',
+    };
+    const result = { categorieProposee: 'NOTE_CALCUL', prioriteProposee: 'HAUTE' };
+    let received: unknown;
+    api.analyseIa(body).subscribe((response) => (received = response));
+    const request = http.expectOne(base + '/demandes/analyse-ia');
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toEqual(body);
+    expect(request.request.params.keys()).toEqual([]);
+    request.flush(result);
+    expect(received).toEqual(result);
+  });
   it('liste paginée à partir de zéro avec tous les filtres serveur', () => {
     api
       .list({

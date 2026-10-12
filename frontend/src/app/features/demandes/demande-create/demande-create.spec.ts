@@ -272,15 +272,27 @@ describe('Création de demande', () => {
       const page = setup();
       page.analyse();
       analyseRequest().flush(suggestion);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('Appliquer les suggestions');
       page.form.controls[field].setValue('Nouveau texte');
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).not.toContain('Appliquer les suggestions');
+      expect(fixture.nativeElement.textContent).toContain('Relancez l’analyse');
       expect(page.suggestions()).toBeNull();
       page.applySuggestions();
       expect(page.form.controls.categorie.value).toBe('AUTRE');
       page.analyse();
       const pending = analyseRequest();
+      expect(page.analysisError()).toBeNull();
       page.form.controls[field].setValue('Autre texte');
       expect(pending.cancelled).toBe(true);
       expect(page.analysing()).toBe(false);
+      expect(page.suggestions()).toBeNull();
+      expect(page.form.controls.categorie.value).toBe('AUTRE');
+      expect(page.form.controls.priorite.value).toBe('MOYENNE');
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('Relancez l’analyse');
+      http.expectNone(base + '/demandes/analyse-ia');
     });
   for (const status of [503, 403, 0])
     it('échec IA ' + status + ' conserve la saisie et la création manuelle', () => {
@@ -307,6 +319,42 @@ describe('Création de demande', () => {
     expect(page.suggestions()).toBeNull();
     expect(page.form.controls.categorie.value).toBe('AUTRE');
     expect(page.analysisError()).toBeTruthy();
+  });
+  for (const field of ['titre', 'description'] as const)
+    it(
+      'conserve les valeurs appliquées mais signale leur obsolescence si ' + field + ' change',
+      () => {
+        const page = setup();
+        page.analyse();
+        analyseRequest().flush(suggestion);
+        fixture.detectChanges();
+        const apply = [...fixture.nativeElement.querySelectorAll('button')].find((b: any) =>
+          b.textContent.includes('Appliquer les suggestions'),
+        ) as HTMLButtonElement;
+        apply.click();
+        expect(page.analysisApplied()).toBe(true);
+        page.form.controls[field].setValue('Texte modifié');
+        expect(page.analysisApplied()).toBe(false);
+        expect(page.suggestions()).toBeNull();
+        expect(page.form.controls.categorie.value).toBe('NOTE_CALCUL');
+        expect(page.form.controls.priorite.value).toBe('HAUTE');
+        fixture.detectChanges();
+        expect(fixture.nativeElement.textContent).toContain('Relancez l’analyse');
+        expect(fixture.nativeElement.textContent).not.toContain('Suggestions appliquées');
+        page.form.controls[field].setValue('Encore modifié');
+        fixture.detectChanges();
+        expect(fixture.nativeElement.textContent).toContain('Relancez l’analyse');
+        http.expectNone(base + '/demandes/analyse-ia');
+      },
+    );
+  it('ne demande pas de relancer une analyse jamais lancée', () => {
+    const page = setup();
+    page.form.controls.titre.setValue('Autre titre');
+    page.form.controls.description.setValue('Autre description');
+    fixture.detectChanges();
+    expect(page.analysisError()).toBeNull();
+    expect(fixture.nativeElement.textContent).not.toContain('Relancez l’analyse');
+    http.expectNone(base + '/demandes/analyse-ia');
   });
   it('annule une analyse à la destruction de la page', () => {
     const page = setup();

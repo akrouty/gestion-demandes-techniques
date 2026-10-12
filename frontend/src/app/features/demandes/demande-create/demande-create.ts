@@ -128,9 +128,12 @@ export class DemandeCreate {
     merge(this.form.controls.titre.valueChanges, this.form.controls.description.valueChanges)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
+        if (!this.analysing() && !this.suggestions() && !this.analysisApplied()) return;
         this.cancelAnalysis.next();
         this.suggestions.set(null);
-        this.analysisError.set(null);
+        this.analysisError.set(
+          'Les informations ont changé. Relancez l’analyse pour obtenir de nouvelles suggestions.',
+        );
         this.analysisApplied.set(false);
       });
     this.searchClients();
