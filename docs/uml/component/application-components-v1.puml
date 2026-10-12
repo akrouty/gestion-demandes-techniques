@@ -22,16 +22,17 @@ rectangle "Système de gestion des demandes techniques" as SYSTEM {
   database "PostgreSQL" as POSTGRES
 }
 rectangle "Groq API\n« système externe »" as GROQ
-SPA .right.> SECURITY : authentification
-SPA .right.> REQUEST : fonctions métier
-SPA .right.> IDENTITY : administration
-SECURITY .right.> IDENTITY : identités et rôles
-REQUEST .right.> IDENTITY : utilisateurs liés
-' Interface requise côté demandes, fournie par GroqAnalyseIaAdapter.
+SPA -(0- SECURITY : Authentification
+SPA -(0 REQUEST : Gestion des demandes
+SPA -(0- IDENTITY : Administration des utilisateurs
+SECURITY -(0 IDENTITY : Identités et rôles
+REQUEST -(0- IDENTITY : Identités et rôles
+' Assemblies : socket côté client, lollipop côté fournisseur.
+' Identités et rôles : même contrat IdentiteService, deux usages représentés.
 REQUEST -(0 AI : AnalyseIaPort
-AI .down.> GROQ
-REQUEST .down.> POSTGRES
-IDENTITY .down.> POSTGRES
+AI -(0 GROQ : API Groq
+REQUEST -(0- POSTGRES : Persistance demandes
+IDENTITY -(0- POSTGRES : Persistance identités
 ' Contraintes graphiques uniquement.
 REQUEST -[hidden]right-> AI
 SPA -[hidden]down-> SECURITY

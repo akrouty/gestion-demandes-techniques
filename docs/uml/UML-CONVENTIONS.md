@@ -130,7 +130,7 @@ La sémantique des diagrammes suit la spécification OMG Unified Modeling Langua
 - Chaque dépendance visible doit répondre à la question : « Pourquoi le client dépend-il du fournisseur ? » Ne pas créer de dépendance uniquement pour connecter visuellement deux éléments.
 - Représenter une interface fournie ou requise uniquement lorsqu'un contrat réel a été identifié.
 - Une interface ne sert jamais de point graphique destiné à réunir plusieurs flèches.
-- Représenter la fourniture d'une interface par une réalisation UML correcte et l'utilisation d'un contrat par une dépendance dirigée du composant utilisateur vers ce contrat.
+- Dans les diagrammes de composants destinés au rapport, privilégier les interfaces fournies/requises (lollipop/socket) reliées par des connecteurs d’assemblage lorsque cela clarifie les contrats réels : API, service applicatif ou port. Une interface architecturale ne nécessite pas une interface Java ; elle doit correspondre à un contrat identifiable de l’architecture actuelle, sans service inventé. La notation explicite par réalisation et dépendance reste possible lorsqu’elle est adaptée au niveau de la vue.
 - Si aucun contrat précis n'est encore décidé, préférer une dépendance simple entre composants plutôt qu'inventer une interface.
 - Distinguer le terme architectural « port », utilisé par exemple pour désigner une abstraction d'intégration, de l'élément UML `Port`. Un port architectural ne doit pas être représenté automatiquement par un Port UML. N'utiliser un Port UML que lorsque sa sémantique UML sur un classifier structuré est réellement nécessaire et décidée.
 - Ne pas inventer d'interface, de port, de protocole, de service IA, de proxy, de broker ou de couche technique non décidé.
