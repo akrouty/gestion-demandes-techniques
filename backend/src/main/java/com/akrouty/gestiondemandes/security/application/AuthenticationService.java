@@ -3,8 +3,6 @@ package com.akrouty.gestiondemandes.security.application;
 import com.akrouty.gestiondemandes.identity.application.IdentiteConnexion;
 import com.akrouty.gestiondemandes.identity.application.IdentiteService;
 import com.akrouty.gestiondemandes.security.jwt.JwtService;
-import com.akrouty.gestiondemandes.security.presentation.LoginRequest;
-import com.akrouty.gestiondemandes.security.presentation.LoginResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,22 +34,22 @@ public class AuthenticationService {
 		this.jwtService = jwtService;
 	}
 
-	public LoginResponse connecter(LoginRequest demande) {
+	public AuthentificationResultat connecter(String email, String password) {
 		IdentiteConnexion identite = identiteService
-				.rechercherPourConnexion(demande.email())
+				.rechercherPourConnexion(email)
 				.orElse(null);
 
 		// Échec générique unique : inconnu, inactif et mauvais mot de passe
 		// sont indistinguables côté client (401).
 		if (identite == null
 				|| !identite.actif()
-				|| demande.password() == null
-				|| !passwordEncoder.matches(demande.password(), identite.passwordHash())) {
+				|| password == null
+				|| !passwordEncoder.matches(password, identite.passwordHash())) {
 			throw new AuthentificationEchoueeException();
 		}
 
 		JwtService.TokenEmis jeton = jwtService.emettre(identite.id());
-		return new LoginResponse(
+		return new AuthentificationResultat(
 				jeton.valeur(),
 				TYPE_BEARER,
 				jeton.expiresAt(),

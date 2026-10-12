@@ -1,6 +1,7 @@
 package com.akrouty.gestiondemandes.security.presentation;
 
 import com.akrouty.gestiondemandes.security.application.AuthenticationService;
+import com.akrouty.gestiondemandes.security.application.AuthentificationResultat;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +25,8 @@ public class AuthController {
 
 	@PostMapping("/api/v1/auth/login")
 	public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
-		return ResponseEntity.ok(authenticationService.connecter(request));
+		AuthentificationResultat resultat = authenticationService.connecter(request.email(), request.password());
+		return ResponseEntity.ok(new LoginResponse(
+				resultat.accessToken(), resultat.tokenType(), resultat.expiresAt(), resultat.user()));
 	}
 }
