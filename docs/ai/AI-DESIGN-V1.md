@@ -4,7 +4,7 @@
 
 **DRAFT**
 
-Document de conception transcrit à partir des décisions retenues et des propositions explicitement marquées à valider dans la discussion. Les six conventions métier nécessaires avant la construction du dataset sont désormais retenues pour la V1. P01–P24 et leurs labels sont désormais fonctionnellement figés et validés humainement pour le benchmark comparatif V1 exploratoire. La conception globale reste DRAFT en l’absence de validation humaine explicite de son statut global. Le benchmark exploratoire Groq et le choix Groq/Qwen V1 sont validés humainement ; Gemini est incomplet. Le Bloc IA-1 backend est implémenté et validé par les tests automatisés ; le Bloc IA-2 Angular est techniquement implémenté et validé par les tests automatisés ; validation humaine navigateur encore à effectuer. Aucun appel fournisseur réel ni benchmark n’est exécuté pendant cette implémentation.
+Document de conception transcrit à partir des décisions retenues et des propositions explicitement marquées à valider dans la discussion. Les six conventions métier nécessaires avant la construction du dataset sont désormais retenues pour la V1. P01–P24 et leurs labels sont désormais fonctionnellement figés et validés humainement pour le benchmark comparatif V1 exploratoire. La conception globale reste DRAFT en l’absence de validation humaine explicite de son statut global. Le benchmark exploratoire Groq et le choix Groq/Qwen V1 sont validés humainement ; Gemini est incomplet. Le Bloc IA-1 backend est implémenté et validé par les tests automatisés ; le Bloc IA-2 Angular est techniquement implémenté et validé par les tests automatisés ; validation humaine IA-2 dans le navigateur et intégration réelle locale backend → Groq confirmées par l’utilisateur. Aucun appel fournisseur réel ni benchmark n’est exécuté pendant cette implémentation.
 
 ## 1. Objectif et limites du module IA
 
@@ -21,7 +21,7 @@ Décisions déjà retenues :
 - aucun auto-assignment ni aucune décision métier automatique ;
 - aucun fallback déterministe de classification/priorisation présenté comme de l’IA ;
 - aucun résumé IA en V1 ;
-- Bloc IA-1 Spring Boot implémenté et validé techniquement ; Bloc IA-2 Angular techniquement implémenté et validé par les tests automatisés, validation humaine navigateur encore à effectuer ; comparaison Gemini/Groq incomplète, sans conclusion de supériorité.
+- Bloc IA-1 Spring Boot implémenté et validé techniquement ; Bloc IA-2 Angular techniquement implémenté et validé par les tests automatisés, validation humaine IA-2 dans le navigateur et intégration réelle locale backend → Groq confirmées par l’utilisateur ; comparaison Gemini/Groq incomplète, sans conclusion de supériorité.
 
 ## 2. Entrée
 
@@ -1209,7 +1209,7 @@ Restent ouverts :
 
 Les six conventions métier V1 sont fermées comme **CONVENTIONS V1 RETENUES**. Le dataset V1 P01–P24, sa provenance `IA_ASSISTE_RELU_HUMAINEMENT`, ses labels validés humainement, sa couverture, ses métriques et le protocole décrit en section 16 sont figés pour cette étape. Ils ne sont plus présentés comme des décisions ouvertes. L’absence de dataset historique exploitable chez Safyron est connue.
 
-Les éléments non fournis concernant l’identité ou le nombre des annotateurs et l’historique d’adjudication ne sont pas inventés. La compatibilité effective de `gemini-3.8-flash` avec Interactions v1 reste une limite documentaire historique du candidat non retenu. Le choix Groq V1 est fermé ; la validation réelle de l’endpoint backend avec Groq sur l’environnement cible n’est pas effectuée pendant ce bloc, dont les tests restent hors ligne.
+Les éléments non fournis concernant l’identité ou le nombre des annotateurs et l’historique d’adjudication ne sont pas inventés. La compatibilité effective de `gemini-3.8-flash` avec Interactions v1 reste une limite documentaire historique du candidat non retenu. Le choix Groq V1 est fermé ; l’intégration réelle locale de l’endpoint backend avec Groq et le parcours Angular IA-2 sont désormais validés manuellement par l’utilisateur, y compris l’indisponibilité 503 sans clé après redémarrage ; les tests automatisés restent hors ligne.
 
 ## 19. État final de la conception
 
@@ -1226,14 +1226,14 @@ Les éléments non fournis concernant l’identité ou le nombre des annotateurs
 - Accuracy, Macro-F1 et matrices de confusion restent les métriques principales ; exact match reste secondaire et sous-priorisation complémentaire. Les échecs restent inclus dans les calculs et visibles.
 - GROQ / `qwen/qwen3.8-27b` retenu pour la V1 ; Gemini exploré non retenu et Ollama non benchmarké non retenu. Protocole exploratoire, structure des résultats et retries du benchmark conservés ; prompt et JSON Schema métier inchangés.
 - Benchmark Groq exécuté, résultats validés humainement : 24/24 sorties valides ; catégorie 23/24 (95,8 %) ; priorité et exact match 22/24 (91,7 %) ; aucune sous-priorisation ni sortie invalide observée.
-- Bloc IA-1 backend : **IMPLEMENTED + VALIDATED par les tests automatisés** ; endpoint RT disponible, validation humaine finale des propositions obligatoire.
+- Bloc IA-1 backend : **IMPLEMENTED + VALIDATED par les tests automatisés** ; endpoint RT disponible, intégration backend → Groq validée manuellement dans l’environnement local ; validation humaine finale des propositions toujours obligatoire.
 
 ### Limites et travail restant
 
 - Benchmark Gemini incomplet à cause des limites du Free Tier ; aucune conclusion de supériorité entre modèles.
 - Aucun résultat brut final manquant n’est fabriqué ; les observations de benchmark sont attribuées à la validation humaine.
-- Validation réelle du nouvel endpoint backend avec Groq sur l’environnement cible non effectuée pendant IA-1.
-- Bloc IA-2 Angular : **IMPLEMENTED + VALIDATED par les tests automatisés** ; build production et suite frontend réussis (184 tests réussis, 0 échoué, 15 fichiers). Dans /demandes/nouvelle, le RT déclenche manuellement l’analyse du titre et de la description via le backend, sans appel Angular direct au fournisseur. Les propositions sont affichées sans application automatique ; un clic humain explicite les applique, puis les valeurs finales restent modifiables. Une modification du titre ou de la description invalide la suggestion et nécessite une nouvelle analyse volontaire, sans réinitialiser les valeurs déjà appliquées. Panne IA non bloquante, aucune persistance automatique des suggestions. Validation humaine navigateur IA-2 encore à effectuer ; aucune affirmation que la fonctionnalité complète frontend + backend est humainement validée.
+- Validation réelle locale backend → Groq effectuée avec succès par l’utilisateur ; indisponibilité 503 sans clé Groq après redémarrage backend et qualification manuelle toujours disponible vérifiées.
+- Bloc IA-2 Angular : **IMPLEMENTED + VALIDATED par les tests automatisés** ; build production et suite frontend réussis (184 tests réussis, 0 échoué, 15 fichiers). Dans /demandes/nouvelle, le RT déclenche manuellement l’analyse du titre et de la description via le backend, sans appel Angular direct au fournisseur. Les propositions sont affichées sans application automatique ; un clic humain explicite les applique, puis les valeurs finales restent modifiables. Une modification du titre ou de la description invalide la suggestion et nécessite une nouvelle analyse volontaire, sans réinitialiser les valeurs déjà appliquées. Panne IA non bloquante, aucune persistance automatique des suggestions. Validation humaine locale confirmée par l’utilisateur : connexion RT, ouverture de /demandes/nouvelle, analyse réelle Angular → Spring Boot → Groq et affichage d’une catégorie et d’une priorité, sans application automatique ; application par clic humain explicite, modification manuelle possible et création avec les valeurs finales du RT ; invalidation après modification du titre ou de la description, sans nouvelle analyse automatique ; espacement du bloc IA vérifié dans le navigateur. Sans GROQ_API_KEY locale et après redémarrage backend, indisponibilité 503 vérifiée, avec saisie et qualification manuelles toujours disponibles. Le parcours IA V1 est terminé et validé humainement dans son périmètre défini ; le statut global du document reste DRAFT.
 - Weighted Cohen’s Kappa OPTIONNEL / À VALIDER, sans pondération choisie.
 - Aucun seuil d’acceptation chiffré validé.
 

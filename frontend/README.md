@@ -2,7 +2,7 @@
 
 F1 est implémenté et validé humainement (IMPLEMENTED + VALIDATED), intégré dans main.
 F2 est implémenté et validé humainement (IMPLEMENTED + VALIDATED), selon la confirmation explicite de l’utilisateur.
-F3 et F4 sont implémentés et validés humainement conformément à PROJECT_TRUTH. IA-1 backend est disponible ; IA-2 Angular est intégré dans la création de demande RT et validé par les tests automatisés. La validation humaine navigateur IA-2 reste à faire.
+F3 et F4 sont implémentés et validés humainement conformément à PROJECT_TRUTH. IA-1 backend est disponible ; IA-2 Angular est intégré dans la création de demande RT et validé par les tests automatisés. Le parcours IA-2 est désormais validé manuellement dans le navigateur : analyse réelle, affichage des propositions sans application automatique, application explicite, modification manuelle, création avec les valeurs finales, invalidation après modification du texte sans relance automatique, espacement vérifié et scénario 503 sans clé après redémarrage, sans blocage du mode manuel.
 
 ## Périmètre
 
@@ -107,7 +107,7 @@ chargées en groupe après pagination, avec consultation groupée des rôles uti
 
 Les ADR et documents de conception VALIDATED restent inchangés. Leurs phrases historiques
 « sans implémentation » décrivent la conception ; PROJECT_TRUTH donne l’état actuel.
-L’endpoint IA-1 backend est désormais disponible ; IA-2 Angular appelle POST /api/v1/demandes/analyse-ia depuis /demandes/nouvelle, sur clic explicite du RT, avec uniquement titre et description. Angular n’appelle jamais Groq directement. Les suggestions temporaires de catégorie/priorité sont appliquées par clic humain explicite et restent modifiables avant création, sans persistance automatique. Modifier le titre ou la description invalide les suggestions et invite à relancer volontairement l’analyse ; les valeurs déjà appliquées restent éditables. Une panne IA ne bloque pas la qualification manuelle. Vérification de clôture : npm run build et npm test -- --watch=false réussis, 184 tests réussis, 0 échoué dans 15 fichiers. La validation humaine navigateur IA-2 reste à faire.
+L’endpoint IA-1 backend est désormais disponible ; IA-2 Angular appelle POST /api/v1/demandes/analyse-ia depuis /demandes/nouvelle, sur clic explicite du RT, avec uniquement titre et description. Angular n’appelle jamais Groq directement. Les suggestions temporaires de catégorie/priorité sont appliquées par clic humain explicite et restent modifiables avant création, sans persistance automatique. Modifier le titre ou la description invalide les suggestions et invite à relancer volontairement l’analyse ; les valeurs déjà appliquées restent éditables. Une panne IA ne bloque pas la qualification manuelle. Vérification de clôture : npm run build et npm test -- --watch=false réussis, 184 tests réussis, 0 échoué dans 15 fichiers. Le parcours IA-2 est désormais validé manuellement dans le navigateur : analyse réelle, affichage des propositions sans application automatique, application explicite, modification manuelle, création avec les valeurs finales, invalidation après modification du texte sans relance automatique, espacement vérifié et scénario 503 sans clé après redémarrage, sans blocage du mode manuel.
 
 ## Fichiers F2 — livraison précédente
 
