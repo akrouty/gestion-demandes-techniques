@@ -1,6 +1,7 @@
 package com.akrouty.gestiondemandes.request.presentation;
 
 import com.akrouty.gestiondemandes.identity.domain.Role;
+import com.akrouty.gestiondemandes.request.application.AnalyseIaService;
 import com.akrouty.gestiondemandes.request.application.CreationDemandeCommand;
 import com.akrouty.gestiondemandes.request.application.DemandeConsultation;
 import com.akrouty.gestiondemandes.request.application.DemandeResumeConsultation;
@@ -52,9 +53,17 @@ public class DemandeController {
 			"dateCreation", "dateModification", "reference", "titre", "statut", "categorie", "priorite");
 
 	private final DemandeService service;
+	private final AnalyseIaService analyseIaService;
 
-	public DemandeController(DemandeService service) {
+	public DemandeController(DemandeService service, AnalyseIaService analyseIaService) {
 		this.service = service;
+		this.analyseIaService = analyseIaService;
+	}
+
+	@PostMapping("/analyse-ia")
+	public AnalyseIaResponse analyser(@Valid @RequestBody AnalyseIaRequest request) {
+		var resultat = analyseIaService.analyser(request.titre(), request.description());
+		return new AnalyseIaResponse(resultat.categorieProposee(), resultat.prioriteProposee());
 	}
 
 	// ---------------------------------------------------------------- création

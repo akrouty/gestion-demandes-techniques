@@ -1,0 +1,7 @@
+caseId,provider,model,promptVersion,categorieReference,prioriteReference,categoriePredite,prioritePredite,sortieValide,typeErreur,latenceMs,inputTokens,outputTokens,totalTokens,coutObserveUsd
+P01,GEMINI,gemini-3.8-flash,AI-QUALIFICATION-PROMPT-v1.0.0,ETUDE_DANGERS,HAUTE,,,false,HTTP_429,1004.968,,,,
+P02,GEMINI,gemini-3.8-flash,AI-QUALIFICATION-PROMPT-v1.0.0,ANALYSE_RISQUES_INDUSTRIELS,MOYENNE,,,false,HTTP_429,847.67,,,,
+P03,GEMINI,gemini-3.8-flash,AI-QUALIFICATION-PROMPT-v1.0.0,PROTECTION_INCENDIE,CRITIQUE,,,false,HTTP_429,1047.575,,,,
+P04,GEMINI,gemini-3.8-flash,AI-QUALIFICATION-PROMPT-v1.0.0,NOTE_CALCUL,MOYENNE,,,false,HTTP_429,736.001,,,,
+P05,GEMINI,gemini-3.8-flash,AI-QUALIFICATION-PROMPT-v1.0.0,DOSSIER_TECHNIQUE,BASSE,,,false,HTTP_429,745.855,,,,
+P06,GEMINI,gemini-3.8-flash,AI-QUALIFICATION-PROMPT-v1.0.0,ASSISTANCE_REGLEMENTAIRE,MOYENNE,,,false,HTTP_429,700.351,,,,

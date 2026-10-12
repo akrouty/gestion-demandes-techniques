@@ -55,12 +55,12 @@ class ClientAgentApiTest extends WorkflowApiTestSupport {
     }
 
     @Test
-    void aucun_crud_client_ni_endpoint_ia_historique() {
+    void aucun_crud_client_ni_endpoint_historique_autonome() {
         var routes = mappings.getHandlerMethods().keySet();
         assertThat(routes.stream().filter(r -> r.getPatternValues().stream().anyMatch(p -> p.startsWith("/api/v1/clients"))))
                 .allSatisfy(r -> assertThat(r.getMethodsCondition().getMethods()).containsExactly(RequestMethod.GET));
         assertThat(routes.stream().flatMap(r -> r.getPatternValues().stream()))
-                .noneMatch(p -> p.contains("analyse-ia") || p.contains("historique"));
+                .noneMatch(p -> p.contains("historique"));
     }
 
     @Test

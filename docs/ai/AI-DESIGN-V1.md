@@ -4,7 +4,7 @@
 
 **DRAFT**
 
-Document de conception transcrit à partir des décisions retenues et des propositions explicitement marquées à valider dans la discussion. Les six conventions métier nécessaires avant la construction du dataset sont désormais retenues pour la V1. P01–P24 et leurs labels sont désormais fonctionnellement figés et validés humainement pour le benchmark comparatif V1 exploratoire. La conception globale reste DRAFT tant que le benchmark comparatif et le choix final du modèle ne sont pas terminés. Aucune implémentation, aucun appel API IA et aucun benchmark ne sont réalisés à cette étape.
+Document de conception transcrit à partir des décisions retenues et des propositions explicitement marquées à valider dans la discussion. Les six conventions métier nécessaires avant la construction du dataset sont désormais retenues pour la V1. P01–P24 et leurs labels sont désormais fonctionnellement figés et validés humainement pour le benchmark comparatif V1 exploratoire. La conception globale reste DRAFT en l’absence de validation humaine explicite de son statut global. Le benchmark exploratoire Groq et le choix Groq/Qwen V1 sont validés humainement ; Gemini est incomplet. Le Bloc IA-1 backend est implémenté et validé par les tests automatisés ; Angular IA-2 reste non implémenté. Aucun appel fournisseur réel ni benchmark n’est exécuté pendant cette implémentation.
 
 ## 1. Objectif et limites du module IA
 
@@ -21,7 +21,7 @@ Décisions déjà retenues :
 - aucun auto-assignment ni aucune décision métier automatique ;
 - aucun fallback déterministe de classification/priorisation présenté comme de l’IA ;
 - aucun résumé IA en V1 ;
-- aucun benchmark complet ni aucune implémentation Spring Boot/Angular à cette étape.
+- Bloc IA-1 Spring Boot implémenté et validé techniquement ; Angular IA-2 non implémenté ; comparaison Gemini/Groq incomplète, sans conclusion de supériorité.
 
 ## 2. Entrée
 
@@ -47,14 +47,14 @@ Ces propositions sont temporaires. Elles ne créent ni ne modifient automatiquem
 request → AnalyseIaPort → module ai / adaptateur fournisseur
 ```
 
-`request` dépend du port sans connaître son implémentation fournisseur. Le module `ai` porte l’adaptateur fournisseur prévu par la conception. Aucune implémentation de `AnalyseIaPort` ni aucun adaptateur fournisseur n’est créé par ce document.
+`request` dépend du port sans connaître son implémentation fournisseur. Le flux backend réalisé est `DemandeController → AnalyseIaService → AnalyseIaPort → ai.groq.GroqAnalyseIaAdapter → Groq`. Le résultat applicatif contient uniquement les enums `Categorie` et `Priorite`. Le service IA n’a ni repository, ni transaction, ni logique fournisseur ; le domaine ne dépend pas de HTTP ou de Groq.
 
 Références existantes consultées :
 
 - [ADR-002 — Architecture backend V1](../adr/ADR-002-architecture-backend-v1.md), section 8 : frontière `request` / `AnalyseIaPort` / `ai` ;
 - [API-CONTRACT-V1](../api/API-CONTRACT-V1.md) : `POST /api/v1/demandes/analyse-ia`, accessible au RT, sans création ni modification de demande, avec propositions temporaires et qualification manuelle toujours possible.
 
-Les champs d’entrée/sortie et les codes enums ci-dessous correspondent à ce contrat. Aucun de ces documents n’est modifié. Aucun fournisseur ou modèle final n’est retenu.
+Les champs d’entrée/sortie et les codes enums ci-dessous correspondent à ce contrat. Aucun de ces documents n’est modifié. Le fournisseur V1 est GROQ, modèle `qwen/qwen3.8-27b`, désormais retenu humainement.
 
 ## 5. Taxonomie des sept catégories V1
 
@@ -297,7 +297,7 @@ Schéma exact fourni :
 
 ## 9. Validation backend attendue
 
-Même avec Structured Outputs, Spring Boot reste l’autorité de validation. Il devra vérifier :
+Même avec Structured Outputs, Spring Boot reste l’autorité de validation. Le Bloc IA-1 vérifie effectivement :
 
 1. réponse présente ;
 2. réponse non vide ;
@@ -308,7 +308,7 @@ Même avec Structured Outputs, Spring Boot reste l’autorité de validation. Il
 7. `categorieProposee` appartient à l’enum V1 ;
 8. `prioriteProposee` appartient à l’enum V1.
 
-Une sortie invalide ne doit jamais être automatiquement corrigée. Ces contrôles sont attendus pour l’implémentation future ; ils ne sont pas implémentés par ce document.
+Une sortie invalide n’est jamais automatiquement corrigée. L’adaptateur vérifie aussi la racine objet, les types textuels, les clés dupliquées et les données JSON finales supplémentaires. L’enveloppe doit contenir une seule choice terminée (`finish_reason = stop`), un message assistant et un contenu non blanc ; refus, appel d’outil ou réponse tronquée produisent un échec. Les valeurs sont vérifiées exactement contre les enums métier existants, sans normalisation.
 
 ## 10. Stratégie d’erreur non bloquante
 
@@ -334,20 +334,25 @@ aucune suggestion IA → aucune valeur inventée → qualification manuelle touj
 
 Aucun fallback automatique de classification ou priorisation. Les timeouts doivent être configurables, mais aucune valeur chiffrée n’est encore validée.
 
-Conformément à API-CONTRACT-V1, une indisponibilité temporaire de l’analyse IA peut produire HTTP 503 Service Unavailable lorsque cette cause s’applique.
+Conformément à API-CONTRACT-V1 et au mapping V1 retenu pour IA-1, timeout, erreur réseau, tout HTTP fournisseur non réussi (dont 429 et 5xx), réponse invalide/vide et configuration IA absente produisent HTTP 503 sur l’analyse IA uniquement. Le handler existant retourne le code `ANALYSE_IA_INDISPONIBLE` et un message générique, sans cause fournisseur, body, clé, URL ou stack trace. Aucun retry automatique ni fallback métier n’est ajouté au backend ; la politique de retry du benchmark reste distincte.
 
-## 11. Fournisseurs et modèles candidats — contrainte de stage
+### Configuration backend IA-1
 
-OpenAI GPT-5.6 Luna et Mistral Small 4 avaient été préparés comme candidats. Dans la situation du stage rapportée par l’utilisateur, leur utilisation API réelle nécessite une activation de facturation. La contrainte V1 retenue est désormais **coût API = 0, sans carte bancaire**. Ils ne sont donc pas utilisés pour le benchmark V1. Cela n’est **PAS une conclusion sur leur qualité**. Les anciennes sources et les artefacts d’exécution restent conservés pour la traçabilité historique.
+La clé provient de `GROQ_API_KEY`. Le timeout provient de `GROQ_TIMEOUT`, lié comme `Duration` Spring (format ISO-8601 recommandé), sans valeur par défaut. Les deux propriétés peuvent être absentes sans empêcher le démarrage ; l’appel IA renvoie alors 503 sans appel réseau. Le client est `RestClient` avec le transport HTTP JDK disponible, sans SDK Groq Java ni nouvelle dépendance. Le modèle reste fixé dans l’adaptateur.
 
-| Fournisseur | provider CSV | Modèle candidat | Accès prévu |
-|---|---|---|---|
-| Google | `GEMINI` | Gemini 3.8 Flash — `gemini-3.8-flash` | Gemini API Free Tier |
-| Groq | `GROQ` | Qwen 3.8 27B — `qwen/qwen3.8-27b` | Groq Free Plan |
+`GroqProperties.baseUrl` sert à injecter le stub HTTP local dans les tests ; sa valeur normale reste l’URL officielle Groq. Les variables Groq doivent être fournies à l’environnement du processus : le script local `start-dev.ps1` ne les charge pas depuis sa liste fermée de variables `.env`. Aucun fichier de secret ni script de démarrage n’est modifié. Aucun log de clé, titre, description, prompt ou réponse brute n’est ajouté.
 
-Ces candidats sont retenus pour leur accessibilité actuelle sur les offres gratuites, suffisantes en principe pour ce benchmark exploratoire de 24 cas par modèle, sous réserve des quotas et de l’éligibilité des comptes. Aucun paiement n’est requis pour le benchmark prévu tant que les comptes restent sur leurs free tiers ; aucune permanence future de ces conditions n’est promise. Les comptes, quotas effectifs et l’absence de facturation n’ont pas été vérifiés par appel API.
+## 11. Fournisseur et modèle retenus pour la V1
 
-Aucun fournisseur ni modèle final n’est choisi pour l’intégration. Aucune décision métier, aucun cas, label, difficulté, prompt, JSON Schema ou métrique ne change à cause de cette contrainte.
+**Provider : GROQ. Modèle : `qwen/qwen3.8-27b`.** Ce choix V1 est retenu humainement à la suite du benchmark exploratoire P01–P24 : compromis entre qualité observée, accessibilité cloud constatée pour le stage, quotas pratiques observés et simplicité d’intégration. Il ne constitue pas une preuve générale de performance.
+
+Gemini 3.8 Flash reste un candidat exploré mais non retenu pour la V1 : son benchmark n’a pas été mené complètement à cause des limites rencontrées sur le Free Tier. Aucune conclusion « Groq meilleur que Gemini » ne peut être tirée de cette comparaison incomplète.
+
+OpenAI GPT-5.6 Luna et Mistral Small 4 avaient été préparés comme candidats ; leur utilisation API nécessitait dans la situation rapportée du stage une activation de facturation. La contrainte V1 de stage reste coût API = 0 sans carte bancaire. Leur exclusion n’est pas une conclusion sur leur qualité ; les anciennes sources et artefacts restent historiques.
+
+Ollama local n’est pas retenu pour cette V1 : il n’a pas été benchmarké sur P01–P24 et ajouterait un axe d’intégration supplémentaire non nécessaire. Aucun nouveau modèle n’est comparé ou choisi dans ce bloc.
+
+Les conditions des offres gratuites peuvent évoluer ; aucun coût financier n’est codé en dur. Aucun cas, label, difficulté, convention métier, prompt, JSON Schema ou métrique n’est modifié par le choix fournisseur.
 
 ## 12. Dataset d’évaluation V1 figé
 
@@ -1065,9 +1070,24 @@ Son utilisation n’est pas acquise. **Aucune pondération linéaire ou quadrati
 
 Référence principale : Cohen (1968). Documentation technique éventuelle : `cohen_kappa_score`.
 
-## 16. Protocole de benchmark V1 figé, non exécuté
+## 16. Protocole figé et résultats exploratoires validés
 
-**Le benchmark comparatif V1 exploratoire Gemini/Groq n’est PAS encore exécuté.** Les conventions métier, P01–P24, leurs labels et difficultés, leur provenance et statut, les métriques, le prompt `AI-QUALIFICATION-PROMPT-v1.0.0` et le JSON Schema métier restent strictement inchangés.
+**Le benchmark Groq P01–P24 a été exécuté et ses résultats sont validés humainement. Le benchmark Gemini est incomplet à cause des limites rencontrées sur son Free Tier.** Les conventions métier, P01–P24, leurs labels et difficultés, leur provenance et statut, les métriques, le prompt `AI-QUALIFICATION-PROMPT-v1.0.0` et le JSON Schema métier restent strictement inchangés.
+
+### Résultats Groq observés et validés humainement
+
+| Observation | Résultat validé |
+|---|---|
+| Sorties valides | 24/24 |
+| Accuracy catégorie | 23/24 = 95,8 % |
+| Accuracy priorité | 22/24 = 91,7 % |
+| Exact match catégorie + priorité | 22/24 = 91,7 % |
+| Sous-priorisation observée | Aucune |
+| Sorties invalides | Aucune |
+
+Ces valeurs sont celles explicitement observées et validées humainement par l’utilisateur. Les artefacts bruts finaux ne sont pas présents dans Git : les fichiers actifs locaux sont non suivis, tandis que les archives historiques sont conservées. Aucun fichier de résultat absent n’est fabriqué ou ajouté ; aucun Macro-F1 ni matrice chiffrée supplémentaire n’est inventé. L’évaluation reste exploratoire sur 24 cas synthétiques, non statistiquement représentative de la production Safyron. Elle ne permet pas d’affirmer que Groq/Qwen est meilleur que Gemini.
+
+Le protocole ci-dessous conserve la trace des deux candidats initialement préparés ; seul GROQ / `qwen/qwen3.8-27b` est retenu pour l’intégration V1.
 
 ### Candidats et API
 
@@ -1098,7 +1118,7 @@ Les différences de paramètres et de sémantique fournisseur sont documentées 
 
 Les documentations officielles consultées le 2026-10-11 confirment le Free Tier Gemini 3.8 Flash, le Free Plan et les limites Groq, les modèles, les sorties structurées, les paramètres de raisonnement et le format Interactions `v1`. Les sources sont consignées dans [SOURCES-LOG](../../report/bibliography/SOURCES-LOG.md), SRC-023 à SRC-033 ; les références OpenAI/Mistral restent historiques.
 
-La liste de valeurs du champ `model` dans la référence Interactions v1 consultée n’inclut pas encore `gemini-3.8-flash`, alors que la page officielle du modèle et les exemples Gemini le documentent. La compatibilité effective de ce modèle avec `v1` reste à confirmer ; aucune propriété manquante n’est inventée et aucun fallback vers v1beta n’est ajouté. Aucun accès de compte ni appel réel n’est testé ici.
+La liste de valeurs du champ `model` dans la référence Interactions v1 consultée n’inclut pas encore `gemini-3.8-flash`, alors que la page officielle du modèle et les exemples Gemini le documentent. La compatibilité effective de ce modèle avec `v1` reste à confirmer ; aucune propriété manquante n’est inventée et aucun fallback vers v1beta n’est ajouté. Cette limite documentaire concerne le candidat exploré Gemini et ne remet pas en cause le choix Groq V1. Aucun accès de compte ni appel réel supplémentaire n’est testé pendant IA-1.
 
 ### Volume prévu
 
@@ -1106,7 +1126,7 @@ La liste de valeurs du champ `model` dans la référence Interactions v1 consult
 - 24 appels Groq.
 - 48 appels métier, hors au maximum un retry technique par cas si l’option existante est activée.
 
-Benchmark comparatif et exploratoire, non statistiquement représentatif ; aucune preuve générale de performance ni décision de modèle final.
+Le volume comparatif prévu était de 24 cas par modèle. Groq a été mené à terme et Gemini est incomplet ; le choix Groq V1 est un compromis validé humainement, sans preuve générale de performance ni classement comparatif complet.
 
 ### Rate limits et pacing Groq
 
@@ -1122,7 +1142,7 @@ Le pacing volontaire est tracé séparément en `pacingSeconds` et **exclu de `l
 caseId,provider,model,promptVersion,categorieReference,prioriteReference,categoriePredite,prioritePredite,sortieValide,typeErreur,latenceMs,inputTokens,outputTokens,totalTokens,coutObserveUsd
 ```
 
-Une ligne correspond à un couple `cas × modèle`, avec uniquement `GEMINI` ou `GROQ` comme provider pour cette nouvelle exécution. Les coûts restent nullables ; aucun tarif ni coût financier n’est codé en dur. Les tokens restent vides si indisponibles. Aucune ligne de résultat n’est créée dans ce bloc ; les artefacts historiques ne sont ni supprimés ni écrasés.
+Une ligne correspond à un couple `cas × modèle`, avec uniquement `GEMINI` ou `GROQ` comme provider pour cette nouvelle exécution. Les coûts restent nullables ; aucun tarif ni coût financier n’est codé en dur. Les tokens restent vides si indisponibles. Aucune ligne de résultat n’est créée pendant IA-1 ; les artefacts historiques ne sont ni supprimés ni écrasés.
 
 ### Retries — règles versionnées dans le protocole V1
 
@@ -1148,7 +1168,7 @@ Aucun mécanisme complexe de retry n’est défini dans ce bloc.
 - **Technique :** types d’erreur, sorties invalides, latence, tokens/coûts disponibles et fiables.
 - **Optionnel :** Weighted Cohen’s Kappa uniquement s’il est validé ultérieurement.
 
-Aucun résultat, classement final, nouvelle métrique ou seuil d’acceptation n’est présenté. Les timeouts restent un choix explicite de l’opérateur, sans convention métier chiffrée ajoutée.
+Seuls les résultats explicitement validés humainement ci-dessus sont rapportés. Aucun classement complet, nouvelle métrique ou seuil d’acceptation n’est ajouté. Les timeouts restent un choix explicite de l’opérateur, sans convention métier chiffrée ajoutée.
 
 ## 17. Références méthodologiques et traçabilité
 
@@ -1183,18 +1203,17 @@ Klie, J.-C., Eckart de Castilho, R., & Gurevych, I. (2024). *Analyzing Dataset A
 
 Restent ouverts :
 
-- fournisseur final et modèle final pour l’intégration ;
 - utilisation ou non du Weighted Cohen’s Kappa et pondération éventuelle ;
 - valeurs des timeouts techniques ;
 - tout seuil d’acceptation éventuel.
 
 Les six conventions métier V1 sont fermées comme **CONVENTIONS V1 RETENUES**. Le dataset V1 P01–P24, sa provenance `IA_ASSISTE_RELU_HUMAINEMENT`, ses labels validés humainement, sa couverture, ses métriques et le protocole décrit en section 16 sont figés pour cette étape. Ils ne sont plus présentés comme des décisions ouvertes. L’absence de dataset historique exploitable chez Safyron est connue.
 
-Les éléments non fournis concernant l’identité ou le nombre des annotateurs et l’historique d’adjudication ne sont pas inventés. La compatibilité effective de `gemini-3.8-flash` avec Interactions v1 reste un point documentaire à confirmer, sans remise en cause des décisions métier ni exécution d’un appel API.
+Les éléments non fournis concernant l’identité ou le nombre des annotateurs et l’historique d’adjudication ne sont pas inventés. La compatibilité effective de `gemini-3.8-flash` avec Interactions v1 reste une limite documentaire historique du candidat non retenu. Le choix Groq V1 est fermé ; la validation réelle de l’endpoint backend avec Groq sur l’environnement cible n’est pas effectuée pendant ce bloc, dont les tests restent hors ligne.
 
 ## 19. État final de la conception
 
-**DRAFT.** `AI-DESIGN-V1.md` reste globalement DRAFT tant que le benchmark comparatif et le choix final du modèle ne sont pas terminés.
+**DRAFT.** Le statut global du document n’a pas reçu de validation humaine explicite. Le choix fournisseur/modèle V1 et les résultats exploratoires Groq sont toutefois validés humainement ; la comparaison Gemini/Groq est incomplète.
 
 ### Figé pour cette étape V1
 
@@ -1205,15 +1224,17 @@ Les éléments non fournis concernant l’identité ou le nombre des annotateurs
 - Couverture contrôlée : 24 cas ; sept catégories, quatre priorités et trois niveaux de difficulté.
 - Benchmark comparatif V1 exploratoire : ce dataset ne représente pas statistiquement la production réelle et ne prouve aucune performance générale.
 - Accuracy, Macro-F1 et matrices de confusion restent les métriques principales ; exact match reste secondaire et sous-priorisation complémentaire. Les échecs restent inclus dans les calculs et visibles.
-- Protocole comparatif, modèles candidats, API, structure future des résultats et règles de retries documentés ; prompt et JSON Schema métier inchangés.
+- GROQ / `qwen/qwen3.8-27b` retenu pour la V1 ; Gemini exploré non retenu et Ollama non benchmarké non retenu. Protocole exploratoire, structure des résultats et retries du benchmark conservés ; prompt et JSON Schema métier inchangés.
+- Benchmark Groq exécuté, résultats validés humainement : 24/24 sorties valides ; catégorie 23/24 (95,8 %) ; priorité et exact match 22/24 (91,7 %) ; aucune sous-priorisation ni sortie invalide observée.
+- Bloc IA-1 backend : **IMPLEMENTED + VALIDATED par les tests automatisés** ; endpoint RT disponible, validation humaine finale des propositions obligatoire.
 
-### Toujours non réalisé ou non décidé
+### Limites et travail restant
 
-- Benchmark comparatif V1 exploratoire non exécuté ; aucune prédiction ni aucun résultat produit.
-- Fournisseur et modèle final non choisis ; les candidats du benchmark sont désormais Gemini 3.8 Flash et Qwen 3.8 27B via Groq, selon la contrainte de stage coût API = 0 sans carte bancaire.
-- IA non implémentée côté Spring Boot.
-- IA non implémentée côté Angular.
+- Benchmark Gemini incomplet à cause des limites du Free Tier ; aucune conclusion de supériorité entre modèles.
+- Aucun résultat brut final manquant n’est fabriqué ; les observations de benchmark sont attribuées à la validation humaine.
+- Validation réelle du nouvel endpoint backend avec Groq sur l’environnement cible non effectuée pendant IA-1.
+- Angular IA-2 : **NON IMPLÉMENTÉ** ; aucune affirmation que la fonctionnalité complète frontend + backend est terminée.
 - Weighted Cohen’s Kappa OPTIONNEL / À VALIDER, sans pondération choisie.
 - Aucun seuil d’acceptation chiffré validé.
 
-Aucune intégration applicative ni configuration Spring Boot/Angular n’est créée ; le script autonome de benchmark est préparé et vérifié hors ligne, sans création de résultats. Aucun appel fournisseur n’est exécuté dans ce bloc. Les ADR, `functional-scope.md` et `API-CONTRACT-V1.md` ne sont pas modifiés.
+Vérification IA-1 : 65 tests ciblés réussis, dont 50 nouveaux tests IA ; `clean test` et `clean verify` réussis chacun avec 270 tests, sans échec, erreur ni test ignoré. Les 220 tests backend antérieurs restent verts. Tests H2 + stub HTTP local, sans clé réelle ni appel Groq. Aucun fichier Angular, dépendance Maven, migration Flyway, règle RBAC existante, benchmark ou dataset n’est modifié. Les ADR, `functional-scope.md` et `API-CONTRACT-V1.md` restent inchangés.

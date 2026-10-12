@@ -2,6 +2,7 @@ package com.akrouty.gestiondemandes.request.presentation;
 
 import com.akrouty.gestiondemandes.identity.application.UtilisateurIntrouvableException;
 import com.akrouty.gestiondemandes.request.application.AccesDemandeInterditException;
+import com.akrouty.gestiondemandes.request.application.AnalyseIaIndisponibleException;
 import com.akrouty.gestiondemandes.request.application.AgentNonAffectableException;
 import com.akrouty.gestiondemandes.request.application.ClientIntrouvableException;
 import com.akrouty.gestiondemandes.request.application.DemandeIntrouvableException;
@@ -29,6 +30,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice(assignableTypes = {
 		DemandeController.class, ClientController.class, AgentController.class})
 public class DemandeApiExceptionHandler {
+
+	@ExceptionHandler(AnalyseIaIndisponibleException.class)
+	public ResponseEntity<ErreurApi> analyseIaIndisponible(AnalyseIaIndisponibleException erreur) {
+		return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+				.body(ErreurApi.simple("ANALYSE_IA_INDISPONIBLE", "Analyse IA temporairement indisponible."));
+	}
 
 	// ---------------------------------------------------------------- 404
 
