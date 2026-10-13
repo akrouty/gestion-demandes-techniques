@@ -1,9 +1,11 @@
 @startuml
 !pragma horizontalLineBetweenDifferentPackageAllowed
 ' Statut : DRAFT
-' Vue logique limitée ; aucun détail de déploiement.
-' Les contrats portent des noms architecturaux ; seule AnalyseIaPort est une interface Java.
-' layoutWide est un sélecteur graphique masqué, sans signification architecturale.
+' Vue d'architecture logique limitée ; aucun détail de déploiement.
+' Service d'identité : contrat applicatif de la classe IdentiteService, pas une interface Java.
+' Persistance JPA : accès applicatif via Spring Data JPA/Hibernate à PostgreSQL.
+' PostgreSQL est le système de persistance ; il ne fournit pas l'API JPA.
+' Le Port/Adapter concerne uniquement l'intégration IA.
 title Composants applicatifs V1 — DRAFT
 top to bottom direction
 skinparam monochrome true
@@ -11,56 +13,40 @@ skinparam shadowing false
 skinparam backgroundColor white
 skinparam componentStyle uml2
 skinparam defaultFontSize 18
-skinparam ArrowFontSize 15
-skinparam titleFontSize 20
+skinparam ArrowFontSize 16
+skinparam titleFontSize 22
+skinparam linetype ortho
+skinparam nodesep 150
+skinparam ranksep 100
 <style>
 component {
-  HorizontalAlignment center
-  MinimumWidth 200
-  .layoutWide {
-    MinimumWidth 360
-  }
-}
-database {
-  MinimumWidth 320
-  HorizontalAlignment center
+ HorizontalAlignment center
+ MinimumWidth 240
+ .wide { MinimumWidth 760 }
 }
 </style>
 hide stereotype
-skinparam linetype ortho
-skinparam nodesep 130
-skinparam ranksep 95
 rectangle "Système de gestion des demandes techniques" as SYSTEM {
-  component "Angular SPA" as SPA
-  rectangle "Spring Boot — monolithe modulaire\n" as BACKEND #line:transparent;back:F7F7F7 {
+  component "Angular SPA" as SPA <<wide>>
+  rectangle "Spring Boot — monolithe modulaire" as BACKEND #line:transparent;back:F7F7F7 {
     component "Sécurité" as SECURITY
+    component "Identité / Administration" as IDENTITY
     component "Gestion des demandes" as REQUEST
-    component "Identité / Administration" as IDENTITY <<layoutWide>>
     component "Adaptateur IA Groq" as AI
   }
   database "PostgreSQL" as POSTGRES
 }
 rectangle "Groq API\n« système externe »" as GROQ
-SPA #-right(0-# SECURITY : \nAPI Authentification
-SPA #-right(0-# REQUEST : API Demandes
-SPA #-[norank](0-# IDENTITY : \nAPI Administration
-SECURITY #-down(0-# IDENTITY : Service identités et rôles
-REQUEST #-down(0-# IDENTITY : Service identités et rôles
-' Vue compacte des ports UML : chaque extrémité # dessine un carré sur le cadre.
-' Chaque port appartient au composant auquel son extrémité est rattachée.
-' Assemblies : socket côté port consommateur, lollipop côté port fournisseur.
-' Identités et rôles : même contrat IdentiteService, deux usages représentés.
-REQUEST #-right(0-# AI : AnalyseIaPort
-AI #-right(0-# GROQ : API Groq
-POSTGRES #-up0)-# REQUEST : Données demandes
-IDENTITY #-down(0-# POSTGRES : Données identités
-' Contraintes graphiques uniquement ; aucun lien sémantique supplémentaire.
-REQUEST -[hidden]right-> AI
-REQUEST -[hidden]down-> IDENTITY
-
-SECURITY -[hidden]right-> REQUEST
-IDENTITY -[hidden]down-> POSTGRES
-
-AI -[hidden]right-> GROQ
-
+' Carrés sur cadres : ports UML ; socket consommateur, cercle fournisseur.
+SPA #-down(0-# SECURITY : API Authentification
+SPA #-down(0-# REQUEST : API Demandes\n\n<size:1> </size>
+SPA #-down(0-# IDENTITY : API Administration
+IDENTITY #-left0)-# SECURITY : Service d'identité
+REQUEST #-up(0-# IDENTITY : Service d'identité
+REQUEST #-down(0-# AI : AnalyseIaPort
+AI #-right(0-# GROQ : API Groq\n\n<size:1> </size>
+POSTGRES #-[norank]0)-# REQUEST : Persistance JPA
+POSTGRES #-[norank]0)-# IDENTITY : Persistance JPA
+' Contraintes graphiques uniquement, sans relation sémantique supplémentaire.
+POSTGRES -[hidden]right-> AI
 @enduml
