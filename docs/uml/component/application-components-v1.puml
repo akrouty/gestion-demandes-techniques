@@ -2,44 +2,63 @@
 !pragma horizontalLineBetweenDifferentPackageAllowed
 ' Statut : DRAFT
 ' Vue logique limitée ; aucun détail de déploiement.
+' Les contrats portent des noms architecturaux ; seule AnalyseIaPort est une interface Java.
+' layoutWide est un sélecteur graphique masqué, sans signification architecturale.
 title Composants applicatifs V1 — DRAFT
 top to bottom direction
 skinparam monochrome true
 skinparam shadowing false
 skinparam backgroundColor white
 skinparam componentStyle uml2
-skinparam linetype polyline
-skinparam nodesep 60
-skinparam ranksep 75
+skinparam defaultFontSize 18
+skinparam ArrowFontSize 15
+skinparam titleFontSize 20
+<style>
+component {
+  HorizontalAlignment center
+  MinimumWidth 200
+  .layoutWide {
+    MinimumWidth 360
+  }
+}
+database {
+  MinimumWidth 320
+  HorizontalAlignment center
+}
+</style>
+hide stereotype
+skinparam linetype ortho
+skinparam nodesep 130
+skinparam ranksep 95
 rectangle "Système de gestion des demandes techniques" as SYSTEM {
   component "Angular SPA" as SPA
-  rectangle "Spring Boot — monolithe modulaire" as BACKEND {
+  rectangle "Spring Boot — monolithe modulaire\n" as BACKEND #line:transparent;back:F7F7F7 {
     component "Sécurité" as SECURITY
     component "Gestion des demandes" as REQUEST
-    component "Identité / Administration" as IDENTITY
+    component "Identité / Administration" as IDENTITY <<layoutWide>>
     component "Adaptateur IA Groq" as AI
   }
   database "PostgreSQL" as POSTGRES
 }
 rectangle "Groq API\n« système externe »" as GROQ
-SPA -(0- SECURITY : Authentification
-SPA -(0 REQUEST : Gestion des demandes
-SPA -(0- IDENTITY : Administration des utilisateurs
-SECURITY -(0 IDENTITY : Identités et rôles
-REQUEST -(0- IDENTITY : Identités et rôles
-' Assemblies : socket côté client, lollipop côté fournisseur.
+SPA #-right(0-# SECURITY : \nAPI Authentification
+SPA #-right(0-# REQUEST : API Demandes
+SPA #-[norank](0-# IDENTITY : \nAPI Administration
+SECURITY #-down(0-# IDENTITY : Service identités et rôles
+REQUEST #-down(0-# IDENTITY : Service identités et rôles
+' Vue compacte des ports UML : chaque extrémité # dessine un carré sur le cadre.
+' Chaque port appartient au composant auquel son extrémité est rattachée.
+' Assemblies : socket côté port consommateur, lollipop côté port fournisseur.
 ' Identités et rôles : même contrat IdentiteService, deux usages représentés.
-REQUEST -(0 AI : AnalyseIaPort
-AI -(0 GROQ : API Groq
-REQUEST -(0- POSTGRES : Persistance demandes
-IDENTITY -(0- POSTGRES : Persistance identités
-' Contraintes graphiques uniquement.
+REQUEST #-right(0-# AI : AnalyseIaPort
+AI #-right(0-# GROQ : API Groq
+POSTGRES #-up0)-# REQUEST : Données demandes
+IDENTITY #-down(0-# POSTGRES : Données identités
+' Contraintes graphiques uniquement ; aucun lien sémantique supplémentaire.
 REQUEST -[hidden]right-> AI
-SPA -[hidden]down-> SECURITY
-SECURITY -[hidden]right-> IDENTITY
-
-SPA -[hidden]right-> REQUEST
 REQUEST -[hidden]down-> IDENTITY
+
+SECURITY -[hidden]right-> REQUEST
 IDENTITY -[hidden]down-> POSTGRES
 
 AI -[hidden]right-> GROQ
