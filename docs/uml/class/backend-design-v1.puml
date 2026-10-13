@@ -49,7 +49,7 @@ package security as SECURITY_MODULE {
   class LoginResponse <<DTO>>
   class AuthController <<Controller>>
   class AuthenticationService <<Service>>
-  class AuthentificationResultat <<DTO>>
+  class AuthentificationResultat <<Result>>
   class JwtService <<Service>>
   AuthController .up.> LoginRequest
   AuthController .up.> LoginResponse
