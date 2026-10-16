@@ -153,17 +153,22 @@ export class DemandesList {
   paginate(event: PageEvent): void {
     this.navigate({ ...this.query, page: event.pageIndex, size: event.pageSize });
   }
-  activeFilterCount(): number {
+  /** Filtres métier actifs (hors tri) — affichage discret « N filtres actifs ». */
+  activeBusinessFilterCount(): number {
     const value = this.filters.getRawValue();
     return [
       value.recherche.trim(),
       value.statut,
       value.priorite,
       value.categorie,
-      value.sort !== 'dateCreation,desc',
       this.query.clientId,
       this.query.agentId,
     ].filter(Boolean).length;
+  }
+  /** Comprend le tri non par défaut — pilote la réinitialisation. */
+  activeFilterCount(): number {
+    const value = this.filters.getRawValue();
+    return this.activeBusinessFilterCount() + (value.sort !== 'dateCreation,desc' ? 1 : 0);
   }
   clearSearch(): void {
     this.filters.controls.recherche.setValue('', { emitEvent: false });

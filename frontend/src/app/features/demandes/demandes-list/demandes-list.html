@@ -1,4 +1,4 @@
-<header class="page-heading">
+<header class="page-heading demandes-list-heading">
   <div>
     <h1>Demandes techniques</h1>
     <p class="muted">Consultez les demandes et suivez leur avancement.</p>
@@ -7,17 +7,7 @@
     <a mat-flat-button routerLink="/demandes/nouvelle">Nouvelle demande</a>
   }
 </header>
-<section class="surface" aria-label="Filtres des demandes">
-  <header class="filter-heading">
-    <div>
-      <h2>Filtres</h2>
-      <p class="muted">Affinez la liste des demandes.</p>
-    </div>
-    <span class="muted"
-      >{{ activeFilterCount() }}
-      {{ activeFilterCount() === 1 ? 'filtre actif' : 'filtres actifs' }}</span
-    >
-  </header>
+<section class="surface filter-bar" aria-label="Filtres des demandes">
   <form [formGroup]="filters">
     <div class="filters">
       <mat-form-field appearance="outline" subscriptSizing="dynamic"
@@ -66,8 +56,6 @@
           }
         </mat-select></mat-form-field
       >
-    </div>
-    <div class="actions">
       <mat-form-field appearance="outline" subscriptSizing="dynamic"
         ><mat-label>Trier par</mat-label
         ><mat-select formControlName="sort">
@@ -75,9 +63,24 @@
             <mat-option [value]="item.value">{{ item.label }}</mat-option>
           }
         </mat-select></mat-form-field
-      ><button mat-button type="button" (click)="reset()" [disabled]="activeFilterCount() === 0">
-        Réinitialiser les filtres
-      </button>
+      >
+      <div class="filter-actions">
+        @if (activeBusinessFilterCount() > 0) {
+          <span class="filter-count"
+            >{{ activeBusinessFilterCount() }}
+            {{ activeBusinessFilterCount() === 1 ? 'filtre actif' : 'filtres actifs' }}</span
+          >
+        }
+        <button
+          mat-button
+          type="button"
+          aria-label="Réinitialiser les filtres"
+          (click)="reset()"
+          [disabled]="activeFilterCount() === 0"
+        >
+          Réinitialiser
+        </button>
+      </div>
     </div>
   </form>
 </section>
@@ -123,32 +126,39 @@
     } @else {
       <div class="desktop-list">
         <table>
-          <caption class="muted">
-            Demandes accessibles —
-            {{
-              page.totalElements
-            }}
-            résultat(s)
+          <caption class="sr-only">
+            Demandes accessibles
           </caption>
+          <colgroup>
+            <col class="col-demande" />
+            <col class="col-client" />
+            <col class="col-categorie" />
+            <col class="col-priorite" />
+            <col class="col-statut" />
+            <col class="col-agent" />
+            <col class="col-creation" />
+          </colgroup>
           <thead>
             <tr>
-              <th>Référence / titre</th>
-              <th>Client</th>
-              <th>Catégorie</th>
-              <th>Priorité</th>
-              <th>Statut</th>
-              <th>Agent</th>
-              <th>Création</th>
+              <th scope="col">Demande</th>
+              <th scope="col">Client</th>
+              <th scope="col">Catégorie</th>
+              <th scope="col">Priorité</th>
+              <th scope="col">Statut</th>
+              <th scope="col">Agent</th>
+              <th scope="col">Création</th>
             </tr>
           </thead>
           <tbody>
             @for (item of page.items; track item.reference) {
               <tr>
                 <td>
-                  <a [routerLink]="['/demandes', item.reference]" class="reference">{{
-                    item.reference
+                  <a [routerLink]="['/demandes', item.reference]" class="demande-title">{{
+                    item.titre
                   }}</a>
-                  <p>{{ item.titre }}</p>
+                  <span class="reference demande-ref" [attr.title]="item.reference">{{
+                    item.reference
+                  }}</span>
                 </td>
                 <td>{{ item.client.nom }}</td>
                 <td>{{ categories[item.categorie] }}</td>
@@ -170,10 +180,14 @@
       <div class="mobile-list">
         @for (item of page.items; track item.reference) {
           <article class="surface">
-            <a [routerLink]="['/demandes', item.reference]" class="reference">{{
+            <h2>
+              <a [routerLink]="['/demandes', item.reference]" class="demande-title">{{
+                item.titre
+              }}</a>
+            </h2>
+            <span class="reference demande-ref" [attr.title]="item.reference">{{
               item.reference
-            }}</a>
-            <h2>{{ item.titre }}</h2>
+            }}</span>
             <div class="actions">
               <span [class]="'badge status-' + item.statut">{{ statuts[item.statut] }}</span
               ><span [class]="'badge priority-' + item.priorite">{{

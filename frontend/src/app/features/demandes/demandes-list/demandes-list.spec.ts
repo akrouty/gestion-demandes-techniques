@@ -61,7 +61,7 @@ describe('Liste des demandes', () => {
     harness.detectChanges();
     expect(harness.routeNativeElement?.textContent).toContain('Pompe à inspecter');
     expect(harness.routeNativeElement?.textContent).toContain('Client API');
-    expect(harness.routeNativeElement?.querySelector('a.reference')?.getAttribute('href')).toBe(
+    expect(harness.routeNativeElement?.querySelector('a.demande-title')?.getAttribute('href')).toBe(
       '/demandes/DT-42',
     );
     http.expectNone(
@@ -211,7 +211,7 @@ describe('Liste des demandes', () => {
     harness.detectChanges();
     const page = harness.routeDebugElement!.componentInstance as DemandesList;
     expect(page.activeFilterCount()).toBe(5);
-    expect(harness.routeNativeElement!.textContent).toContain('5 filtres actifs');
+    expect(harness.routeNativeElement!.textContent).toContain('4 filtres actifs');
     expect(harness.routeNativeElement!.textContent).toContain(
       'Aucune demande ne correspond aux filtres sélectionnés.',
     );
