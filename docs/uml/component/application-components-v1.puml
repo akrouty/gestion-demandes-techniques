@@ -45,8 +45,8 @@ IDENTITY #-left0)-# SECURITY : Service d'identité
 REQUEST #-up(0-# IDENTITY : Service d'identité
 REQUEST #-down(0-# AI : AnalyseIaPort
 AI #-right(0-# GROQ : API Groq\n\n<size:1> </size>
-POSTGRES #-[norank]0)-# REQUEST : Persistance JPA
-POSTGRES #-[norank]0)-# IDENTITY : Persistance JPA
+REQUEST .[norank].> POSTGRES : Persistance via JPA/Hibernate
+IDENTITY .[norank].> POSTGRES : Persistance via JPA/Hibernate
 ' Contraintes graphiques uniquement, sans relation sémantique supplémentaire.
 POSTGRES -[hidden]right-> AI
 @enduml
