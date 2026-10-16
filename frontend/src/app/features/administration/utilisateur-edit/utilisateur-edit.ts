@@ -1,4 +1,6 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { SuccessNotice } from '../../../shared/ui/success-notice';
+import { focusInvalid, focusFeedback } from '../../../shared/ui/feedback-focus';
+import { Component, DestroyRef, ElementRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -28,6 +30,8 @@ import { AdministrationError, UtilisateurDetailResponse, roleLabels } from '../u
   styleUrl: '../administration.scss',
 })
 export class UtilisateurEdit {
+  private readonly notice = inject(SuccessNotice);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly api = inject(AdministrationApi);
   private readonly session = inject(SessionService);
   private readonly route = inject(ActivatedRoute);
@@ -112,6 +116,7 @@ export class UtilisateurEdit {
         this.confirmDeactivate.reset(false);
         if (created === user.id) {
           this.pageSuccess.set('Utilisateur créé.');
+          this.notice.show('Utilisateur créé.');
           created = undefined;
         }
       });
@@ -135,6 +140,7 @@ export class UtilisateurEdit {
     if (!user || this.identityBusy() || this.identityReload()) return;
     if (this.identity.invalid) {
       this.identity.markAllAsTouched();
+      focusInvalid(this.host.nativeElement, this.identity, '[data-focus="identity"]');
       return;
     }
     const value = this.identity.getRawValue();
@@ -161,10 +167,17 @@ export class UtilisateurEdit {
           );
           this.identity.reset({ nom: response.nom, email: response.email });
           this.identitySuccess.set('Nom et email enregistrés.');
+          this.notice.show('Nom et email enregistrés.');
         },
         error: (error) => {
           this.identity.enable({ emitEvent: false });
           this.identityError.set(administrationError(error, this.identity));
+          focusInvalid(
+            this.host.nativeElement,
+            this.identity,
+            '[data-focus="identity"]',
+            '[data-identity-error]',
+          );
           this.identityReload.set(this.requiresReload(error));
           this.handleMissing(error);
         },
@@ -176,6 +189,7 @@ export class UtilisateurEdit {
     if (user.actif && this.isOwnAccount()) return;
     if (user.actif && this.confirmDeactivate.invalid) {
       this.confirmDeactivate.markAsTouched();
+      focusFeedback(this.host.nativeElement, '[data-confirm-deactivate] input');
       return;
     }
     this.stateBusy.set(true);
@@ -199,9 +213,11 @@ export class UtilisateurEdit {
           );
           this.confirmDeactivate.reset(false);
           this.stateSuccess.set(response.actif ? 'Compte activé.' : 'Compte désactivé.');
+          this.notice.show(response.actif ? 'Compte activé.' : 'Compte désactivé.');
         },
         error: (error) => {
           this.stateError.set(administrationError(error));
+          focusFeedback(this.host.nativeElement, '[data-state-error]');
           this.stateReload.set(this.requiresReload(error));
           this.handleMissing(error);
         },
@@ -209,7 +225,17 @@ export class UtilisateurEdit {
   }
   saveRoles(): void {
     const user = this.user();
-    if (!user || this.rolesBusy() || this.rolesReload() || this.rolesForm.invalid) return;
+    if (!user || this.rolesBusy() || this.rolesReload()) return;
+    if (this.rolesForm.invalid) {
+      this.rolesForm.markAllAsTouched();
+      focusInvalid(
+        this.host.nativeElement,
+        this.rolesForm,
+        '[data-focus="rolesForm"]',
+        '[data-roles-error]',
+      );
+      return;
+    }
     const rolesMetier = businessRoles(this.rolesForm.getRawValue().rolesMetier);
     this.rolesBusy.set(true);
     this.rolesError.set(null);
@@ -232,10 +258,17 @@ export class UtilisateurEdit {
           );
           this.resetRoles(response);
           this.rolesSuccess.set('Rôles métier enregistrés.');
+          this.notice.show('Rôles métier enregistrés.');
         },
         error: (error) => {
           this.rolesForm.enable({ emitEvent: false });
           this.rolesError.set(administrationError(error, this.rolesForm));
+          focusInvalid(
+            this.host.nativeElement,
+            this.rolesForm,
+            '[data-focus="rolesForm"]',
+            '[data-roles-error]',
+          );
           this.rolesReload.set(this.requiresReload(error));
           this.handleMissing(error);
         },
@@ -260,6 +293,7 @@ export class UtilisateurEdit {
       this.user.set(null);
       this.pageStatus.set(404);
       this.pageError.set(administrationError(error));
+      focusFeedback(this.host.nativeElement, 'app-page-state');
     }
   }
 }

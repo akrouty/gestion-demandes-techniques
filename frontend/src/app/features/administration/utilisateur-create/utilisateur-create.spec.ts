@@ -212,4 +212,37 @@ describe('Création utilisateur F3', () => {
     fixture.destroy();
     expect(r.cancelled).toBe(true);
   });
+  it('submit invalide cible le premier champ et conserve les mat-error', async () => {
+    const page = fixture.componentInstance;
+    const input = fixture.nativeElement.querySelector(
+      '[formControlName="nom"]',
+    ) as HTMLInputElement;
+    vi.spyOn(input, 'getClientRects').mockReturnValue([{}] as unknown as DOMRectList);
+    page.form.patchValue({ nom: '', email: '' });
+    page.submit();
+    fixture.detectChanges();
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    expect(document.activeElement).toBe(input);
+    expect(page.form.controls.email.touched).toBe(true);
+    http.expectNone(base);
+  });
+  it('400 cible le champ backend plutôt que le résumé', async () => {
+    const input = fixture.nativeElement.querySelector(
+      '[formControlName="email"]',
+    ) as HTMLInputElement;
+    vi.spyOn(input, 'getClientRects').mockReturnValue([{}] as unknown as DOMRectList);
+    fixture.componentInstance.submit();
+    creation().flush(
+      {
+        code: 'VALIDATION',
+        message: 'Erreur',
+        fieldErrors: [{ field: 'email', message: 'Email refusé' }],
+      },
+      { status: 400, statusText: 'Bad Request' },
+    );
+    fixture.detectChanges();
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    expect(document.activeElement).toBe(input);
+    expect(fixture.nativeElement.textContent).toContain('Email refusé');
+  });
 });

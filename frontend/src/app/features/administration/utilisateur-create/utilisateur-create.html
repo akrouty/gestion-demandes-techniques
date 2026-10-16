@@ -6,11 +6,11 @@
   </div>
 </header>
 @if (error(); as failure) {
-  <div class="feedback feedback-error" role="alert">
+  <div class="feedback feedback-error" role="alert" tabindex="-1" data-submit-error>
     <p>
       {{ failure.message }}
       @if (failure.code) {
-        <span class="api-code">({{ failure.code }})</span>
+        <span class="api-code">Référence : {{ failure.code }}</span>
       }
     </p>
     @for (field of failure.fieldErrors; track $index) {
@@ -68,7 +68,7 @@
       Sélectionnez les accès utiles. Un compte peut cumuler les rôles ou ne posséder aucun rôle
       métier.
     </p>
-    <div formGroupName="rolesMetier" class="role-checkboxes">
+    <div formGroupName="rolesMetier" data-error-control="rolesMetier" class="role-checkboxes">
       <mat-checkbox formControlName="responsable">Responsable technique</mat-checkbox
       ><mat-checkbox formControlName="agent">Agent technique</mat-checkbox>
     </div>

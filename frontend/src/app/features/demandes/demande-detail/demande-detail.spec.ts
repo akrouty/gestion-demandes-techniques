@@ -1,3 +1,5 @@
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
@@ -212,7 +214,7 @@ describe('Détail et actions de demande', () => {
     page.saveTreatment();
     http.expectNone(base + '/traitement');
     expect(page.traitement.controls.descriptionTraitement.invalid).toBe(true);
-    expect(page.error()?.message).toContain('non vide');
+    expect(page.actionError()?.message).toContain('non vide');
   });
   it('résolution bloquée pour solution non enregistrée ou traitement modifié', async () => {
     await setup({}, ['AGENT_TECHNIQUE']);
@@ -406,5 +408,53 @@ describe('Détail et actions de demande', () => {
     await setup({ statut: 'CLOTUREE' });
     expect(harness.routeNativeElement!.querySelector('.action-area')).toBeNull();
     expect(harness.routeNativeElement!.textContent).toContain('Diagnostic enregistré');
+  });
+  it('confirme la clôture par snackbar même après disparition des actions', async () => {
+    await setup({ statut: 'RESOLUE' }, ['RESPONSABLE_TECHNIQUE']);
+    const open = vi.spyOn(TestBed.inject(MatSnackBar), 'open');
+    page.close();
+    action('cloture').flush(fixtureData({ statut: 'CLOTUREE' }));
+    harness.detectChanges();
+    expect(harness.routeNativeElement!.querySelector('.action-area')).toBeNull();
+    expect(open).toHaveBeenCalledWith(
+      'Demande clôturée.',
+      'Fermer',
+      expect.objectContaining({ duration: 6000, politeness: 'polite', verticalPosition: 'top' }),
+    );
+  });
+  it('garde le conflit près des actions avec reprise et sans erreur de chargement', async () => {
+    await setup();
+    page.qualify();
+    action('qualification').flush(
+      { code: 'CONFLIT', message: 'État modifié' },
+      { status: 409, statusText: 'Conflict' },
+    );
+    harness.detectChanges();
+    const area = harness.routeNativeElement!.querySelector('.action-area')!;
+    expect(area.querySelector('[role="alert"]')?.textContent).toContain('État modifié');
+    expect(area.querySelector('[role="alert"]')?.textContent).toContain('Recharger l’état serveur');
+    expect(harness.routeNativeElement!.querySelector('[data-page-error]')).toBeNull();
+  });
+  it('cible le select en erreur serveur après réactivation', async () => {
+    await setup();
+    const select = harness.routeNativeElement!.querySelector<HTMLElement>(
+      '[formControlName="categorie"]',
+    )!;
+    vi.spyOn(select, 'getClientRects').mockReturnValue([{}] as unknown as DOMRectList);
+    page.qualify();
+    action('qualification').flush(
+      {
+        code: 'VALIDATION',
+        message: 'Erreur',
+        fieldErrors: [{ field: 'categorie', message: 'Catégorie refusée' }],
+      },
+      { status: 400, statusText: 'Bad Request' },
+    );
+    harness.detectChanges();
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    expect(document.activeElement).toBe(select);
+    expect(harness.routeNativeElement!.querySelector('mat-error')?.textContent).toContain(
+      'Catégorie refusée',
+    );
   });
 });

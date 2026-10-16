@@ -120,7 +120,6 @@ export class DemandesList {
             switchMap(() => {
               this.loading.set(true);
               this.error.set(null);
-              this.result.set(null);
               return this.api.list(this.query).pipe(
                 catchError((error) => {
                   this.error.set(apiError(error));
@@ -154,7 +153,27 @@ export class DemandesList {
   paginate(event: PageEvent): void {
     this.navigate({ ...this.query, page: event.pageIndex, size: event.pageSize });
   }
+  activeFilterCount(): number {
+    const value = this.filters.getRawValue();
+    return [
+      value.recherche.trim(),
+      value.statut,
+      value.priorite,
+      value.categorie,
+      value.sort !== 'dateCreation,desc',
+      this.query.clientId,
+      this.query.agentId,
+    ].filter(Boolean).length;
+  }
+  clearSearch(): void {
+    this.filters.controls.recherche.setValue('', { emitEvent: false });
+    this.applyFilters();
+  }
   reset(): void {
+    this.filters.reset(
+      { recherche: '', statut: '', priorite: '', categorie: '', sort: 'dateCreation,desc' },
+      { emitEvent: false },
+    );
     this.navigate({ page: 0, size: 20, sort: 'dateCreation,desc' });
   }
   retry(): void {

@@ -1,4 +1,6 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { SuccessNotice } from '../../../shared/ui/success-notice';
+import { focusInvalid, focusFeedback } from '../../../shared/ui/feedback-focus';
+import { Component, DestroyRef, ElementRef, inject, signal } from '@angular/core';
 import { DatePipe, KeyValuePipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -53,6 +55,8 @@ import {
   styleUrl: '../demandes.scss',
 })
 export class DemandeDetail {
+  private readonly notice = inject(SuccessNotice);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly api = inject(DemandesApi);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
@@ -66,6 +70,7 @@ export class DemandeDetail {
   readonly loading = signal(true);
   readonly busy = signal(false);
   readonly error = signal<ApiError | null>(null);
+  readonly actionError = signal<ApiError | null>(null);
   readonly success = signal('');
   readonly status = signal<number | null>(null);
   readonly reloadRequired = signal(false);
@@ -85,7 +90,7 @@ export class DemandeDetail {
     confirme: [false, Validators.requiredTrue],
   });
   constructor() {
-    const created = inject(Router).getCurrentNavigation()?.extras.state?.['demandeCreated'];
+    let created = inject(Router).getCurrentNavigation()?.extras.state?.['demandeCreated'];
     this.route.paramMap
       .pipe(
         switchMap((params) =>
@@ -95,6 +100,7 @@ export class DemandeDetail {
               this.loading.set(true);
               this.demande.set(null);
               this.error.set(null);
+              this.actionError.set(null);
               this.status.set(null);
               this.reloadRequired.set(false);
               this.agents.set(null);
@@ -115,7 +121,11 @@ export class DemandeDetail {
         this.loading.set(false);
         if (detail) {
           this.adopt(detail);
-          if (created === detail.reference) this.success.set('Demande créée.');
+          if (created === detail.reference) {
+            this.success.set('Demande créée.');
+            this.notice.show('Demande créée.');
+            created = undefined;
+          }
         }
       });
   }
@@ -152,6 +162,7 @@ export class DemandeDetail {
   qualify(): void {
     if (!this.rt() || !this.qualifiable() || this.qualification.invalid) {
       this.qualification.markAllAsTouched();
+      focusInvalid(this.host.nativeElement, this.qualification, '[data-focus="qualification"]');
       return;
     }
     const { categorie, priorite } = this.qualification.getRawValue();
@@ -181,6 +192,7 @@ export class DemandeDetail {
   assign(): void {
     if (!this.rt() || !this.active() || this.affectation.invalid) {
       this.affectation.markAllAsTouched();
+      focusInvalid(this.host.nativeElement, this.affectation, '[data-focus="affectation"]');
       return;
     }
     const id = this.affectation.getRawValue().agentId;
@@ -210,7 +222,9 @@ export class DemandeDetail {
       }
     }
     if (this.traitement.invalid) {
-      this.error.set({
+      this.traitement.markAllAsTouched();
+      focusInvalid(this.host.nativeElement, this.traitement, '[data-focus="traitement"]');
+      this.actionError.set({
         code: '',
         message:
           'Un champ modifié doit être non vide. L’effacement du traitement ou de la solution n’est pas prévu.',
@@ -239,6 +253,7 @@ export class DemandeDetail {
   cancel(): void {
     if (!this.rt() || !this.active() || this.annulation.invalid) {
       this.annulation.markAllAsTouched();
+      focusInvalid(this.host.nativeElement, this.annulation, '[data-focus="annulation"]');
       return;
     }
     this.mutate(
@@ -270,7 +285,7 @@ export class DemandeDetail {
   ): void {
     if (this.busy() || this.loading() || this.reloadRequired()) return;
     this.busy.set(true);
-    this.error.set(null);
+    this.actionError.set(null);
     this.success.set('');
     this.status.set(null);
     const forms = [this.qualification, this.affectation, this.traitement, this.annulation];
@@ -290,15 +305,36 @@ export class DemandeDetail {
         next: (detail) => {
           this.adopt(detail);
           this.success.set(message);
+          this.notice.show(message);
         },
         error: (error) => {
           // Réactiver avant de rattacher les erreurs serveur : enable() recalculerait leur validité.
           forms.forEach((group) => group.enable({ emitEvent: false }));
-          this.error.set(apiError(error, form));
+          this.actionError.set(apiError(error, form));
           const status = error instanceof HttpErrorResponse ? error.status : 0;
           this.status.set(status);
           this.reloadRequired.set(status === 409 || status === 0 || status >= 500);
-          if (status === 404) this.demande.set(null);
+          if (status === 404) {
+            this.error.set(this.actionError());
+            this.actionError.set(null);
+            this.demande.set(null);
+            focusFeedback(this.host.nativeElement, '[data-page-error]');
+          } else if (form) {
+            const name =
+              form === this.qualification
+                ? 'qualification'
+                : form === this.affectation
+                  ? 'affectation'
+                  : form === this.traitement
+                    ? 'traitement'
+                    : 'annulation';
+            focusInvalid(
+              this.host.nativeElement,
+              form,
+              '[data-focus="' + name + '"]',
+              '[data-action-error]',
+            );
+          } else focusFeedback(this.host.nativeElement, '[data-action-error]');
         },
       });
   }

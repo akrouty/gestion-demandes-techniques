@@ -237,3 +237,25 @@ td p {
 .metadata {
   font-size: 0.9rem;
 }
+
+.filter-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-bottom: 20px;
+}
+.filter-heading h2,
+.filter-heading p {
+  margin: 0 0 4px;
+}
+.results-count {
+  font-weight: 650;
+  color: var(--safyron-navy);
+}
+.results-updating {
+  padding: 12px 16px;
+  background: var(--safyron-navy-soft);
+  border-radius: 6px;
+}

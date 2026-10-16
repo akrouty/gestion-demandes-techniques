@@ -191,4 +191,93 @@ describe('Liste des demandes', () => {
     expect(r.request.params.get('sort')).toBe('titre,asc');
     r.flush({ items: [], page: 0, size: 20, totalElements: 0, totalPages: 0 });
   });
+  it('ne compte ni recherche blanche ni tri par défaut et désactive reset', async () => {
+    const harness = await RouterTestingHarness.create('/demandes?recherche=%20%20');
+    flushEmpty();
+    harness.detectChanges();
+    const page = harness.routeDebugElement!.componentInstance as DemandesList;
+    expect(page.activeFilterCount()).toBe(0);
+    const reset = Array.from(harness.routeNativeElement!.querySelectorAll('button')).find((b) =>
+      b.textContent?.includes('Réinitialiser'),
+    )!;
+    expect(reset.disabled).toBe(true);
+    expect(harness.routeNativeElement!.textContent).toContain('Aucune demande disponible.');
+  });
+  it('compte les filtres et réinitialise aussi tri et page dans URL et formulaire', async () => {
+    const harness = await RouterTestingHarness.create(
+      '/demandes?page=3&statut=RESOLUE&priorite=HAUTE&categorie=AUTRE&recherche=pompe&sort=titre,asc',
+    );
+    flushEmpty(3);
+    harness.detectChanges();
+    const page = harness.routeDebugElement!.componentInstance as DemandesList;
+    expect(page.activeFilterCount()).toBe(5);
+    expect(harness.routeNativeElement!.textContent).toContain('5 filtres actifs');
+    expect(harness.routeNativeElement!.textContent).toContain(
+      'Aucune demande ne correspond aux filtres sélectionnés.',
+    );
+    page.reset();
+    await harness.fixture.whenStable();
+    const r = request();
+    expect(r.request.params.get('page')).toBe('0');
+    expect(r.request.params.get('sort')).toBe('dateCreation,desc');
+    expect(r.request.params.has('recherche')).toBe(false);
+    r.flush({ items: [], page: 0, size: 20, totalElements: 0, totalPages: 0 });
+    expect(page.filters.getRawValue()).toEqual({
+      recherche: '',
+      statut: '',
+      priorite: '',
+      categorie: '',
+      sort: 'dateCreation,desc',
+    });
+  });
+  it('vider la recherche conserve les autres filtres', async () => {
+    const harness = await RouterTestingHarness.create('/demandes?recherche=pompe&statut=RESOLUE');
+    flushEmpty();
+    const page = harness.routeDebugElement!.componentInstance as DemandesList;
+    page.clearSearch();
+    await harness.fixture.whenStable();
+    const r = request();
+    expect(r.request.params.has('recherche')).toBe(false);
+    expect(r.request.params.get('statut')).toBe('RESOLUE');
+    r.flush({ items: [], page: 0, size: 20, totalElements: 0, totalPages: 0 });
+  });
+  it('conserve les résultats pendant le chargement et expose le total hors desktop', async () => {
+    const harness = await RouterTestingHarness.create('/demandes');
+    request().flush({
+      items: [
+        {
+          reference: 'DT-1',
+          titre: 'Résultat réel',
+          categorie: 'AUTRE',
+          priorite: 'HAUTE',
+          statut: 'NOUVELLE',
+          client: { nom: 'Client' },
+          dateCreation: '2026-10-08T10:00:00Z',
+        },
+      ],
+      page: 0,
+      size: 20,
+      totalElements: 24,
+      totalPages: 2,
+    });
+    harness.detectChanges();
+    const total = harness.routeNativeElement!.querySelector('.results-count')!;
+    expect(total.textContent).toContain('24 demandes');
+    expect(total.closest('.desktop-list')).toBeNull();
+    expect(harness.routeNativeElement!.querySelector('.mobile-list')?.textContent).toContain(
+      'Résultat réel',
+    );
+    const page = harness.routeDebugElement!.componentInstance as DemandesList;
+    page.filters.controls.statut.setValue('RESOLUE');
+    await harness.fixture.whenStable();
+    harness.detectChanges();
+    expect(harness.routeNativeElement!.querySelector('.results')?.getAttribute('aria-busy')).toBe(
+      'true',
+    );
+    expect(harness.routeNativeElement!.querySelector('[role="status"]')?.textContent).toContain(
+      'Mise à jour des résultats',
+    );
+    expect(harness.routeNativeElement!.textContent).toContain('Résultat réel');
+    flushEmpty();
+  });
 });

@@ -6,11 +6,8 @@
     message="Les informations sont en cours de chargement."
   />
 }
-@if (success()) {
-  <p class="feedback feedback-success" role="status">{{ success() }}</p>
-}
 @if (error(); as failure) {
-  <div class="feedback feedback-error" role="alert">
+  <div class="feedback feedback-error" role="alert" tabindex="-1" data-page-error>
     @if (status() === 403) {
       <h2>Accès refusé</h2>
     }
@@ -20,7 +17,7 @@
     <p>
       {{ failure.message }}
       @if (failure.code) {
-        <span class="api-code">({{ failure.code }})</span>
+        <span class="api-code">Référence : {{ failure.code }}</span>
       }
     </p>
     @for (field of failure.fieldErrors; track $index) {
@@ -126,13 +123,41 @@
         <h2 id="demande-actions-title">Actions sur la demande</h2>
         <p class="muted">Choisissez l’action adaptée à votre travail sur cette demande.</p>
       </header>
+      @if (actionError(); as failure) {
+        <div class="feedback feedback-error" role="alert" tabindex="-1" data-action-error>
+          @if (status() === 403) {
+            <h3>Accès refusé</h3>
+          }
+          <p>{{ failure.message }}</p>
+          @if (failure.code) {
+            <span class="api-code">Référence : {{ failure.code }}</span>
+          }
+          @for (field of failure.fieldErrors; track $index) {
+            <p>{{ field.field }} : {{ field.message }}</p>
+          }
+          @if (reloadRequired()) {
+            <p>
+              L’état affiché peut avoir changé. Le rechargement remplacera vos saisies par les
+              valeurs du serveur.
+            </p>
+            <button mat-button (click)="reload()" [disabled]="busy()">
+              Recharger l’état serveur
+            </button>
+          }
+        </div>
+      }
       @if (busy()) {
         <p role="status">Enregistrement de l’action…</p>
       }
       @if (rt() && qualifiable()) {
         <section class="surface">
           <h3>Qualification</h3>
-          <form [attr.aria-busy]="busy()" [formGroup]="qualification" (ngSubmit)="qualify()">
+          <form
+            [attr.aria-busy]="busy()"
+            data-focus="qualification"
+            [formGroup]="qualification"
+            (ngSubmit)="qualify()"
+          >
             <div class="form-grid">
               <mat-form-field appearance="outline" subscriptSizing="dynamic"
                 ><mat-label>Catégorie</mat-label
@@ -176,7 +201,12 @@
             @if (!choices.length) {
               <p>Aucun agent actif disponible.</p>
             } @else {
-              <form [attr.aria-busy]="busy()" [formGroup]="affectation" (ngSubmit)="assign()">
+              <form
+                [attr.aria-busy]="busy()"
+                data-focus="affectation"
+                [formGroup]="affectation"
+                (ngSubmit)="assign()"
+              >
                 <mat-form-field appearance="outline" subscriptSizing="dynamic"
                   ><mat-label>Agent technique</mat-label
                   ><mat-select formControlName="agentId" required>
@@ -207,7 +237,12 @@
       @if (at() && detail.statut === 'EN_COURS') {
         <section class="surface">
           <h3>Renseigner le traitement</h3>
-          <form [attr.aria-busy]="busy()" [formGroup]="traitement" (ngSubmit)="saveTreatment()">
+          <form
+            [attr.aria-busy]="busy()"
+            data-focus="traitement"
+            [formGroup]="traitement"
+            (ngSubmit)="saveTreatment()"
+          >
             <mat-form-field appearance="outline" subscriptSizing="dynamic"
               ><mat-label>Description du traitement</mat-label
               ><textarea matInput rows="4" formControlName="descriptionTraitement"></textarea
@@ -269,7 +304,12 @@
       @if (rt() && active()) {
         <section class="surface danger-surface">
           <h3>Annuler la demande</h3>
-          <form [attr.aria-busy]="busy()" [formGroup]="annulation" (ngSubmit)="cancel()">
+          <form
+            [attr.aria-busy]="busy()"
+            data-focus="annulation"
+            [formGroup]="annulation"
+            (ngSubmit)="cancel()"
+          >
             <mat-form-field appearance="outline" subscriptSizing="dynamic"
               ><mat-label>Motif d’annulation</mat-label
               ><textarea matInput rows="2" formControlName="motif" required></textarea

@@ -1,3 +1,5 @@
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
@@ -406,5 +408,42 @@ describe('Modification utilisateur F3', () => {
     expect(harness.routeNativeElement!.textContent).toContain('AUTO_DESACTIVATION_INTERDITE');
     expect(TestBed.inject(SessionService).token()).toBe('test');
     expect(page.user()?.actif).toBe(true);
+  });
+  it('annonce les succès de chaque section par snackbar', async () => {
+    await setup();
+    const open = vi.spyOn(TestBed.inject(MatSnackBar), 'open');
+    page.saveIdentity();
+    http.expectOne(base).flush(data());
+    expect(open).toHaveBeenLastCalledWith(
+      'Nom et email enregistrés.',
+      'Fermer',
+      expect.objectContaining({ politeness: 'polite' }),
+    );
+    page.saveRoles();
+    action('roles-metier').flush(data());
+    expect(open).toHaveBeenLastCalledWith(
+      'Rôles métier enregistrés.',
+      'Fermer',
+      expect.any(Object),
+    );
+    page.confirmDeactivate.setValue(true);
+    page.changeState();
+    action('desactivation').flush(data({ actif: false }));
+    expect(open).toHaveBeenLastCalledWith('Compte désactivé.', 'Fermer', expect.any(Object));
+    page.changeState();
+    action('activation').flush(data());
+    expect(open).toHaveBeenLastCalledWith('Compte activé.', 'Fermer', expect.any(Object));
+  });
+  it('cible le nom invalide sans déplacer les erreurs des autres sections', async () => {
+    await setup();
+    const input =
+      harness.routeNativeElement!.querySelector<HTMLInputElement>('[formControlName="nom"]')!;
+    vi.spyOn(input, 'getClientRects').mockReturnValue([{}] as unknown as DOMRectList);
+    page.identity.controls.nom.setValue('');
+    page.saveIdentity();
+    harness.detectChanges();
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    expect(document.activeElement).toBe(input);
+    http.expectNone(base);
   });
 });

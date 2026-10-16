@@ -1,6 +1,7 @@
 <a mat-button routerLink="/administration/utilisateurs">Retour aux utilisateurs</a>
 @if (loading()) {
   <app-page-state
+    tabindex="-1"
     kind="loading"
     title="Chargement du compte"
     message="Les informations de l’utilisateur sont en cours de chargement."
@@ -8,6 +9,7 @@
 }
 @if (pageError(); as failure) {
   <app-page-state
+    tabindex="-1"
     kind="error"
     [title]="
       pageStatus() === 404
@@ -19,14 +21,14 @@
     [message]="failure.message"
   />
   @if (failure.code) {
-    <p class="muted">{{ failure.code }}</p>
+    <p class="api-code">Référence : {{ failure.code }}</p>
   }
   @if (pageStatus() !== 404 && pageStatus() !== 403) {
     <button mat-button (click)="reload()">Réessayer</button>
   }
 }
 @if (pageSuccess()) {
-  <p class="feedback feedback-success" role="status">{{ pageSuccess() }}</p>
+  <p class="feedback feedback-success">{{ pageSuccess() }}</p>
 }
 @if (user(); as detail) {
   <header class="page-heading">
@@ -50,11 +52,11 @@
   <section class="surface">
     <h2>Informations générales</h2>
     @if (identityError(); as failure) {
-      <div class="feedback feedback-error" role="alert">
+      <div class="feedback feedback-error" tabindex="-1" data-identity-error role="alert">
         <p>
           {{ failure.message }}
           @if (failure.code) {
-            <span class="api-code">({{ failure.code }})</span>
+            <span class="api-code">Référence : {{ failure.code }}</span>
           }
         </p>
         @for (field of failure.fieldErrors; track $index) {
@@ -63,9 +65,14 @@
       </div>
     }
     @if (identitySuccess()) {
-      <p class="feedback feedback-success" role="status">{{ identitySuccess() }}</p>
+      <p class="feedback feedback-success">{{ identitySuccess() }}</p>
     }
-    <form [attr.aria-busy]="identityBusy()" [formGroup]="identity" (ngSubmit)="saveIdentity()">
+    <form
+      [attr.aria-busy]="identityBusy()"
+      data-focus="identity"
+      [formGroup]="identity"
+      (ngSubmit)="saveIdentity()"
+    >
       <div class="form-grid">
         <mat-form-field appearance="outline" subscriptSizing="dynamic"
           ><mat-label>Nom</mat-label><input matInput formControlName="nom" required /><mat-error>{{
@@ -89,15 +96,15 @@
       État actuel : <strong>{{ detail.actif ? 'Actif' : 'Inactif' }}</strong>
     </p>
     @if (stateError(); as failure) {
-      <p class="feedback feedback-error" role="alert">
+      <p class="feedback feedback-error" tabindex="-1" data-state-error role="alert">
         {{ failure.message }}
         @if (failure.code) {
-          <span class="api-code">({{ failure.code }})</span>
+          <span class="api-code">Référence : {{ failure.code }}</span>
         }
       </p>
     }
     @if (stateSuccess()) {
-      <p class="feedback feedback-success" role="status">{{ stateSuccess() }}</p>
+      <p class="feedback feedback-success">{{ stateSuccess() }}</p>
     }
     @if (detail.actif && isOwnAccount()) {
       <p class="muted">Vous ne pouvez pas désactiver votre propre compte.</p>
@@ -107,7 +114,7 @@
           La désactivation rend le compte inutilisable pour la connexion et les requêtes protégées.
         </p>
         <p>
-          <mat-checkbox [formControl]="confirmDeactivate"
+          <mat-checkbox data-confirm-deactivate [formControl]="confirmDeactivate"
             >Je confirme la désactivation de ce compte.</mat-checkbox
           >
         </p>
@@ -142,11 +149,11 @@
       </p>
     }
     @if (rolesError(); as failure) {
-      <div class="feedback feedback-error" role="alert">
+      <div class="feedback feedback-error" tabindex="-1" data-roles-error role="alert">
         <p>
           {{ failure.message }}
           @if (failure.code) {
-            <span class="api-code">({{ failure.code }})</span>
+            <span class="api-code">Référence : {{ failure.code }}</span>
           }
         </p>
         @for (field of failure.fieldErrors; track $index) {
@@ -155,11 +162,16 @@
       </div>
     }
     @if (rolesSuccess()) {
-      <p class="feedback feedback-success" role="status">{{ rolesSuccess() }}</p>
+      <p class="feedback feedback-success">{{ rolesSuccess() }}</p>
     }
-    <form [attr.aria-busy]="rolesBusy()" [formGroup]="rolesForm" (ngSubmit)="saveRoles()">
+    <form
+      [attr.aria-busy]="rolesBusy()"
+      data-focus="rolesForm"
+      [formGroup]="rolesForm"
+      (ngSubmit)="saveRoles()"
+    >
       <h3>Rôles métier modifiables</h3>
-      <div formGroupName="rolesMetier" class="role-checkboxes">
+      <div formGroupName="rolesMetier" data-error-control="rolesMetier" class="role-checkboxes">
         <mat-checkbox formControlName="responsable">Responsable technique</mat-checkbox
         ><mat-checkbox formControlName="agent">Agent technique</mat-checkbox>
       </div>

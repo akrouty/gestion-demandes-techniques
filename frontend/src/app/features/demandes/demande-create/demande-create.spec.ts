@@ -363,4 +363,17 @@ describe('Création de demande', () => {
     fixture.destroy();
     expect(r.cancelled).toBe(true);
   });
+  it('client manquant cible la recherche même sans résultat sélectionnable', async () => {
+    const page = setup();
+    const search = fixture.nativeElement.querySelector(
+      '[data-error-control="clientId"]',
+    ) as HTMLInputElement;
+    vi.spyOn(search, 'getClientRects').mockReturnValue([{}] as unknown as DOMRectList);
+    page.submit();
+    fixture.detectChanges();
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    expect(document.activeElement).toBe(search);
+    expect(search.getAttribute('aria-invalid')).toBe('true');
+    http.expectNone(base + '/demandes');
+  });
 });

@@ -1,4 +1,5 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { focusInvalid } from '../../../shared/ui/feedback-focus';
+import { Component, DestroyRef, ElementRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -24,6 +25,7 @@ import { AdministrationError } from '../utilisateur-models';
   styleUrl: '../administration.scss',
 })
 export class UtilisateurCreate {
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly api = inject(AdministrationApi);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
@@ -42,6 +44,7 @@ export class UtilisateurCreate {
     if (this.loading()) return;
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      focusInvalid(this.host.nativeElement, this.form);
       return;
     }
     const value = this.form.getRawValue();
@@ -76,6 +79,7 @@ export class UtilisateurCreate {
         error: (error) => {
           this.form.enable({ emitEvent: false });
           this.error.set(administrationError(error, this.form));
+          focusInvalid(this.host.nativeElement, this.form, 'form', '[data-submit-error]');
         },
       });
   }

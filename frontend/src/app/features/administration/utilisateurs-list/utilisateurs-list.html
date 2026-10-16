@@ -25,7 +25,7 @@
     <p>
       {{ failure.message }}
       @if (failure.code) {
-        <span class="api-code">({{ failure.code }})</span>
+        <span class="api-code">Référence : {{ failure.code }}</span>
       }
     </p>
     <button mat-button (click)="retry()">Réessayer</button>

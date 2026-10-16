@@ -209,7 +209,7 @@ h3 {
   line-height: 1.4;
 }
 .api-code {
-  display: inline;
+  display: block;
   color: inherit;
   font-size: 0.8em;
   font-weight: 400;
@@ -258,4 +258,20 @@ mat-paginator {
   mat-paginator .mat-mdc-paginator-range-label {
     margin: 0 8px;
   }
+}
+
+/* Confirmation près du haut de la fenêtre pour laisser les actions de bas de page accessibles. */
+.success-notice {
+  @include mat.snack-bar-overrides(
+    (
+      container-color: #003056,
+      supporting-text-color: #fff,
+      button-color: #fff,
+    )
+  );
+}
+[formControlName],
+[data-error-control],
+[tabindex='-1'] {
+  scroll-margin-block: 24px;
 }

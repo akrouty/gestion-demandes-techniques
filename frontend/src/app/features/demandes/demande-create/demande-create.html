@@ -6,11 +6,11 @@
   </div>
 </header>
 @if (error(); as failure) {
-  <div class="feedback feedback-error" role="alert">
+  <div class="feedback feedback-error" role="alert" tabindex="-1" data-submit-error>
     <p>
       {{ failure.message }}
       @if (failure.code) {
-        <span class="api-code">({{ failure.code }})</span>
+        <span class="api-code">Référence : {{ failure.code }}</span>
       }
     </p>
     @for (field of failure.fieldErrors; track $index) {
@@ -39,7 +39,11 @@
       }
     </mat-form-field>
     @if (canAnalyse()) {
-      <section class="ai-assistance" aria-labelledby="analysis-heading" [attr.aria-busy]="analysing()">
+      <section
+        class="ai-assistance"
+        aria-labelledby="analysis-heading"
+        [attr.aria-busy]="analysing()"
+      >
         <h2 id="analysis-heading">Assistance IA facultative</h2>
         <p class="muted">
           Les suggestions doivent être vérifiées avant de les appliquer. La saisie manuelle reste
@@ -125,7 +129,13 @@
     @if (form.controls.clientMode.value === 'existing') {
       <mat-form-field appearance="outline" subscriptSizing="dynamic"
         ><mat-label>Rechercher un client</mat-label
-        ><input matInput [formControl]="search" placeholder="Nom, email ou téléphone"
+        ><input
+          matInput
+          data-error-control="clientId"
+          [formControl]="search"
+          [attr.aria-invalid]="form.controls.clientId.touched && form.controls.clientId.invalid"
+          aria-describedby="client-selection-error"
+          placeholder="Nom, email ou téléphone"
       /></mat-form-field>
       @if (selectedClient(); as client) {
         <p role="status">
@@ -175,7 +185,7 @@
         />
       }
       @if (form.controls.clientId.touched && form.controls.clientId.invalid) {
-        <p role="alert" class="feedback feedback-error">
+        <p id="client-selection-error" role="alert" class="feedback feedback-error">
           {{ form.controls.clientId.getError('server') ?? 'Sélectionnez un client.' }}
         </p>
       }

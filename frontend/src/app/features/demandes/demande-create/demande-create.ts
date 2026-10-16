@@ -1,4 +1,5 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { focusInvalid } from '../../../shared/ui/feedback-focus';
+import { Component, DestroyRef, ElementRef, inject, signal } from '@angular/core';
 import { KeyValuePipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -52,6 +53,7 @@ import {
   styleUrl: '../demandes.scss',
 })
 export class DemandeCreate {
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly api = inject(DemandesApi);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
@@ -215,6 +217,7 @@ export class DemandeCreate {
     if (this.loading() || !this.session.hasAnyRole(['RESPONSABLE_TECHNIQUE'])) return;
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      focusInvalid(this.host.nativeElement, this.form);
       return;
     }
     const value = this.form.getRawValue();
@@ -261,6 +264,7 @@ export class DemandeCreate {
         error: (error) => {
           this.enableForm();
           this.error.set(apiError(error, this.form));
+          focusInvalid(this.host.nativeElement, this.form, 'form', '[data-submit-error]');
         },
       });
   }
