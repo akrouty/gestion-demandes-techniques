@@ -1,7 +1,7 @@
 @startuml
 
-' Statut : DRAFT
-title Enregistrer et qualifier une demande - V1\nDRAFT
+' Statut : VALIDATED
+title Enregistrer et qualifier une demande - V1\nVALIDATED
 
 hide footbox
 ' PlantUML affiche nativement les gardes des fragments entre crochets.

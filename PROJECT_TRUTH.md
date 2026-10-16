@@ -10,7 +10,7 @@ Frontend V1 implémenté et validé.
 - Diagramme Use Case global : validé.
 - Diagramme d'activité du cycle de vie : validé.
 - Fiches détaillées des cas d'utilisation : DRAFT.
-- Cinq diagrammes de séquence V1 : DRAFT après correction contre le code actuel de main ; nouvelle validation humaine requise.
+- Cinq diagrammes de séquence V1 : validés.
 - Diagramme de classes métier : validé.
 - Conventions de conception technique : DRAFT.
 - ADR-001 architecture applicative V1 : DRAFT.
@@ -22,9 +22,9 @@ Frontend V1 implémenté et validé.
 - Conception sécurité V1 : validée.
 - ADR-006 architecture frontend V1 : validé.
 - Conception frontend V1 : validée.
-- Diagramme de composants V1 : DRAFT après synchronisation avec l’implémentation réelle et Groq externe.
-- Diagramme de classes de conception backend V1 : DRAFT, reconstruit à partir des classes réellement présentes dans main après le commit 7a6438d.
-- Diagramme des entités persistantes / modèle de données V1 : DRAFT, fondé sur les quatre entités JPA, enums, mappings et migration V1 actuels.
+- Diagramme de composants V1 : validé.
+- Diagramme de classes de conception backend V1 : validé.
+- Diagramme des entités persistantes / modèle de données V1 : validé.
 
 ## Décisions d'architecture retenues
 
@@ -52,7 +52,7 @@ Frontend V1 implémenté et validé.
 - Autorisation : RBAC complété par les contrôles métier contextuels.
 - IA : frontière architecturale définie par un port abstrait réalisé par un adaptateur ; fonctionnement non bloquant et validation humaine obligatoire.
 
-Ces décisions portent sur l'architecture générale, l'architecture backend, la persistance, l'API REST, la sécurité et le frontend. Les classes techniques et leurs dépendances sont désormais implémentées dans main ; les vues UML de conception corrigées restent DRAFT jusqu’à leur validation humaine.
+Ces décisions portent sur l'architecture générale, l'architecture backend, la persistance, l'API REST, la sécurité et le frontend. Les classes techniques et leurs dépendances sont désormais implémentées dans main ; les cinq diagrammes de séquence V1 et les vues de composants, de conception backend et des entités persistantes V1 sont validés humainement.
 
 ## Conception frontend validée
 
@@ -65,7 +65,7 @@ ADR-006 et FRONTEND-DESIGN-V1 retiennent une organisation Angular SPA feature-ba
 
 ## État de l'implémentation
 
-- Backend V1 : implémenté et validé dans les blocs documentés ci-dessous ; vues UML techniques en relecture DRAFT.
+- Backend V1 : implémenté et validé dans les blocs documentés ci-dessous ; diagrammes de séquence, de composants, de conception backend et des entités persistantes V1 validés humainement.
 - Bloc 1 — fondation Spring Boot + persistance V1 : implémenté et validé.
 - Bloc 2 — Identity + Sécurité V1 : implémenté et validé.
 - Bloc 3 — Module Demandes + API + historique : implémenté et validé.

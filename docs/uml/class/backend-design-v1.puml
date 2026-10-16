@@ -1,8 +1,8 @@
 @startuml
-' Statut : DRAFT
+' Statut : VALIDATED
 ' Vue synthétique des classes réelles de main ; détails omis volontairement.
 ' Les liens hidden sont uniquement des contraintes graphiques.
-title Conception backend V1 — DRAFT
+title Conception backend V1 — VALIDATED
 top to bottom direction
 skinparam monochrome true
 skinparam shadowing false

@@ -1,7 +1,7 @@
 @startuml
 
-' Statut : DRAFT
-title Analyser une demande avec l'IA - V1\nDRAFT
+' Statut : VALIDATED
+title Analyser une demande avec l'IA - V1\nVALIDATED
 
 hide footbox
 ' PlantUML affiche nativement les gardes des fragments entre crochets.
