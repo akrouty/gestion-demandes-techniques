@@ -29,6 +29,7 @@ describe('Authorization interceptor', () => {
     });
   });
   afterEach(() => {
+    sessionStorage.removeItem('safyron.session.v1');
     requests.verify();
     vi.restoreAllMocks();
   });
@@ -68,6 +69,7 @@ describe('Authorization interceptor', () => {
     http.get(url).subscribe({ error: () => {} });
     for (const r of requests.match(url)) r.flush({}, { status: 401, statusText: 'Unauthorized' });
     expect(session.user()).toBeNull();
+    expect(sessionStorage.getItem('safyron.session.v1')).toBeNull();
     expect(navigate).toHaveBeenCalledTimes(1);
     expect(navigate).toHaveBeenCalledWith('/login');
   });
