@@ -2,7 +2,18 @@
   display: block;
 }
 .ai-assistance {
-  margin-bottom: 1.5rem;
+  margin-top: 0.5rem;
+  padding-left: 16px;
+  border-left: 3px solid var(--safyron-navy);
+}
+.ai-assistance h3 {
+  margin: 0;
+}
+.ai-assistance .muted {
+  margin: 0 0 8px;
+}
+.ai-assistance button {
+  margin-left: 8px;
 }
 .form-grid {
   align-items: start;
@@ -32,7 +43,7 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
-  gap: 4px 8px;
+  gap: 8px;
   min-width: 0;
 }
 .filter-count {
@@ -108,17 +119,11 @@ td {
   padding: 0.55rem 0.65rem;
   border-bottom: 1px solid var(--border);
   vertical-align: middle;
+  overflow-wrap: break-word;
 }
 th {
   color: var(--safyron-navy);
-  font-size: 0.85rem;
-}
-td {
-  font-size: 0.9rem;
-}
-td a {
-  color: var(--safyron-navy);
-  font-weight: 600;
+  background: var(--safyron-navy-soft);
 }
 .mobile-list {
   display: none;
@@ -126,10 +131,8 @@ td a {
 .client-choice {
   display: grid;
   gap: 0.5rem;
-  margin-bottom: 1rem;
 }
 .client-choice label {
-  min-width: 0;
   min-height: 48px;
   display: flex;
   align-items: center;
@@ -171,39 +174,6 @@ td a {
   dd {
     margin-bottom: 0.7rem;
   }
-}
-
-.surface > :last-child {
-  margin-bottom: 0;
-}
-form {
-  min-width: 0;
-}
-legend {
-  color: var(--safyron-navy);
-  font-size: 1.15rem;
-  font-weight: 650;
-  padding: 0 8px;
-}
-th,
-td {
-  overflow-wrap: break-word;
-}
-.desktop-list {
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-}
-th {
-  background: var(--safyron-navy-soft);
-}
-.mobile-list .surface {
-  margin-bottom: 0;
-}
-.mobile-list .surface h2 {
-  margin: 0 0 4px;
-}
-@media (max-width: 600px) {
   .page-heading {
     align-items: flex-start;
   }
@@ -212,8 +182,30 @@ th {
   }
 }
 
+.surface > :last-child {
+  margin-bottom: 0;
+}
+legend {
+  color: var(--safyron-navy);
+  font-size: 1.15rem;
+}
+.desktop-list {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.mobile-list .surface {
+  margin-bottom: 0;
+}
+.mobile-list .surface h2 {
+  margin: 0;
+}
+
+.client-choice label,
 .client-choice span {
   min-width: 0;
+}
+.client-choice span {
   overflow-wrap: anywhere;
 }
 .client-choice input {
@@ -229,6 +221,12 @@ th {
 .client-choice label:focus-within {
   outline: 3px solid var(--safyron-navy);
   outline-offset: 2px;
+}
+/* Résultats clients sur deux colonnes dès le desktop : divise la hauteur de la liste. */
+@media (min-width: 768px) {
+  .client-choice {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 .action-area {
   border-top: 3px solid var(--safyron-navy);
@@ -255,14 +253,16 @@ th {
   font-size: 0.9rem;
 }
 
-.results-count {
+.results-count,
+.results-updating {
   margin: 0 0 10px;
+}
+.results-count {
   font-size: 0.9rem;
   font-weight: 650;
   color: var(--safyron-navy);
 }
 .results-updating {
-  margin: 0 0 10px;
   padding: 8px 12px;
   background: var(--safyron-navy-soft);
   border-radius: 6px;
@@ -270,16 +270,16 @@ th {
 
 /* Liste : hiérarchie visuelle — titre métier principal, référence secondaire. */
 /* Colonnes sans largeur explicite se partagent équitalement le reste. */
-col.col-demande {
+.col-demande {
   width: 27%;
 }
-col.col-priorite {
+.col-priorite {
   width: 10%;
 }
-col.col-statut {
+.col-statut {
   width: 10%;
 }
-col.col-creation {
+.col-creation {
   width: 11%;
 }
 .demande-title {
@@ -293,7 +293,4 @@ col.col-creation {
   font-size: 0.72rem;
   font-weight: 400;
   color: var(--text-secondary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }

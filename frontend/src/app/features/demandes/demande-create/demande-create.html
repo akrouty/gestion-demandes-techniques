@@ -38,30 +38,52 @@
         }}</mat-error>
       }
     </mat-form-field>
+    <div class="form-grid">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic"
+        ><mat-label>Catégorie</mat-label
+        ><mat-select formControlName="categorie" required>
+          @for (item of categories | keyvalue; track item.key) {
+            <mat-option [value]="item.key">{{ item.value }}</mat-option>
+          }</mat-select
+        ><mat-error>{{
+          form.controls.categorie.getError('server') ?? 'Choisissez une catégorie.'
+        }}</mat-error></mat-form-field
+      >
+      <mat-form-field appearance="outline" subscriptSizing="dynamic"
+        ><mat-label>Priorité</mat-label
+        ><mat-select formControlName="priorite" required>
+          @for (item of priorites | keyvalue; track item.key) {
+            <mat-option [value]="item.key">{{ item.value }}</mat-option>
+          }</mat-select
+        ><mat-error>{{
+          form.controls.priorite.getError('server') ?? 'Choisissez une priorité.'
+        }}</mat-error></mat-form-field
+      >
+    </div>
     @if (canAnalyse()) {
       <section
         class="ai-assistance"
         aria-labelledby="analysis-heading"
         [attr.aria-busy]="analysing()"
       >
-        <h2 id="analysis-heading">Assistance IA facultative</h2>
+        <h3 id="analysis-heading">Assistance IA facultative</h3>
         <p class="muted">
           Les suggestions doivent être vérifiées avant de les appliquer. La saisie manuelle reste
           disponible.
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="analyse()"
+            [disabled]="
+              loading() ||
+              analysing() ||
+              form.controls.titre.invalid ||
+              form.controls.description.invalid
+            "
+          >
+            Analyser avec l’IA
+          </button>
         </p>
-        <button
-          mat-stroked-button
-          type="button"
-          (click)="analyse()"
-          [disabled]="
-            loading() ||
-            analysing() ||
-            form.controls.titre.invalid ||
-            form.controls.description.invalid
-          "
-        >
-          Analyser avec l’IA
-        </button>
         @if (analysing()) {
           <p role="status">Analyse en cours… Vous pouvez continuer la saisie manuelle.</p>
         }
@@ -93,28 +115,6 @@
         }
       </section>
     }
-    <div class="form-grid">
-      <mat-form-field appearance="outline" subscriptSizing="dynamic"
-        ><mat-label>Catégorie</mat-label
-        ><mat-select formControlName="categorie" required>
-          @for (item of categories | keyvalue; track item.key) {
-            <mat-option [value]="item.key">{{ item.value }}</mat-option>
-          }</mat-select
-        ><mat-error>{{
-          form.controls.categorie.getError('server') ?? 'Choisissez une catégorie.'
-        }}</mat-error></mat-form-field
-      >
-      <mat-form-field appearance="outline" subscriptSizing="dynamic"
-        ><mat-label>Priorité</mat-label
-        ><mat-select formControlName="priorite" required>
-          @for (item of priorites | keyvalue; track item.key) {
-            <mat-option [value]="item.key">{{ item.value }}</mat-option>
-          }</mat-select
-        ><mat-error>{{
-          form.controls.priorite.getError('server') ?? 'Choisissez une priorité.'
-        }}</mat-error></mat-form-field
-      >
-    </div>
   </fieldset>
   <section class="surface">
     <h2>Client</h2>
@@ -217,7 +217,7 @@
   <div class="actions">
     <button mat-flat-button type="submit" [disabled]="loading()">
       {{ loading() ? 'Enregistrement…' : 'Créer la demande' }}</button
-    ><a mat-button routerLink="/demandes">Retour à la liste</a>
+    >
   </div>
   @if (loading()) {
     <p role="status">La demande est en cours d’enregistrement.</p>

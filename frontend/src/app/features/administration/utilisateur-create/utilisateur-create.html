@@ -76,7 +76,7 @@
   <div class="actions">
     <button mat-flat-button type="submit" [disabled]="loading()">
       {{ loading() ? 'Création…' : 'Créer l’utilisateur' }}</button
-    ><a mat-button routerLink="/administration/utilisateurs">Retour à la liste</a>
+    >
   </div>
   @if (loading()) {
     <p role="status">Création du compte en cours…</p>

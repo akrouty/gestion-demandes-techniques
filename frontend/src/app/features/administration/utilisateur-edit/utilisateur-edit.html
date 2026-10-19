@@ -92,9 +92,6 @@
   </section>
   <section class="surface">
     <h2>État du compte</h2>
-    <p>
-      État actuel : <strong>{{ detail.actif ? 'Actif' : 'Inactif' }}</strong>
-    </p>
     @if (stateError(); as failure) {
       <p class="feedback feedback-error" tabindex="-1" data-state-error role="alert">
         {{ failure.message }}
