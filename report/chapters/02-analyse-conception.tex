@@ -1,52 +1,61 @@
 \chapter{Analyse et conception}
 \label{chap:02-analyse-conception}
-\markboth{Analyse et conception}{}
+\markboth{Analyse et conception}{ }
 \clearpage
 
-Ce chapitre transforme le besoin de gestion des demandes techniques en exigences, règles métier et modèles de conception. La distinction entre conception et réalisation est maintenue : les modèles décrivent la solution retenue, tandis que le chapitre suivant vérifie ce qui a effectivement été développé.
+\section{De la problématique aux exigences}
+\label{sec:02-exigences}
 
-\section{Acteurs et exigences}
-\label{sec:02-acteurs-exigences}
+Le besoin initial est exprimé en termes de suivi de demandes. Pour devenir développable, il est transformé en exigences observables : qui réalise l'action, sur quelle donnée, à quel moment et sous quelles conditions ? Les exigences fonctionnelles couvrent l'authentification, la gestion des demandes et clients, le workflow, l'administration et l'assistance IA. Les exigences non fonctionnelles ajoutent des contraintes de sécurité, cohérence transactionnelle, maintenabilité, ergonomie, accessibilité et traçabilité.
 
-Le système est utilisé par trois rôles internes. Le Responsable technique enregistre, qualifie, affecte et supervise les demandes. L'Agent technique traite les demandes qui lui sont affectées, renseigne la solution et déclare une résolution. L'Administrateur gère les comptes internes et leurs rôles métier. Le Client est une donnée métier associée à une demande, mais ne possède pas de compte dans la V1.
-
-Les exigences fonctionnelles couvrent l'authentification, la gestion des demandes, la sélection ou la saisie minimale d'un client, l'affectation, le traitement, la résolution, la clôture, le refus de résolution, l'annulation avec motif, l'historisation et l'administration des utilisateurs. L'assistance IA propose une catégorie et une priorité ; elle ne décide jamais seule.
-
-Les exigences non fonctionnelles concernent la sécurité des accès, la cohérence transactionnelle, la maintenabilité, la lisibilité de l'interface, l'accessibilité et la traçabilité des changements. L'API doit rester indépendante de la présentation et les autorisations métier doivent être vérifiées côté serveur.
+\begin{table}[htbp]
+\centering
+\caption{Synthèse des exigences principales}
+\label{tab:02-exigences}
+\begin{tabular}{p{0.27\textwidth}p{0.62\textwidth}}
+\textbf{Domaine} & \textbf{Attente principale}\\
+Authentification & Identifier un utilisateur actif et transmettre un JWT aux requêtes protégées.\\
+Demandes & Créer, consulter, filtrer, affecter, traiter, résoudre, clôturer ou annuler une demande.\\
+Administration & Gérer les comptes, rôles métier et états actifs.\\
+Sécurité & Appliquer RBAC et contrôles contextuels côté backend.\\
+IA & Proposer une catégorie et une priorité sans application automatique.\\
+\end{tabular}
+\end{table}
 
 \section{Règles métier et cycle de vie}
-\label{sec:02-regles-cycle}
+\label{sec:02-regles}
 
-Une demande possède une référence générée côté serveur, un client, une catégorie, une priorité et un statut. Les transitions ne sont pas de simples changements de valeur : chaque opération vérifie le rôle, l'état courant et les conditions propres à l'action. La résolution déclarée par l'Agent est distincte de son acceptation par le Responsable technique. L'annulation exige un motif et les changements importants sont historisés atomiquement avec la modification métier.
+Une demande ne se résume pas à un statut modifiable librement. Chaque transition correspond à une action métier explicite. L'affectation associe une demande à un agent ; le traitement permet de renseigner les éléments nécessaires ; la résolution est déclarée par l'Agent puis examinée par le Responsable technique. Le refus renvoie la demande vers une reprise. L'annulation exige un motif et reste distincte de la clôture. Les changements métier et leur historisation sont atomiques.
 
-Le diagramme d'activité du cycle de vie formalise cette progression. Il répond à la question suivante : dans quelles conditions une demande peut-elle passer de l'enregistrement à la clôture, au refus ou à l'annulation ? Il est conservé dans les sources UML validées ; son rendu sera placé dans `figures/uml/` lorsque l'outil de génération sera disponible.
+Le diagramme d'activité répond à la question des transitions possibles depuis chaque état. Le diagramme de cas d'utilisation montre quel acteur demande quelle capacité. Les séquences validées détaillent les scénarios majeurs sans exposer le détail des contrôleurs et repositories ; le lecteur comprend d'abord le comportement, avant l'implémentation.
 
-\section{Modélisation fonctionnelle}
-\label{sec:02-modelisation}
-
-Le diagramme global de cas d'utilisation met en relation les trois rôles et les fonctions de la V1. Les cinq diagrammes de séquence détaillent les scénarios majeurs : enregistrer et qualifier une demande, affecter ou réaffecter, traiter et résoudre, examiner une résolution, et demander une analyse IA. Ils restent centrés sur l'interaction entre l'acteur et le système, afin de compléter l'analyse fonctionnelle sans exposer prématurément les détails de code.
-
-\section{Architecture générale}
+\section{Architecture retenue}
 \label{sec:02-architecture}
 
-La solution adopte une application web Angular communiquant avec une API REST Spring Boot et une base PostgreSQL. Le backend est un monolithe modulaire : les modules sont regroupés par responsabilités métier (`request`, `identity / administration`, `security` et `ai`) tout en partageant un même déploiement. Cette organisation répond au besoin de séparation des responsabilités sans introduire la complexité opérationnelle de plusieurs services indépendants.
+La solution combine Angular, une API REST Spring Boot et PostgreSQL. Le backend est un monolithe modulaire : les fonctionnalités partagent un déploiement, mais sont séparées autour de `request`, `identity / administration`, `security` et `ai`. Cette organisation répond au besoin de simplicité opérationnelle tout en préparant une évolution maîtrisée.
 
-À l'intérieur des modules, les responsabilités sont séparées entre présentation, application, domaine et persistance. Les contrôleurs exposent les échanges HTTP, les services d'application orchestrent les cas d'utilisation et les transactions, le domaine porte les invariants, et les repositories isolent l'accès aux données. Les DTO séparent les contrats d'échange des entités JPA.
+La séparation interne distingue présentation, application, domaine et persistance. Le Controller traduit HTTP vers un cas d'utilisation ; le Service orchestre ce cas et sa transaction ; le domaine porte les invariants ; le Repository encapsule la persistance ; les DTO stabilisent les échanges et séparent contrat API et entité JPA.
 
-Cette organisation justifie plusieurs principes SOLID, mais pas tous au même niveau. La séparation des responsabilités illustre principalement le principe de responsabilité unique. `AnalyseIaPort` et son adaptateur Groq illustrent une inversion de dépendance : le cœur applicatif dépend d'une abstraction, non du fournisseur. Les autres principes ne sont pas revendiqués globalement sans preuve spécifique ; l'architecture reste une organisation pragmatique, adaptée à une V1.
+\section{SOLID et patterns : analyse limitée aux preuves}
+\label{sec:02-solid-patterns}
 
-\section{Données, API et sécurité conçues}
-\label{sec:02-donnees-securite}
+Le principe de responsabilité unique est observable dans la séparation entre contrôleurs, services, objets métier et repositories. Cette organisation améliore la lisibilité, mais ne prouve pas une conformité absolue à SOLID. Le principe d'inversion des dépendances est visible dans `AnalyseIaPort` : le cœur applicatif dépend d'une abstraction et l'adaptateur Groq fournit l'intégration concrète.
 
-Les entités persistées sont `Utilisateur`, `Client`, `DemandeTechnique` et `HistoriqueDemande`. JPA/Hibernate assure le mapping objet-relationnel et Spring Data JPA fournit les opérations de persistance. PostgreSQL porte les contraintes d'unicité, les relations et les instants temporels. Flyway versionne l'évolution du schéma.
+Le projet n'utilise pas le State Pattern pour le cycle de vie. Les états sont portés par un enum et des opérations métier explicites, solution adaptée au nombre limité d'états de la V1. Cette décision pourra être réévaluée si le workflow devient beaucoup plus complexe.
 
-L'API REST expose des ressources et des actions métier explicites. Les réponses utilisent des DTO afin de ne pas exposer directement les entités persistantes. Les modifications métier et leur historique sont regroupées dans une même transaction.
+\section{Conception des données}
+\label{sec:02-donnees}
 
-L'authentification utilise un JSON Web Token (JWT), c'est-à-dire un format compact contenant des claims, conformément à la norme correspondante \parencite{rfc7519-jwt}. Angular conserve la session en mémoire et dans `sessionStorage` sous `safyron.session.v1`, puis envoie le token dans l'en-tête `Authorization`. Cette restauration locale ne remplace pas la vérification backend de la signature, de l'état actif, des rôles actuels et des droits. Le contrôle d'accès fondé sur les rôles (RBAC) est complété par des contrôles métier contextuels.
+Les entités persistées sont `Utilisateur`, `Client`, `DemandeTechnique` et `HistoriqueDemande`. La référence métier est générée côté serveur, unique et immuable ; l'email utilisateur est unique et normalisé. JPA et Hibernate assurent le mapping objet-relationnel, Spring Data JPA fournit les repositories et Flyway applique les migrations SQL versionnées. Les instants utilisent `Instant` côté Java et `timestamptz` côté PostgreSQL \parencite{postgresql-datetime-types}.
 
-\section{Assistance intelligente}
-\label{sec:02-ia}
+\section{API, sécurité et session Angular}
+\label{sec:02-securite}
 
-L'intégration IA est conçue autour de `AnalyseIaPort` et d'un adaptateur Groq. Le Responsable technique déclenche explicitement l'analyse à partir du titre et de la description. La réponse propose une catégorie et une priorité, qui restent modifiables et ne sont appliquées qu'après une action humaine. Une indisponibilité de l'IA doit laisser la qualification manuelle disponible.
+L'API REST expose des opérations orientées métier et retourne des DTO. Le backend est l'autorité pour l'identité, l'état actif, les rôles courants et les permissions. Le contrôle d'accès fondé sur les rôles (RBAC) est complété par des contrôles contextuels, notamment pour l'affectation et l'auto-désactivation.
 
-Cette frontière permet de remplacer le fournisseur sans faire dépendre les règles métier de son SDK. Elle ne transforme pas la suggestion en décision automatique : la validation humaine reste une règle fonctionnelle et une limite importante du module.
+Le JSON Web Token (JWT) est un format compact de claims standardisé par l'IETF \parencite{rfc7519-jwt}. Angular conserve la session en mémoire et dans `sessionStorage` sous `safyron.session.v1`. Il effectue des contrôles locaux de structure et d'expiration, sans remplacer la validation backend de la signature et des droits. Les mots de passe sont traités par `PasswordEncoder` et la configuration sensible est externalisée \parencite{spring-security-password-storage,spring-boot-externalized-configuration}.
+
+\section{Conception de l'assistance IA}
+\label{sec:02-conception-ia}
+
+L'IA réduit l'effort de qualification, mais ne prend pas la décision. L'entrée est limitée au titre et à la description ; la sortie propose une catégorie et une priorité. `AnalyseIaPort` isole le cœur applicatif de l'adaptateur Groq. La proposition est temporaire, modifiable et appliquée après un clic explicite. En cas d'indisponibilité, la saisie manuelle reste possible.

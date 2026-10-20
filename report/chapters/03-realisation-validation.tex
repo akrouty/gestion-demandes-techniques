@@ -1,46 +1,111 @@
 \chapter{Réalisation et validation}
 \label{chap:03-realisation-validation}
-\markboth{Réalisation et validation}{}
+\markboth{Réalisation et validation}{ }
 \clearpage
 
-\section{Environnement et architecture réalisée}
-\label{sec:03-environnement}
+\section{Vue d'ensemble de la solution réalisée}
+\label{sec:03-vue-ensemble}
 
-La réalisation associe un frontend Angular 22 et Angular Material 22 à un backend Spring Boot. Les données sont persistées dans PostgreSQL avec JPA/Hibernate et les migrations sont gérées par Flyway. Le frontend est organisé par fonctionnalités, avec des responsabilités communes dans `core` et `shared`.
+Angular fournit l'application web et les parcours utilisateur. Spring Boot expose l'API et applique les règles métier. PostgreSQL conserve les données et l'historique. Cette répartition permet de faire évoluer l'interface sans déplacer les invariants métier dans le navigateur.
 
-Le frontend utilise des services API par fonctionnalité, des formulaires réactifs, des guards pour guider la navigation et un interceptor pour transmettre le JWT. Les guards améliorent l'expérience utilisateur, mais le backend reste l'autorité pour l'autorisation.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.72\textwidth]{figures/screenshots/01-connexion.png}
+\caption{Connexion à l'application}
+\label{fig:03-login}
+\end{figure}
 
-\section{Fonctionnement des fonctionnalités clés}
-\label{sec:03-fonctionnalites}
+Après authentification, le frontend conserve le token et le snapshot minimal utile à l'orientation de l'interface. Les autorisations effectives restent décidées par l'API.
 
-La création d'une demande permet de sélectionner un client existant ou de renseigner les informations minimales d'un nouveau client. La liste propose filtres, tri et pagination côté serveur. Le détail présente les actions permises par le rôle et l'état courant. Le workflow couvre l'affectation, la prise en charge, le traitement, la résolution, l'acceptation, le refus, la clôture et l'annulation.
+\section{Parcours complet d'une demande}
+\label{sec:03-parcours-demande}
 
-Les interfaces d'administration permettent la liste paginée, la création, la modification du nom et de l'email, l'activation ou la désactivation et le remplacement des rôles métier. L'auto-désactivation de l'administrateur connecté est refusée côté serveur et signalée dans l'interface.
+Le parcours commence par la création et la qualification. Le Responsable technique renseigne un titre, une description, un client, une catégorie et une priorité. Il peut demander une suggestion IA, mais garde la possibilité de modifier les valeurs avant l'enregistrement.
 
-Les captures présentes dans `figures/screenshots/` illustrent les écrans réels de connexion, liste, création, assistance IA, sélection de client, affectation, traitement, résolution, clôture et administration. Elles seront insérées après contrôle de leur résolution et de leur lisibilité dans le PDF.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.86\textwidth]{figures/screenshots/03-creation-demande.png}
+\caption{Création et qualification initiale d'une demande}
+\label{fig:03-creation}
+\end{figure}
 
-\section{Sécurité et gestion des erreurs}
-\label{sec:03-securite}
+La liste permet ensuite de retrouver les demandes par filtres, tri et pagination côté serveur. Après affectation, l'Agent traite la demande, renseigne la solution et déclare la résolution. Le Responsable examine cette proposition : il clôture la demande ou la refuse pour demander une reprise.
 
-Le backend vérifie le JWT, relit l'utilisateur et son état actif, puis applique le RBAC et les contrôles contextuels. Une réponse 401 termine la session Angular ; une réponse 403 signale une action interdite sans confondre l'absence d'authentification et l'absence de permission. Les mots de passe sont hachés par `PasswordEncoder` et les secrets restent externalisés \parencite{spring-security-password-storage,spring-boot-externalized-configuration}.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.86\textwidth]{figures/screenshots/02-liste-demandes.png}
+\caption{Liste filtrable des demandes}
+\label{fig:03-liste}
+\end{figure}
 
-Les règles métier produisent des erreurs explicites, notamment lorsqu'une transition est impossible, lorsqu'une ressource n'existe pas ou lorsqu'une opération sensible est interdite. Les transactions garantissent que l'évolution d'une demande et son historique ne sont pas séparés.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.82\textwidth]{figures/screenshots/07-traitement.png}
+\caption{Traitement d'une demande affectée}
+\label{fig:03-traitement}
+\end{figure}
 
-\section{Assistance IA Groq et validation humaine}
-\label{sec:03-ia}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.82\textwidth]{figures/screenshots/09-cloture.png}
+\caption{Clôture après examen de la résolution}
+\label{fig:03-cloture}
+\end{figure}
 
-Le module IA V1 est intégré pour le seul rôle de Responsable technique. Le chemin réel est Angular, Spring Boot, puis l'adaptateur Groq. Le fournisseur retourne une proposition temporaire ; aucune persistance automatique et aucune affectation automatique ne sont réalisées. La modification du titre ou de la description invalide la suggestion et impose une nouvelle analyse volontaire.
+Ces écrans illustrent une propriété importante : l'interface présente des actions dépendantes du rôle et du statut, mais cette présentation ne remplace pas le contrôle côté serveur.
 
-Le benchmark exploratoire documenté porte sur 24 exemples : 24 sorties valides, 23 catégories correctes et 22 priorités correctes, soit respectivement 95,8\,\% et 91,7\,\%. Ces chiffres décrivent cet échantillon et cette procédure ; ils ne constituent ni une mesure générale de performance ni une comparaison définitive avec Gemini, dont l'évaluation était incomplète. La décision finale reste humaine.
+\section{Administration et contrôle des accès}
+\label{sec:03-administration}
 
-\section{Tests et résultats}
+L'administration permet de créer et modifier les comptes, de gérer leur état actif et de remplacer leurs rôles métier. L'auto-désactivation du compte courant est refusée par l'API avec une réponse 409 et l'interface conserve un retour compréhensible.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.86\textwidth]{figures/screenshots/10-administration.png}
+\caption{Gestion des utilisateurs internes}
+\label{fig:03-administration}
+\end{figure}
+
+Le backend relit l'utilisateur et ses rôles à chaque requête protégée. Un rôle supprimé ou un compte désactivé ne conserve donc pas ses droits simplement parce qu'un snapshot ancien existe dans le navigateur.
+
+\section{Assistance IA et validation humaine}
+\label{sec:03-realisation-ia}
+
+L'analyse IA est déclenchée depuis le formulaire de nouvelle demande. Le frontend envoie uniquement le titre et la description à l'endpoint backend. Le serveur appelle l'adaptateur Groq via `AnalyseIaPort`, contrôle la réponse puis renvoie une proposition temporaire. La catégorie et la priorité ne sont jamais appliquées automatiquement.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.86\textwidth]{figures/screenshots/04-assistance-ia.png}
+\caption{Assistance IA lors de la qualification}
+\label{fig:03-ia}
+\end{figure}
+
+Une modification du titre ou de la description invalide la suggestion. Lorsque la clé Groq est absente, l'API renvoie une indisponibilité contrôlée et le formulaire reste utilisable manuellement. Le benchmark exploratoire porte sur 24 exemples : sorties valides dans les 24 cas, catégorie correcte dans 23 cas et priorité dans 22 cas. Ces valeurs ne permettent pas d'annoncer une performance générale ni une supériorité universelle d'un fournisseur.
+
+\section{Tests et validation}
 \label{sec:03-tests}
 
-La validation backend a atteint 270 tests réussis avec `clean test` et `clean verify`, sans échec, erreur ou test ignoré. Les tests hors ligne de l'IA utilisent H2 et un stub HTTP local ; ils ne doivent pas être confondus avec un appel Groq. Une intégration locale Angular vers Spring Boot et Groq a toutefois été vérifiée manuellement, ainsi que le scénario 503 sans clé, avec maintien de la qualification manuelle.
+La validation backend atteint 270 tests réussis avec `clean test` et `clean verify`, sans échec, erreur ou test ignoré. Les tests IA hors ligne utilisent H2 et un stub HTTP local ; ils ne constituent pas un appel Groq. Le frontend a été vérifié par `npm ci`, `npm run build` et `npm test -- --watch=false`, avec 184 tests réussis dans 15 fichiers pour la clôture IA.
 
-La validation frontend a atteint 184 tests réussis dans 15 fichiers, avec `npm run build` et `npm test -- --watch=false`. La validation humaine a couvert les workflows de demandes, l'administration, plusieurs tailles d'écran et les fonctions d'accessibilité prévues. Ces éléments distinguent les tests automatisés, l'intégration réelle et la validation fonctionnelle humaine.
+La validation fonctionnelle humaine a couvert la connexion, la liste, la création, la sélection client, les transitions de demande, l'administration, l'auto-désactivation et l'assistance IA réelle en local. Une revue responsive et accessibilité a également été effectuée sur plusieurs tailles. Ces observations ne remplacent pas une campagne de test de charge ou une validation de production.
+
+\begin{table}[htbp]
+\centering
+\caption{Niveaux de validation et portée}
+\label{tab:03-validation}
+\begin{tabular}{p{0.28\textwidth}p{0.55\textwidth}}
+\textbf{Validation} & \textbf{Ce qu'elle permet d'affirmer}\\
+Tests backend & Les comportements couverts par 270 tests réussissent dans l'environnement vérifié.\\
+Tests frontend & La construction et les scénarios automatisés couverts réussissent.\\
+Intégration locale IA & Le parcours Angular vers Spring Boot et Groq a fonctionné dans les conditions observées.\\
+Validation humaine & Les parcours et l'ergonomie vérifiés ne présentent pas de blocage constaté dans le périmètre revu.\\
+Benchmark IA & Résultats exploratoires sur 24 exemples, non généralisables.\\
+\end{tabular}
+\end{table}
 
 \section{Limites et perspectives}
 \label{sec:03-limites}
 
-La V1 reste limitée aux demandes internes et aux rôles définis. Le client n'a pas de portail, l'IA ne produit ni résumé ni décision automatique, et le benchmark reste exploratoire. Les perspectives peuvent concerner l'élargissement du périmètre fonctionnel, une évaluation IA sur un corpus plus large et représentatif, ainsi qu'une industrialisation du déploiement, sous réserve de besoins et de validations supplémentaires.
+Le rapport ne prétend pas mesurer la performance en production, la résistance à la charge ou la qualité IA sur un corpus représentatif du long terme. Le périmètre reste interne et le client n'interagit pas directement avec la plateforme. La session navigateur utilise `sessionStorage`, ce qui permet une restauration après rechargement mais conserve les risques propres à un stockage accessible au JavaScript du navigateur.
+
+Les perspectives cohérentes avec la V1 sont l'élargissement du corpus d'évaluation IA, l'ajout de mesures répétées et l'amélioration de l'observabilité. Toute extension du workflow, du portail client ou du déploiement devra être précédée d'une analyse de besoin et d'une validation dédiée.

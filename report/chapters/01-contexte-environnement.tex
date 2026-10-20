@@ -1,64 +1,49 @@
-\chapter{Contexte et environnement du projet}
-\label{chap:01-contexte-environnement}
-\markboth{Contexte et environnement}{}
-% Page séparatrice EPI : contenu à partir de la page suivante.
+\chapter{Contexte et cadrage du projet}
+\label{chap:01-contexte-cadrage}
+\markboth{Contexte et cadrage}{ }
 \clearpage
 
-% STATUT : COMPLÉTER PLUS TARD
-% À compléter avec les informations administratives vérifiées : organisme d'accueil.
-\section{Présentation de l'organisme d'accueil}
-\label{sec:01-contexte-environnement-1}
+\section{Cadre professionnel et informations disponibles}
+\label{sec:01-organisme}
 
-% STATUT : COMPLÉTER PLUS TARD
-% À compléter avec les informations administratives vérifiées : équipe et encadrement.
-\section{Organisation et environnement de travail}
-\label{sec:01-contexte-environnement-2}
+Le projet étudié concerne une application interne de gestion des demandes techniques. Les sources disponibles décrivent précisément le besoin logiciel et la solution réalisée, mais elles ne fournissent pas les informations administratives nécessaires pour présenter l'organisme d'accueil, son secteur d'activité, l'équipe ou l'encadrement. Ces éléments sont donc laissés à compléter : nom officiel de l'organisme, activité, service d'accueil, encadrants et dates du stage.
 
-% STATUT : COMPLÉTER PLUS TARD — rédaction partielle, en attente de revue humaine.
-% SOURCE : docs/requirements/functional-scope.md, sections 1 à 6 et 9.
-% Aucun diagnostic de l'existant ni contexte professionnel non documenté.
-\section{Contexte et problématique du projet}
-\label{sec:01-contexte-environnement-3}
+Cette absence ne doit pas être compensée par une description générique. Le rapport distingue le contexte logiciel, vérifiable dans le projet, du contexte professionnel, qui devra être renseigné à partir des informations communiquées par l'étudiant ou l'organisme d'accueil.
 
-Le projet porte sur la gestion interne des demandes techniques reçues des clients. Le besoin fonctionnel couvre leur enregistrement, leur qualification, leur affectation à un Agent technique et le suivi de leur traitement jusqu'à leur clôture ou leur annulation. Chaque demande doit être associée à un client, une catégorie, une priorité et un statut.
+\section{Contexte fonctionnel}
+\label{sec:01-contexte-fonctionnel}
 
-La problématique de conception consiste à organiser ce cycle en définissant les responsabilités de chaque rôle et les conditions de passage entre les étapes. Il s'agit notamment de distinguer la déclaration de résolution par l'Agent technique de son acceptation par le Responsable technique, tout en prévoyant l'historisation des changements importants. L'assistance IA envisagée doit s'inscrire dans ce fonctionnement sans se substituer à la décision humaine.
+Une demande technique naît lorsqu'un client rencontre un problème ou formule un besoin nécessitant l'intervention d'une équipe technique. La difficulté n'est pas limitée à la saisie initiale. Une demande doit être suffisamment décrite pour être comprise, qualifiée pour être priorisée, affectée à une personne responsable, puis suivie jusqu'à une résolution acceptée ou à une clôture justifiée.
 
-% STATUT : RÉDIGER MAINTENANT — première rédaction, en attente de revue humaine.
-% SOURCE : docs/requirements/functional-scope.md, sections 1 à 10.
-\section{Objectifs et périmètre de la V1}
-\label{sec:01-contexte-environnement-4}
+Le projet vise donc à fournir un espace commun où les rôles, les décisions et l'état courant d'une demande restent visibles. La V1 se concentre sur les utilisateurs internes : le client est représenté comme une donnée métier, mais ne se connecte pas à l'application.
 
-La première version vise à réunir les fonctions nécessaires à la qualification, au traitement et au suivi des demandes techniques dans une application réservée aux utilisateurs internes. Son périmètre fonctionnel est validé et gelé. Les fonctions décrites ci-dessous constituent les exigences de cette version, dont la réalisation et la validation sont présentées au chapitre 3.
+\section{Problématique et objectifs}
+\label{sec:01-problematique-objectifs}
 
-\paragraph{Rôles et responsabilités.}
-Trois rôles applicatifs sont retenus. Le \textbf{Responsable technique} enregistre et qualifie les demandes, organise leur affectation et suit leur avancement. Il examine les résolutions proposées et décide de la clôture ou de la reprise du traitement. L'\textbf{Agent technique} consulte ses demandes affectées, réalise leur traitement, renseigne une solution et déclare leur résolution. L'\textbf{Administrateur} gère les comptes internes et l'attribution des rôles métier autorisés. Ce rôle ne donne pas automatiquement accès aux fonctions métier. Une même personne peut cumuler plusieurs rôles.
+La problématique retenue est la suivante : comment construire une application interne capable de piloter le cycle de vie d'une demande technique, en conciliant simplicité d'utilisation, contrôle des droits, cohérence des données et traçabilité des décisions ?
 
-Le Client est une entité métier associée aux demandes, sans compte ni accès à l'application. Le périmètre prévoit la sélection d'un client existant ou la saisie de ses informations minimales pendant l'enregistrement d'une demande.
+Les objectifs sont d'enregistrer une demande, donner à chaque rôle une vision cohérente, formaliser les transitions, conserver l'historique, protéger l'API, proposer une assistance IA facultative et rendre le fonctionnement vérifiable par des tests et une validation humaine. L'objectif n'est pas de multiplier les fonctionnalités, mais de construire un parcours cohérent sur un périmètre V1 maîtrisé.
 
-\paragraph{Cycle de gestion.}
-La qualification repose sur une catégorie issue de la liste prédéfinie de la V1 et sur une priorité évaluée selon le contexte. Une demande nouvelle peut ensuite être affectée, puis prise en charge par l'Agent technique. Celui-ci renseigne le traitement et la solution avant de déclarer la demande résolue. Le Responsable technique peut accepter cette résolution et clôturer la demande, ou la refuser pour reprendre le traitement. L'annulation est prévue aux étapes autorisées, avec un motif obligatoire. La demande est conservée et les changements importants doivent être historisés.
+\section{Étude de l'existant et limites du périmètre}
+\label{sec:01-existant}
 
-\paragraph{Assistance IA.}
-La V1 prévoit une assistance déclenchée explicitement par le Responsable technique pour proposer uniquement une catégorie et une priorité. Le Responsable technique reste responsable de la décision finale : il valide ou modifie les suggestions. Le besoin prévoit également de maintenir la gestion manuelle lorsque l'IA est indisponible ou échoue. Ces exigences fonctionnelles ne constituent pas une implémentation du module IA.
+Les sources du projet ne documentent pas un processus métier antérieur observé dans une entreprise. Il serait donc incorrect d'affirmer que l'application remplace un outil précis ou corrige des délais mesurés. L'étude de l'existant est limitée aux besoins identifiés, aux rôles, aux étapes du cycle et aux exclusions de la V1.
 
-\paragraph{Hors périmètre.}
-La V1 exclut le portail et le compte Client, ainsi qu'un module autonome de gestion des clients. Elle ne prévoit ni sous-catégories, ni statut d'attente, ni système de notes ou commentaires, ni suppression fonctionnelle d'une demande. L'attribution du rôle Administrateur depuis l'interface est également exclue. Enfin, l'IA ne doit ni décider d'une catégorie ou d'une priorité sans validation humaine, ni produire un résumé automatique, ni affecter automatiquement les demandes.
+Le périmètre comprend les demandes internes, les clients associés, la qualification, l'affectation, le traitement, la résolution, la clôture, le refus de résolution, l'annulation avec motif, l'historisation et l'administration des utilisateurs. Il exclut le portail client, le compte client, un module autonome de gestion de clients, les sous-catégories, le statut d'attente, les commentaires, la suppression fonctionnelle et la décision IA automatique.
 
-% STATUT : COMPLÉTER PLUS TARD — état actualisé, en attente de revue humaine.
-% SOURCE COURANTE : main
-% Documents : PROJECT_TRUTH.md ; docs/adr/ADR-001 à ADR-006 ;
-% docs/api/API-CONTRACT-V1.md ; docs/security/SECURITY-DESIGN-V1.md ;
-% docs/architecture/TECHNICAL-CONVENTIONS.md ; docs/uml/component/ ;
-% docs/uml/class/backend-design-v1.puml ; backend/, frontend/, docs/testing/.
-% Les statuts sont vérifiés directement dans la branche de référence main.
-% Référence auditée : main, commit 3f6eb2e65bd1e11a6fe898cdbc96061d6aa26a76.
-% Source frontend : docs/frontend/FRONTEND-DESIGN-V1.md.
-\section{Démarche et travaux réalisés}
-\label{sec:01-contexte-environnement-5}
+Cette délimitation maîtrise le risque et évite de confondre une perspective future avec une fonction livrée.
 
-Les travaux ont commencé par la précision du besoin de gestion des demandes techniques. Le périmètre de la première version a ensuite été délimité et les responsabilités des utilisateurs ont été définies. Cette base a permis d'analyser les règles métier et les étapes de traitement d'une demande, de son enregistrement à sa clôture ou à son annulation.
+\section{Acteurs et responsabilités}
+\label{sec:01-acteurs}
 
-L'analyse a été prolongée par la modélisation des comportements attendus, des données et de leurs relations. Ces modèles ont servi à préparer la conception générale de la solution : organisation de l'application, conservation des données, échanges entre ses parties, sécurité et place de l'assistance intelligente. Cette conception reste en cours et prépare la mise en œuvre.
+Le Responsable technique enregistre et qualifie les demandes, organise l'affectation et examine les résolutions. L'Agent technique traite les demandes qui lui sont affectées, renseigne la solution et déclare la résolution. L'Administrateur gère les comptes internes et leurs rôles métier ; ce rôle administratif ne donne pas automatiquement accès aux opérations métier. Un utilisateur peut cumuler plusieurs rôles, ce qui explique la vérification de l'ensemble des rôles et du contexte de la demande.
 
-La démarche a ensuite été prolongée par l'implémentation du backend et du frontend, l'intégration de l'assistance IA, les tests automatisés et la validation fonctionnelle. Les résultats et leurs limites sont présentés au chapitre 3.
+\section{Démarche et organisation du travail}
+\label{sec:01-demarche}
+
+La démarche suit une progression de génie logiciel : formalisation du besoin et du périmètre, modélisation des règles de cycle de vie, conception de l'architecture et des données, réalisation, puis validation. La validation distingue les tests automatisés, les vérifications d'intégration locale et l'observation humaine des parcours dans le navigateur.
+
+\section{Synthèse du cadrage}
+\label{sec:01-synthese}
+
+Le cadrage fait apparaître une tension centrale : l'application doit guider le processus sans empêcher les décisions métier. Les statuts, les rôles et l'historique structurent le fonctionnement ; l'assistance IA réduit l'effort de qualification mais reste une proposition. Le chapitre suivant montre comment cette tension a été traduite en exigences, modèles et choix d'architecture.
