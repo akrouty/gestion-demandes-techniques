@@ -40,13 +40,9 @@ Phase réellement validée → modification ciblée → compilation → contrôl
 
 La branche officielle et unique de référence est `main`. Travailler directement sur son état courant, sans créer de branche de rapport, consulter une ancienne branche comme source de vérité ni fusionner une ancienne branche.
 
-À tout moment, un seul chapitre est actif. Le chapitre actif actuel est **Chapitre 1 — Contexte et environnement du projet**, dans `report/chapters/01-contexte-environnement.tex`.
+Le rapport suit le plan officiel en trois chapitres : 1) contexte et cadrage, 2) analyse et conception, 3) réalisation et validation.
 
-Processus obligatoire : chapitre actif → rédaction / correction → compilation → contrôle du PDF → revue humaine → corrections éventuelles → validation humaine explicite → seulement ensuite chapitre suivant.
-
-Codex ne doit jamais commencer à rédiger le chapitre suivant sans accord explicite de l'utilisateur, par exemple : « Chapitre 1 validé, passe au chapitre 2. » Une compilation réussie ou une revue partielle ne vaut pas cette autorisation.
-
-Sans cet accord, ne rédiger ni le chapitre 2, ni le chapitre 3, ni aucun autre chapitre suivant et ne pas anticiper leur contenu. Les squelettes existants peuvent rester présents, sans nouveau contenu rédactionnel. L'introduction générale, la conclusion, le résumé, la dédicace et les remerciements restent également hors du travail actif actuel.
+La progression est automatique : rédaction ou correction d'une partie → contrôle de cohérence avec les sources → compilation → contrôle du PDF → passage à la partie suivante. Des contrôles intermédiaires sont conservés dans les commentaires internes et dans le compte rendu final. La validation humaine finale porte sur l'ensemble du rapport ; les informations administratives manquantes restent explicitement signalées.
 
 ## 5. Règles concernant le contenu
 
@@ -120,7 +116,7 @@ Distinguer systématiquement conception et implémentation. « La solution prév
 
 ### Traçabilité interne
 
-Conserver la traçabilité détaillée dans les commentaires LaTeX, le document de vérité du projet, les ADR, les documents de conception et l'historique Git. Le texte destiné au jury expose le raisonnement et l'état réel du projet, sans raconter ce suivi interne. Ces règles complètent les prescriptions EPI et ne changent ni le statut DRAFT ni l'obligation de validation humaine du chapitre actif avant le suivant.
+Conserver la traçabilité détaillée dans les commentaires LaTeX, le document de vérité du projet, les ADR, les documents de conception et l'historique Git. Le texte destiné au jury expose le raisonnement et l'état réel du projet, sans raconter ce suivi interne. Ces règles complètent les prescriptions EPI et ne remplacent pas la validation humaine finale.
 
 ## 11. Conventions LaTeX
 
@@ -128,7 +124,7 @@ Conserver la traçabilité détaillée dans les commentaires LaTeX, le document 
 
 Règles vérifiées dans le fichier joint `Guide PFE.pdf`, « Final Project Report Preparation Guide », pages 1 à 5 ; ce fichier n'est pas présent dans le dépôt au point de départ `cb721ab`. Conserver l'accès au guide pour les revues futures. Le format A4 est demandé par la consigne de cette mission ; le texte du guide joint ne le précise pas explicitement. Les choix d'outillage ci-dessous sont des conventions du projet, pas des prescriptions EPI.
 
-Pages préliminaires : garde, dédicace, remerciements, résumé (150 à 250 mots), 5 à 7 mots-clés, sommaire, listes des figures et tableaux. La page officielle EPI `report/frontmatter/page_du_garde.pdf` constitue la référence graphique et est incluse comme unique première page, sans numéro visible. Ne pas recréer son design en LaTeX : conserver sa charte graphique, ses logos, ses couleurs et ses textes institutionnels. Seules les informations variables nécessaires peuvent être adaptées. L'année universitaire du présent rapport est 2026/2027 ; le PDF fourni porte encore 2025/2026, à remplacer proprement dans le modèle source (TODO interne dans `cover.tex`). Les informations personnelles ou professionnelles non confirmées ne doivent pas être inventées. Puis introduction générale (2 pages maximum), quatre chapitres : contexte et environnement ; étude de marché et état de l'art ; cadre théorique et analytique ; implémentation et mise en pratique. Terminer par conclusion générale (2 pages maximum), annexes numérotées et titrées, références et table des matières détaillée (guide p. 2). Chaque chapitre principal dispose d'une page séparatrice portant son titre.
+Pages préliminaires : garde, dédicace, remerciements, résumé et abstract de 150 à 200 mots, cinq mots-clés, sommaire, listes des figures et tableaux. La page officielle EPI `report/frontmatter/page_du_garde.pdf` constitue la référence graphique et est incluse comme première page, sans numéro visible. Les informations personnelles ou professionnelles non confirmées ne doivent pas être inventées. Puis introduction générale, trois chapitres correspondant au Plan Stage PRO, conclusion générale, références et annexes pertinentes. Chaque chapitre principal dispose d'une page séparatrice portant son titre.
 
 ### Mise en page
 

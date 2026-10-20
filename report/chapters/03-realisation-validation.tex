@@ -1,0 +1,46 @@
+\chapter{Réalisation et validation}
+\label{chap:03-realisation-validation}
+\markboth{Réalisation et validation}{}
+\clearpage
+
+\section{Environnement et architecture réalisée}
+\label{sec:03-environnement}
+
+La réalisation associe un frontend Angular 22 et Angular Material 22 à un backend Spring Boot. Les données sont persistées dans PostgreSQL avec JPA/Hibernate et les migrations sont gérées par Flyway. Le frontend est organisé par fonctionnalités, avec des responsabilités communes dans `core` et `shared`.
+
+Le frontend utilise des services API par fonctionnalité, des formulaires réactifs, des guards pour guider la navigation et un interceptor pour transmettre le JWT. Les guards améliorent l'expérience utilisateur, mais le backend reste l'autorité pour l'autorisation.
+
+\section{Fonctionnement des fonctionnalités clés}
+\label{sec:03-fonctionnalites}
+
+La création d'une demande permet de sélectionner un client existant ou de renseigner les informations minimales d'un nouveau client. La liste propose filtres, tri et pagination côté serveur. Le détail présente les actions permises par le rôle et l'état courant. Le workflow couvre l'affectation, la prise en charge, le traitement, la résolution, l'acceptation, le refus, la clôture et l'annulation.
+
+Les interfaces d'administration permettent la liste paginée, la création, la modification du nom et de l'email, l'activation ou la désactivation et le remplacement des rôles métier. L'auto-désactivation de l'administrateur connecté est refusée côté serveur et signalée dans l'interface.
+
+Les captures présentes dans `figures/screenshots/` illustrent les écrans réels de connexion, liste, création, assistance IA, sélection de client, affectation, traitement, résolution, clôture et administration. Elles seront insérées après contrôle de leur résolution et de leur lisibilité dans le PDF.
+
+\section{Sécurité et gestion des erreurs}
+\label{sec:03-securite}
+
+Le backend vérifie le JWT, relit l'utilisateur et son état actif, puis applique le RBAC et les contrôles contextuels. Une réponse 401 termine la session Angular ; une réponse 403 signale une action interdite sans confondre l'absence d'authentification et l'absence de permission. Les mots de passe sont hachés par `PasswordEncoder` et les secrets restent externalisés \parencite{spring-security-password-storage,spring-boot-externalized-configuration}.
+
+Les règles métier produisent des erreurs explicites, notamment lorsqu'une transition est impossible, lorsqu'une ressource n'existe pas ou lorsqu'une opération sensible est interdite. Les transactions garantissent que l'évolution d'une demande et son historique ne sont pas séparés.
+
+\section{Assistance IA Groq et validation humaine}
+\label{sec:03-ia}
+
+Le module IA V1 est intégré pour le seul rôle de Responsable technique. Le chemin réel est Angular, Spring Boot, puis l'adaptateur Groq. Le fournisseur retourne une proposition temporaire ; aucune persistance automatique et aucune affectation automatique ne sont réalisées. La modification du titre ou de la description invalide la suggestion et impose une nouvelle analyse volontaire.
+
+Le benchmark exploratoire documenté porte sur 24 exemples : 24 sorties valides, 23 catégories correctes et 22 priorités correctes, soit respectivement 95,8\,\% et 91,7\,\%. Ces chiffres décrivent cet échantillon et cette procédure ; ils ne constituent ni une mesure générale de performance ni une comparaison définitive avec Gemini, dont l'évaluation était incomplète. La décision finale reste humaine.
+
+\section{Tests et résultats}
+\label{sec:03-tests}
+
+La validation backend a atteint 270 tests réussis avec `clean test` et `clean verify`, sans échec, erreur ou test ignoré. Les tests hors ligne de l'IA utilisent H2 et un stub HTTP local ; ils ne doivent pas être confondus avec un appel Groq. Une intégration locale Angular vers Spring Boot et Groq a toutefois été vérifiée manuellement, ainsi que le scénario 503 sans clé, avec maintien de la qualification manuelle.
+
+La validation frontend a atteint 184 tests réussis dans 15 fichiers, avec `npm run build` et `npm test -- --watch=false`. La validation humaine a couvert les workflows de demandes, l'administration, plusieurs tailles d'écran et les fonctions d'accessibilité prévues. Ces éléments distinguent les tests automatisés, l'intégration réelle et la validation fonctionnelle humaine.
+
+\section{Limites et perspectives}
+\label{sec:03-limites}
+
+La V1 reste limitée aux demandes internes et aux rôles définis. Le client n'a pas de portail, l'IA ne produit ni résumé ni décision automatique, et le benchmark reste exploratoire. Les perspectives peuvent concerner l'élargissement du périmètre fonctionnel, une évaluation IA sur un corpus plus large et représentatif, ainsi qu'une industrialisation du déploiement, sous réserve de besoins et de validations supplémentaires.

@@ -58,7 +58,7 @@ Ces décisions portent sur l'architecture générale, l'architecture backend, la
 
 ADR-006 et FRONTEND-DESIGN-V1 retiennent une organisation Angular SPA feature-based avec responsabilités `core`, `shared` et `features` (authentification, demandes, administration). Ces décisions sont validées humainement ; leur implémentation frontend V1 est réalisée et validée, comme détaillé ci-dessous.
 
-- Session : JWT, expiration et utilisateur courant conservés uniquement en mémoire, conformément à la sécurité validée ; snapshot de rôles réservé à l'UX.
+- Session : JWT, expiration et utilisateur courant conservés en mémoire et dans `sessionStorage` sous `safyron.session.v1` ; la restauration locale sert à l'UX et le backend reste autoritatif.
 - Guards comme aides à la navigation, interceptor pour le transport du token et la fin de session ; backend autoritatif pour RBAC et contrôles contextuels.
 - État principalement local, services API par feature, Reactive Forms et détail de demande centralisant les actions ; navigation par union des rôles.
 - Implémentation frontend : Angular 22 et Angular Material 22 avec thème Safyron ; aucun NgRx/Redux introduit.

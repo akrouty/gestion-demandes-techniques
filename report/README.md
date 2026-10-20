@@ -23,19 +23,19 @@ Le PDF est `main.pdf`. Pour isoler les fichiers générés, ajouter `-outdir=.bu
 - `main.tex` : orchestration uniquement.
 - `config/` : packages, mise en page, métadonnées vides à compléter avec des informations vérifiées.
 - `frontmatter/` : pages préliminaires ; garde officielle `frontmatter/page_du_garde.pdf`, incluse par `cover.tex`.
-- `chapters/` : introduction, quatre chapitres, conclusion ; statuts et preuves dans les commentaires internes.
+- `chapters/` : introduction, trois chapitres, conclusion ; statuts et preuves dans les commentaires internes.
 - `appendices/` : mécanisme des annexes, sans contenu artificiel.
 - `bibliography/references.bib` : sources réellement exploitées ; classement par auteur avec BibLaTeX/Biber.
 - `figures/uml/` : rendus seulement ; les sources restent dans `../docs/uml/`.
 - `figures/architecture/`, `screenshots/`, `results/` : vides jusqu'à disponibilité de contenus réels.
 
-Les chapitres commencent par une page séparatrice. Le sommaire et la table détaillée sont générés automatiquement à partir des mêmes titres. Les listes des figures et tableaux sont actuellement vides. Les numéros visibles commencent à l'introduction. Les sections encore en attente conservent seulement leurs titres et des commentaires internes. Les statuts et TODO ne doivent jamais apparaître dans le PDF.
+Les chapitres commencent par une page séparatrice. Le rapport suit désormais le plan officiel en trois chapitres : contexte et cadrage, analyse et conception, réalisation et validation. Le sommaire et les listes sont générés automatiquement. Les numéros visibles commencent à l'introduction. Les statuts et TODO ne doivent jamais apparaître dans le PDF.
 
 ## État de référence et synchronisation
 
 La source de vérité courante est la branche `main`, avec `PROJECT_TRUTH.md` et les documents validés du dépôt. Le rapport évolue sur cette même branche ; aucune consultation interbranche n’est nécessaire.
 
-L’état courant indique une conception technique en cours. Le périmètre et les UML métier sont validés ; les fiches UC restent DRAFT. ADR-002 à ADR-006, le contrat API REST, la conception sécurité, la conception frontend et le diagramme de composants sont validés. ADR-001, les conventions techniques et le diagramme de classes backend restent DRAFT. Backend et frontend ne sont pas commencés ; base de données, sécurité et module IA ne sont pas implémentés ; les tests d’implémentation ne sont pas commencés. La frontière IA est définie, mais le fournisseur et le modèle restent à choisir.
+L'état courant est celui décrit dans `PROJECT_TRUTH.md` : le backend et le frontend V1 sont implémentés et validés, les tests et validations fonctionnelles sont documentés, et l'intégration Groq est réalisée dans son périmètre. Les statuts des fiches UC et de certaines conventions de conception restent distincts des statuts d'implémentation.
 
 Les commentaires des autres chapitres restent à réexaminer avant leur rédaction ; ils ne sont pas automatiquement actualisés par cette synchronisation. Recontrôler la version et les statuts des sources lors de chaque nouvelle phase.
 

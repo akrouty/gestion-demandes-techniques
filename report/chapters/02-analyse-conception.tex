@@ -1,0 +1,52 @@
+\chapter{Analyse et conception}
+\label{chap:02-analyse-conception}
+\markboth{Analyse et conception}{}
+\clearpage
+
+Ce chapitre transforme le besoin de gestion des demandes techniques en exigences, règles métier et modèles de conception. La distinction entre conception et réalisation est maintenue : les modèles décrivent la solution retenue, tandis que le chapitre suivant vérifie ce qui a effectivement été développé.
+
+\section{Acteurs et exigences}
+\label{sec:02-acteurs-exigences}
+
+Le système est utilisé par trois rôles internes. Le Responsable technique enregistre, qualifie, affecte et supervise les demandes. L'Agent technique traite les demandes qui lui sont affectées, renseigne la solution et déclare une résolution. L'Administrateur gère les comptes internes et leurs rôles métier. Le Client est une donnée métier associée à une demande, mais ne possède pas de compte dans la V1.
+
+Les exigences fonctionnelles couvrent l'authentification, la gestion des demandes, la sélection ou la saisie minimale d'un client, l'affectation, le traitement, la résolution, la clôture, le refus de résolution, l'annulation avec motif, l'historisation et l'administration des utilisateurs. L'assistance IA propose une catégorie et une priorité ; elle ne décide jamais seule.
+
+Les exigences non fonctionnelles concernent la sécurité des accès, la cohérence transactionnelle, la maintenabilité, la lisibilité de l'interface, l'accessibilité et la traçabilité des changements. L'API doit rester indépendante de la présentation et les autorisations métier doivent être vérifiées côté serveur.
+
+\section{Règles métier et cycle de vie}
+\label{sec:02-regles-cycle}
+
+Une demande possède une référence générée côté serveur, un client, une catégorie, une priorité et un statut. Les transitions ne sont pas de simples changements de valeur : chaque opération vérifie le rôle, l'état courant et les conditions propres à l'action. La résolution déclarée par l'Agent est distincte de son acceptation par le Responsable technique. L'annulation exige un motif et les changements importants sont historisés atomiquement avec la modification métier.
+
+Le diagramme d'activité du cycle de vie formalise cette progression. Il répond à la question suivante : dans quelles conditions une demande peut-elle passer de l'enregistrement à la clôture, au refus ou à l'annulation ? Il est conservé dans les sources UML validées ; son rendu sera placé dans `figures/uml/` lorsque l'outil de génération sera disponible.
+
+\section{Modélisation fonctionnelle}
+\label{sec:02-modelisation}
+
+Le diagramme global de cas d'utilisation met en relation les trois rôles et les fonctions de la V1. Les cinq diagrammes de séquence détaillent les scénarios majeurs : enregistrer et qualifier une demande, affecter ou réaffecter, traiter et résoudre, examiner une résolution, et demander une analyse IA. Ils restent centrés sur l'interaction entre l'acteur et le système, afin de compléter l'analyse fonctionnelle sans exposer prématurément les détails de code.
+
+\section{Architecture générale}
+\label{sec:02-architecture}
+
+La solution adopte une application web Angular communiquant avec une API REST Spring Boot et une base PostgreSQL. Le backend est un monolithe modulaire : les modules sont regroupés par responsabilités métier (`request`, `identity / administration`, `security` et `ai`) tout en partageant un même déploiement. Cette organisation répond au besoin de séparation des responsabilités sans introduire la complexité opérationnelle de plusieurs services indépendants.
+
+À l'intérieur des modules, les responsabilités sont séparées entre présentation, application, domaine et persistance. Les contrôleurs exposent les échanges HTTP, les services d'application orchestrent les cas d'utilisation et les transactions, le domaine porte les invariants, et les repositories isolent l'accès aux données. Les DTO séparent les contrats d'échange des entités JPA.
+
+Cette organisation justifie plusieurs principes SOLID, mais pas tous au même niveau. La séparation des responsabilités illustre principalement le principe de responsabilité unique. `AnalyseIaPort` et son adaptateur Groq illustrent une inversion de dépendance : le cœur applicatif dépend d'une abstraction, non du fournisseur. Les autres principes ne sont pas revendiqués globalement sans preuve spécifique ; l'architecture reste une organisation pragmatique, adaptée à une V1.
+
+\section{Données, API et sécurité conçues}
+\label{sec:02-donnees-securite}
+
+Les entités persistées sont `Utilisateur`, `Client`, `DemandeTechnique` et `HistoriqueDemande`. JPA/Hibernate assure le mapping objet-relationnel et Spring Data JPA fournit les opérations de persistance. PostgreSQL porte les contraintes d'unicité, les relations et les instants temporels. Flyway versionne l'évolution du schéma.
+
+L'API REST expose des ressources et des actions métier explicites. Les réponses utilisent des DTO afin de ne pas exposer directement les entités persistantes. Les modifications métier et leur historique sont regroupées dans une même transaction.
+
+L'authentification utilise un JSON Web Token (JWT), c'est-à-dire un format compact contenant des claims, conformément à la norme correspondante \parencite{rfc7519-jwt}. Angular conserve la session en mémoire et dans `sessionStorage` sous `safyron.session.v1`, puis envoie le token dans l'en-tête `Authorization`. Cette restauration locale ne remplace pas la vérification backend de la signature, de l'état actif, des rôles actuels et des droits. Le contrôle d'accès fondé sur les rôles (RBAC) est complété par des contrôles métier contextuels.
+
+\section{Assistance intelligente}
+\label{sec:02-ia}
+
+L'intégration IA est conçue autour de `AnalyseIaPort` et d'un adaptateur Groq. Le Responsable technique déclenche explicitement l'analyse à partir du titre et de la description. La réponse propose une catégorie et une priorité, qui restent modifiables et ne sont appliquées qu'après une action humaine. Une indisponibilité de l'IA doit laisser la qualification manuelle disponible.
+
+Cette frontière permet de remplacer le fournisseur sans faire dépendre les règles métier de son SDK. Elle ne transforme pas la suggestion en décision automatique : la validation humaine reste une règle fonctionnelle et une limite importante du module.
