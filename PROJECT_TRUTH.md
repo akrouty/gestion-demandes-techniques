@@ -47,7 +47,7 @@ Frontend V1 implémenté et validé.
 - Sécurité V1 : validée et formalisée dans ADR-005 et SECURITY-DESIGN-V1.
 - Authentification : API stateless avec JWT d'accès de durée limitée ; le login retourne avec le JWT un snapshot minimal de l'utilisateur connecté (`id`, `nom`, `email`, `roles`) au moment du login, destiné uniquement à l'UX Angular et jamais utilisé comme source d'autorisation. Les rôles actuels et l'état actif faisant autorité restent relus côté backend depuis `identity / administration` à chaque requête protégée.
 - Mots de passe : BCrypt via Spring Security `PasswordEncoder` ; le mot de passe initial est fourni par l'Administrateur à la création, puis immédiatement haché et jamais persisté en clair.
-- Token côté SPA : JWT conservé uniquement en mémoire ; aucun refresh token, blacklist ou Redis en V1.
+- Token côté SPA : JWT conservé en mémoire et dans `sessionStorage` sous la clé `safyron.session.v1` ; aucun refresh token, blacklist ou Redis en V1. La restauration effectue seulement des contrôles locaux de forme et d'expiration ; le backend reste l'autorité.
 - Secrets : configuration externe, jamais codée en dur ni versionnée.
 - Autorisation : RBAC complété par les contrôles métier contextuels.
 - IA : frontière architecturale définie par un port abstrait réalisé par un adaptateur ; fonctionnement non bloquant et validation humaine obligatoire.

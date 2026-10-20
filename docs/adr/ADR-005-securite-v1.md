@@ -81,15 +81,15 @@ L'opération de gestion des rôles métier reste limitée à `RESPONSABLE_TECHNI
 
 ## 8. Gestion des tokens côté SPA
 
-La V1 conserve le JWT d'accès uniquement en mémoire dans la SPA Angular et l'envoie dans l'en-tête :
+La V1 conserve le JWT d'accès en mémoire et dans `sessionStorage` sous la clé `safyron.session.v1` dans la SPA Angular, puis l'envoie dans l'en-tête :
 
 ```text
 Authorization: Bearer <token>
 ```
 
-Le token n'est pas conservé dans `localStorage` ni `sessionStorage`. Un rechargement complet de la SPA peut donc nécessiter une nouvelle authentification. Ce compromis est accepté provisoirement afin d'éviter un stockage navigateur durablement accessible à JavaScript.
+Le token n'est pas conservé dans `localStorage`. Après un rechargement, Angular peut restaurer une session structurellement valide et non expirée ; la signature et les droits restent vérifiés par le backend.
 
-Aucun refresh token, mécanisme de rotation, blacklist, Redis ou OAuth2/OIDC n'est introduit en V1 sans besoin supplémentaire. Dans ce modèle stateless, la déconnexion consiste principalement à supprimer le token en mémoire côté Angular. Aucun endpoint backend de logout sans effet réel n'est ajouté.
+Aucun refresh token, mécanisme de rotation, blacklist, Redis ou OAuth2/OIDC n'est introduit en V1 sans besoin supplémentaire. Dans ce modèle stateless, la déconnexion supprime le token en mémoire et dans `sessionStorage`. Aucun endpoint backend de logout sans effet réel n'est ajouté.
 
 ## 9. Secrets
 

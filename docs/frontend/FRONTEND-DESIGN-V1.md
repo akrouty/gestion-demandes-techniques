@@ -90,9 +90,9 @@ Cette matrice décrit la présentation et ne remplace pas la matrice backend.
 
 `POST /api/v1/auth/login` est public. `LoginRequest` contient `email`, `password`. `LoginResponse` contient `accessToken`, `tokenType` = `Bearer`, `expiresAt` ISO-8601 correspondant au claim `exp`, et `user` avec `id`, `nom`, `email`, `roles` multiples.
 
-Après succès, conserver ensemble token, expiration et snapshot utilisateur uniquement en mémoire. Aucun stockage via `localStorage`, `sessionStorage`, cookie d'authentification ou IndexedDB. Les credentials ne sont pas intégrés à la session ni journalisés. Le frontend ne tire pas ses rôles du JWT ; aucun claim obligatoire supplémentaire n'est requis.
+Après succès, conserver ensemble token, expiration et snapshot utilisateur en mémoire et dans `sessionStorage` sous la clé `safyron.session.v1`. Aucun stockage via `localStorage`, cookie d'authentification ou IndexedDB. La restauration reste locale et structurelle ; le frontend ne tire pas ses rôles autoritatifs du JWT.
 
-Un rechargement complet perd la session et impose une connexion. L'expiration connue permet de considérer la session inutilisable ; la validation effective du JWT reste backend. La déconnexion efface la session, les données sensibles d'écran associées et revient au login, sans endpoint backend. Une réponse HTTP tardive d'une session terminée ne doit pas rétablir cette session.
+Un rechargement complet peut restaurer la session depuis `sessionStorage` si elle reste structurellement valide et non expirée. La validation de la signature et des droits reste backend. La déconnexion efface la session mémoire et `sessionStorage`, puis revient au login, sans endpoint backend.
 
 Le snapshot peut devenir ancien. Si un rôle est retiré, le backend relit l'utilisateur existant et actif et les rôles actuels depuis Identity à chaque requête protégée, puis applique RBAC et contrôles contextuels. Une action encore visible peut donc recevoir `403`. Aucun `/me`, `/auth/me`, refresh token, synchronisation périodique ou websocket de rôles n'est prévu.
 

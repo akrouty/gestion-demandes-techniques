@@ -256,7 +256,7 @@ Ce snapshot sert uniquement à l'UX Angular : menus, orientation initiale de la 
 
 Spring Boot reste l'unique autorité : le JWT identifie l'utilisateur ; à chaque requête protégée, le backend relit le compte dans `identity / administration`, vérifie qu'il existe et est actif, utilise ses rôles actuels pour appliquer le RBAC, puis applique les contrôles métier contextuels. Si un rôle est retiré après le login, le snapshot peut être ancien, mais le backend refuse dès la requête suivante toute action devenue interdite. Les réponses `401` et `403` du backend font autorité sur l'UX.
 
-Aucun endpoint `/me` ou `/auth/me` n'est ajouté. Le JWT reste uniquement en mémoire côté Angular, sans `localStorage`, `sessionStorage` ni cookie d'authentification. La déconnexion supprime la session et le token en mémoire ; aucun refresh token ni endpoint backend de logout n'est ajouté.
+Aucun endpoint `/me` ou `/auth/me` n'est ajouté. Le JWT et le snapshot minimal sont conservés côté Angular en mémoire et dans `sessionStorage` sous la clé `safyron.session.v1`, sans `localStorage` ni cookie d'authentification. La restauration ne remplace pas les contrôles backend. La déconnexion supprime la session mémoire et l'entrée `sessionStorage` ; aucun refresh token ni endpoint backend de logout n'est ajouté.
 
 ## 5. Valeurs métier fermées
 

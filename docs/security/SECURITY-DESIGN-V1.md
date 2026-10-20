@@ -129,11 +129,11 @@ Argon2 reste une alternative si un besoin concret justifie ses paramètres et sa
 
 ## 10. Stockage du token côté Angular
 
-Le JWT d'accès est conservé uniquement en mémoire et envoyé dans l'en-tête `Authorization`. Il n'est pas conservé dans `localStorage` ni `sessionStorage`.
+Le JWT d'accès est conservé en mémoire et dans `sessionStorage` sous la clé `safyron.session.v1`, puis envoyé dans l'en-tête `Authorization`. Il n'est pas conservé dans `localStorage`.
 
-Conséquence acceptée provisoirement : un rechargement complet de la SPA peut exiger une nouvelle authentification. Aucun refresh token n'est ajouté automatiquement pour masquer cette contrainte.
+Après un rechargement, Angular peut restaurer une session structurellement valide et non expirée. Cette restauration locale ne remplace pas la vérification backend de la signature et des droits. Aucun refresh token n'est ajouté automatiquement.
 
-La déconnexion supprime le JWT en mémoire côté Angular. Aucun endpoint backend de logout n'est proposé tant qu'aucun état serveur de session ou de révocation ne lui donne un effet réel.
+La déconnexion supprime le JWT en mémoire et l'entrée `sessionStorage` côté Angular. Aucun endpoint backend de logout n'est proposé tant qu'aucun état serveur de session ou de révocation ne lui donne un effet réel.
 
 ## 11. Gestion des secrets
 
