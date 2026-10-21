@@ -5,28 +5,37 @@
 \begin{document}
 \pagenumbering{gobble}
 \hypersetup{pageanchor=false}
+\pagestyle{frontmatter}
 \input{frontmatter/cover}
-\input{frontmatter/dedication}
 \input{frontmatter/acknowledgements}
 \input{frontmatter/abstract}
-\input{frontmatter/keywords}
-\renewcommand{\contentsname}{Sommaire}
-\ReportSummary
+\begingroup
+\singlespacing
+\tableofcontents
+\endgroup
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{Liste des figures}
 \listoffigures
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{Liste des tableaux}
 \listoftables
+\input{frontmatter/acronyms}
 \clearpage
 \pagenumbering{arabic}
 \hypersetup{pageanchor=true}
+\pagestyle{fancy}
 \input{chapters/00-introduction}
+\thispagestyle{fancy}
 \input{chapters/01-contexte-environnement}
 \input{chapters/02-analyse-conception}
 \input{chapters/03-realisation-validation}
 \input{chapters/05-conclusion}
-\input{appendices/appendices}
+\thispagestyle{fancy}
 \chapter*{Références}
+\thispagestyle{fancy}
 \markboth{Références}{}
 \addcontentsline{toc}{chapter}{Références}
 \printbibliography[heading=none]
-\renewcommand{\contentsname}{Table des matières détaillée}
-\tableofcontents
 \end{document}
