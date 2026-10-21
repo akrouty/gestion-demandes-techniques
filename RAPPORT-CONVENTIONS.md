@@ -8,13 +8,12 @@ Référence obligatoire avant toute création ou modification du rapport : struc
 
 ## 2. Hiérarchie des sources de vérité
 
-1. Guide officiel EPI.
-2. `PROJECT_TRUTH.md`.
-3. Documents explicitement `VALIDATED` ou explicitement validés par l'humain.
-4. ADR explicitement validés.
-5. Code réellement présent.
-6. Tests réellement exécutés.
-7. Autres documents cohérents avec les précédents.
+1. Plan Stage PRO GL+ 2026/2027, référence principale pour la structure académique du rapport de stage.
+2. Guide EPI PFE, référence complémentaire pour les règles de présentation compatibles : typographie, marges, titres, figures, tableaux, bibliographie et pagination.
+3. `PROJECT_TRUTH.md`, code, tests et documents validés, sources de vérité concernant le projet réellement conçu, implémenté et testé.
+4. Autres documents cohérents avec les sources précédentes.
+
+Le Guide EPI PFE complète le Plan Stage PRO ; il ne peut ni imposer une structure PFE contradictoire ni remplacer la structure du rapport de stage professionnel.
 
 Cette hiérarchie ne transforme jamais une conception en preuve de réalisation. En cas de contradiction, signaler le conflit, suspendre la rédaction concernée et attendre sa résolution ; ne pas choisir arbitrairement ni masquer l'incohérence.
 
@@ -34,15 +33,38 @@ Prévu ≠ conçu ≠ implémenté ≠ testé ≠ validé. Un document DRAFT res
 
 ## 4. Règle d'évolution du rapport
 
-Phase réellement validée → modification ciblée → compilation → contrôle visuel → revue humaine → validation. Identifier les sources et leur version dans les commentaires internes ou la revue Git. Ne mettre à jour que les sections supportées par la phase validée.
+Rédaction ou correction d'un chapitre → vérification avec les sources → compilation → contrôle visuel → revue académique et pédagogique → validation humaine explicite du chapitre → chapitre suivant. Identifier les sources et leur version dans les commentaires internes ou la revue Git. Ne mettre à jour que les sections supportées par l'état réel du projet.
+
+Un chapitre n'est pas terminé du seul fait que son contenu technique est exact, que la compilation réussit ou que Codex a achevé la tâche demandée. Sa validation humaine couvre l'exactitude, la qualité pédagogique, la structure, la qualité rédactionnelle et le rendu visuel.
 
 ### Travail obligatoire chapitre par chapitre
 
 La branche officielle et unique de référence est `main`. Travailler directement sur son état courant, sans créer de branche de rapport, consulter une ancienne branche comme source de vérité ni fusionner une ancienne branche.
 
-Le rapport suit le plan officiel en trois chapitres : 1) contexte et cadrage, 2) analyse et conception, 3) réalisation et validation.
+Le rapport suit le plan officiel en trois chapitres : 1) contexte et cadrage, 2) analyse et conception, 3) réalisation et validation. La validation humaine explicite de chaque chapitre est obligatoire avant de passer au suivant. Les informations administratives manquantes restent explicitement signalées et ne sont jamais inventées.
 
-La progression est automatique : rédaction ou correction d'une partie → contrôle de cohérence avec les sources → compilation → contrôle du PDF → passage à la partie suivante. Des contrôles intermédiaires sont conservés dans les commentaires internes et dans le compte rendu final. La validation humaine finale porte sur l'ensemble du rapport ; les informations administratives manquantes restent explicitement signalées.
+### Structure académique de référence
+
+- Introduction générale.
+- Chapitre 1 — Contexte et cadrage du projet.
+- Chapitre 2 — Analyse et conception.
+- Chapitre 3 — Réalisation et validation.
+- Conclusion générale.
+- Références.
+- Annexes utiles.
+
+Les volumes indiqués dans le Plan Stage PRO sont indicatifs. La pertinence et l'équilibre du contenu priment ; aucune section ne doit être allongée artificiellement pour atteindre un nombre de pages.
+
+### Structure validée du chapitre 1 pour sa prochaine rédaction
+
+Le chapitre 1, intitulé « Contexte et cadrage du projet », suivra cette structure sans restructuration immédiate des fichiers LaTeX :
+
+- courte introduction du chapitre ;
+- 1.1 Organisme d'accueil et cadre du stage ;
+- 1.2 Contexte, existant et problématique ;
+- 1.3 Solution proposée, objectifs et périmètre ;
+- 1.4 Méthodologie et planification du travail ;
+- courte conclusion du chapitre avec transition.
 
 ## 5. Règles concernant le contenu
 
@@ -66,7 +88,13 @@ Aucune référence ou citation inventée ; chaque entrée correspond à une sour
 
 ## 10. Style académique
 
-Français clair et naturel, phrases raisonnablement courtes, terminologie de génie logiciel adaptée, paragraphes structurés et transitions utiles. Éviter remplissage, formulations vagues, répétitions, phrases automatiques génériques, adjectifs promotionnels et conclusions sans preuve. Relier chaque choix technologique à un besoin réel documenté.
+Français clair et naturel, phrases et paragraphes de taille raisonnable, terminologie de génie logiciel adaptée et transitions logiques. Aller du général vers le particulier, expliquer le besoin avant le mécanisme technique et la raison d'un choix avant ses détails. Éviter remplissage, formulations vagues, répétitions, phrases automatiques génériques, adjectifs promotionnels, conclusions sans preuve, jargon et acronymes inutiles. Relier chaque choix technologique à un besoin réel documenté. Ne pas transformer la narration en documentation du dépôt. Utiliser une figure ou un tableau seulement lorsqu'il améliore réellement la compréhension.
+
+### Hiérarchie des titres
+
+La hiérarchie ordinaire est limitée à : Chapitre, section numérotée `1.1`, puis sous-section numérotée `1.1.1` uniquement lorsqu'elle est réellement utile. Éviter les niveaux plus profonds sauf nécessité exceptionnelle, les sections réduites à un petit paragraphe, la multiplication artificielle des titres et l'emploi répété de texte en gras comme substitut à une structure réelle.
+
+Chaque chapitre comporte une courte introduction, un développement structuré et une courte conclusion assurant la transition vers la suite.
 
 ## Règles pédagogiques et niveau de lecture du rapport
 
@@ -130,7 +158,7 @@ Pages préliminaires : garde, dédicace, remerciements, résumé et abstract de 
 
 A4 ; Times New Roman ou Times Roman ; corps 12 pt ; interligne 1,5 ; marges de 2,5 cm. En-tête et pied à 1 cm, titre courant de chapitre limité à 40 caractères, caractères de 10 pt de graisse normale, pagination en pied. La pagination commence à l'introduction générale. Les pages préliminaires ne portent pas de numéro visible (choix du projet). Titres alignés à gauche, numérotation décimale, pas de soulignement ni d'excès de majuscules ; emphase en gras ou italique. Désactiver la césure automatique, éviter veuves, orphelines et titres isolés en bas de page.
 
-Figures et tableaux : numérotation continue indépendante des chapitres, légende 12 pt, figure sous l'image et tableau au-dessus ; une ligne avant et deux après la légende. Le guide mentionne à la fois justification et centrage : une ligne est centrée, une légende multiligne justifiée. Placer l'élément près de sa première mention, images de qualité et présentation homogène. Graphiques : axes identifiés, titre bref en gras 12 pt et légende sous le graphique. Formules numérotées de (1) à (n), numéro à droite. Notes de bas de page : 10 pt, interligne 11 pt, justifiées sans alinéa, numérotation continue ; appel 10 pt relevé de 3 pt. La notation des remarques du guide est « NOTE.— ».
+Figures et tableaux : numérotation continue indépendante des chapitres, légende 12 pt, figure sous l'image et tableau au-dessus ; une ligne avant et deux après la légende. Le guide mentionne à la fois justification et centrage : une ligne est centrée, une légende multiligne justifiée. Placer l'élément près de sa première mention, l'annoncer dans le texte et l'interpréter lorsqu'il apporte un résultat ou une explication. Utiliser des images lisibles, de qualité et de présentation homogène. Conserver les listes des figures et des tableaux dans les pages préliminaires. Le contrôle visuel examine l'équilibre complet de chaque page : taille et lisibilité, espaces blancs, proximité entre figure et texte, légende, coupures et cohérence avec les pages voisines. Graphiques : axes identifiés, titre bref en gras 12 pt et légende sous le graphique. Formules numérotées de (1) à (n), numéro à droite. Notes de bas de page : 10 pt, interligne 11 pt, justifiées sans alinéa, numérotation continue ; appel 10 pt relevé de 3 pt. La notation des remarques du guide est « NOTE.— ».
 
 ### Organisation technique
 
