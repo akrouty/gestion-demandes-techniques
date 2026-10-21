@@ -3,12 +3,12 @@
 \markboth{Analyse et conception}{ }
 \clearpage
 
-Ce chapitre présente le passage du besoin métier à une conception structurée. L'analyse commence par les acteurs et les attentes du système, puis décrit les scénarios et les règles du cycle de vie. Elle aboutit à l'architecture, à la sécurité, à l'intégration de l'assistance IA et au modèle de données. Les éléments présentés ici décrivent des décisions de conception ; la réalisation et les résultats de validation sont traités au chapitre 3.
+La conception transforme les besoins du stage en responsabilités, règles et structures cohérentes. Elle part des utilisateurs internes et du cycle de vie d'une demande, puis établit l'architecture, les mécanismes de sécurité, l'intégration de l'assistance IA et le modèle de données. Chaque choix est ainsi relié au problème qu'il doit résoudre.
 
 \section{Spécification des besoins}
 \label{sec:02-specification-besoins}
 
-\textbf{Acteurs et responsabilités.} L'application est réservée aux utilisateurs internes. Le Responsable technique enregistre et qualifie les demandes, valide ou modifie leur catégorie et leur priorité, affecte ou réaffecte les demandes, suit leur avancement, examine une résolution et peut clôturer, refuser ou annuler une demande selon son état. L'Agent technique consulte les demandes qui lui sont affectées, commence le traitement, renseigne la description du traitement et la solution, puis déclare la demande résolue. L'Administrateur crée et modifie les comptes, active ou désactive les utilisateurs et gère les rôles métier autorisés. Une même personne peut cumuler plusieurs rôles.
+\textbf{Acteurs et responsabilités.} L'application est réservée aux utilisateurs internes. Le Responsable technique pilote la demande depuis son enregistrement jusqu'à la décision de clôture. L'Agent technique prend en charge les demandes qui lui sont affectées et documente leur résolution. L'Administrateur maintient les comptes et leurs rôles. Cette répartition sépare le pilotage, l'exécution et l'administration, tout en autorisant une même personne à cumuler plusieurs rôles lorsque l'organisation l'exige.
 
 Le Client n'est pas un utilisateur de l'application. Il constitue une entité métier associée à une demande. Cette distinction est importante : elle permet de conserver les informations nécessaires au suivi sans introduire dans la V1 un portail, une authentification ou des droits d'accès pour les clients.
 
@@ -21,14 +21,15 @@ La figure~\ref{fig:02-cas-utilisation-global} répond à une première question 
 \label{fig:02-cas-utilisation-global}
 \end{figure}
 
-Ce diagramme met en évidence la séparation des responsabilités : le Responsable technique pilote la demande, l'Agent technique réalise son traitement et l'Administrateur gère les utilisateurs et les rôles. La connexion constitue une capacité commune, tandis que l'assistance IA reste déclenchée dans le cadre de la qualification conduite par le Responsable technique.
+Le diagramme complète cette description en visualisant les interactions. Il montre notamment que la connexion est commune aux acteurs, alors que la qualification et le déclenchement de l'assistance IA restent sous la responsabilité du Responsable technique.
 
-\textbf{Besoins fonctionnels.} Les besoins sont regroupés par capacités métier plutôt que par identifiants de règles. Le premier groupe concerne l'accès : un utilisateur interne doit pouvoir se connecter et accéder uniquement aux fonctions correspondant à ses rôles. Le deuxième concerne les demandes : le Responsable technique doit pouvoir enregistrer une demande avec un client, une catégorie, une priorité et une description, puis consulter et filtrer les demandes. Le troisième concerne le workflow : une demande peut être affectée, traitée, déclarée résolue, clôturée, refusée ou annulée dans les conditions prévues. Le quatrième concerne l'administration des utilisateurs. Le dernier concerne l'assistance IA, qui propose seulement une catégorie et une priorité après une action explicite.
+\textbf{Besoins fonctionnels.} Les attentes sont regroupées en grandes capacités : contrôler l'accès interne, enregistrer et suivre les demandes, encadrer leur cycle de traitement, administrer les utilisateurs et assister la qualification. Le tableau~\ref{tab:02-capacites-fonctionnelles} en donne une synthèse sans reprendre le détail des responsabilités déjà présenté.
 
 Ces besoins décrivent ce que le système doit permettre, et non la manière de le réaliser. Par exemple, « réserver l'accès aux utilisateurs autorisés » est un besoin de protection ; le JWT et le contrôle d'accès basé sur les rôles sont des moyens techniques étudiés plus loin. De même, « conserver les changements importants » est un besoin de traçabilité ; l'entité d'historique et la transaction sont des choix de conception.
 
 \begin{table}[htbp]
 \centering
+\small
 \caption{Capacités fonctionnelles de la V1}
 \label{tab:02-capacites-fonctionnelles}
 \begin{tabular}{p{0.27\textwidth}p{0.60\textwidth}}
@@ -42,24 +43,24 @@ Assistance IA & Proposer une catégorie et une priorité, sans décision automat
 \end{tabular}
 \end{table}
 
-\textbf{Besoins non fonctionnels.} La sécurité est nécessaire parce que les fonctions sont réservées à des utilisateurs internes et que les actions dépendent du rôle et parfois du contexte de la demande. La cohérence des données est nécessaire parce qu'une transition et son historique doivent rester synchronisés. La traçabilité est nécessaire pour comprendre les changements importants sans réécrire un événement déjà enregistré.
+\textbf{Besoins non fonctionnels.} La sécurité est nécessaire parce que les actions dépendent du rôle et parfois de la demande concernée. La cohérence garantit qu'une transition et sa trace historique sont enregistrées ensemble. La traçabilité permet ensuite de comprendre les changements importants sans réécrire un événement passé.
 
-La maintenabilité est recherchée par la séparation des responsabilités et des contrats d'échange. L'ergonomie et le responsive design répondent à la diversité des écrans et à la nécessité de comprendre rapidement l'état d'une demande. Enfin, la continuité manuelle est une exigence fonctionnelle autour de l'IA : une panne ou une indisponibilité du fournisseur ne doit pas empêcher la qualification classique. Aucun seuil de performance ou de disponibilité non mesuré n'est introduit dans le rapport.
+La maintenabilité repose sur des responsabilités et des contrats d'échange clairement séparés. L'ergonomie et l'adaptation aux différentes tailles d'écran doivent permettre d'identifier rapidement l'état d'une demande. Enfin, l'indisponibilité du fournisseur IA ne doit jamais empêcher une qualification manuelle.
 
 \section{Conception fonctionnelle}
 \label{sec:02-conception-fonctionnelle}
 
-\textbf{Cycle de vie.} Une demande commence dans l'état \texttt{NOUVELLE}. Une affectation la place dans l'état \texttt{ASSIGNEE}, puis l'Agent peut commencer le traitement et la faire passer à \texttt{EN\_COURS}. Lorsque la solution est renseignée, l'Agent déclare la demande \texttt{RESOLUE}. Le Responsable technique peut l'accepter et la clôturer, ou refuser la résolution et la remettre en traitement. Une demande peut être annulée depuis \texttt{NOUVELLE}, \texttt{ASSIGNEE} ou \texttt{EN\_COURS}, avec un motif obligatoire. \texttt{CLOTUREE} et \texttt{ANNULEE} sont terminaux.
+\textbf{Cycle de vie.} Une demande suit un cycle contrôlé afin qu'aucune action ne contourne les responsabilités définies. Elle passe de \texttt{NOUVELLE} à \texttt{ASSIGNEE}, puis à \texttt{EN\_COURS} lorsque l'Agent commence effectivement son travail. Après saisie de la solution, elle devient \texttt{RESOLUE}, mais seule la décision du Responsable technique peut la rendre \texttt{CLOTUREE}. Une annulation reste possible avant la clôture, avec un motif obligatoire ; \texttt{CLOTUREE} et \texttt{ANNULEE} sont des états terminaux.
 
-La réaffectation illustre une règle qui ne serait pas visible avec une simple liste de statuts. Depuis \texttt{ASSIGNEE}, une nouvelle affectation conserve cet état. Depuis \texttt{EN\_COURS}, la réaffectation à un autre Agent revient à \texttt{ASSIGNEE}, afin que le nouvel Agent commence explicitement le traitement. La solution et la description du traitement ne sont pas effacées par cette opération.
+La réaffectation protège la responsabilité du nouvel Agent. Si le traitement avait déjà commencé, la demande revient de \texttt{EN\_COURS} à \texttt{ASSIGNEE} : le nouvel Agent doit confirmer explicitement sa prise en charge. Les informations déjà saisies sont conservées afin de ne pas perdre le travail antérieur.
 
-\textbf{Scénario d'enregistrement et de qualification.} Le Responsable technique renseigne le titre et la description, recherche un client et sélectionne un client existant ou saisit les informations minimales d'un nouveau client. Il définit ou valide ensuite la catégorie et la priorité, puis enregistre la demande. Le système crée une référence, associe le créateur et le client, initialise le statut à \texttt{NOUVELLE} et conserve l'événement de création. Une erreur de validation ou l'absence d'un client exploitable empêche l'enregistrement ; elle ne produit pas une demande partielle.
+\textbf{Enregistrement et qualification.} Une demande ne peut être créée qu'avec un client identifiable, une catégorie et une priorité validées. Le Responsable technique peut sélectionner un client existant ou fournir les informations minimales d'un nouveau client. La figure~\ref{fig:02-sequence-enregistrement} porte le détail de ces deux alternatives et de leur transaction finale.
 
-\textbf{Scénario de traitement et de résolution.} Le Responsable technique affecte la demande à un Agent. Celui-ci démarre le traitement, renseigne la description et la solution, puis déclare la demande résolue. Le Responsable examine alors la résolution. L'alternative principale est le refus : la demande revient à \texttt{EN\_COURS}, la date de résolution est réinitialisée et l'historique conserve la trace de la décision. Une tentative d'action depuis un état incompatible est rejetée.
+\textbf{Résolution.} La déclaration de résolution par l'Agent ne clôt pas automatiquement la demande. Le Responsable technique examine le résultat ; s'il le refuse, la demande revient à \texttt{EN\_COURS}, car un travail complémentaire est attendu. La date de résolution est alors réinitialisée et la décision reste tracée dans l'historique.
 
-\textbf{Scénario d'assistance IA.} Le Responsable technique clique explicitement sur « Analyser avec l'IA ». Le système transmet le titre et la description au service d'analyse. Une réponse valide propose une catégorie et une priorité qui restent modifiables dans le formulaire. Si l'analyse échoue ou est indisponible, le Responsable poursuit la qualification manuellement. La proposition ne devient jamais une décision métier sans validation humaine.
+\textbf{Assistance IA.} L'analyse est déclenchée explicitement à partir du titre et de la description. Elle produit une proposition modifiable de catégorie et de priorité, jamais une décision automatique. Le Responsable technique conserve donc la responsabilité finale, et une indisponibilité du fournisseur n'interrompt pas la qualification manuelle.
 
-Le diagramme d'activité complet montre l'ensemble des transitions et des alternatives du cycle de vie. Sa densité le rend toutefois plus adapté aux annexes qu'au corps du chapitre. La figure~\ref{fig:02-sequence-enregistrement} détaille ici le scénario central d'enregistrement et de qualification, ainsi que l'alternative entre un client existant et un nouveau client.
+La figure~\ref{fig:02-sequence-enregistrement} montre comment ces règles sont appliquées lors de l'enregistrement, notamment pour le choix entre un client existant et un nouveau client.
 
 \begin{figure}[htbp]
 \centering
@@ -68,26 +69,30 @@ Le diagramme d'activité complet montre l'ensemble des transitions et des altern
 \label{fig:02-sequence-enregistrement}
 \end{figure}
 
-La séquence montre que la qualification précède l'enregistrement définitif. Les informations d'un nouveau client, la demande et l'événement de création sont persistés ensemble lors de la transaction finale ; aucune demande partielle n'est créée lorsque les informations requises ne sont pas réunies. Les autres séquences spécialisées sont conservées parmi les rendus destinés aux annexes.
+La qualification précède l'enregistrement définitif. Les informations d'un nouveau client, la demande et l'événement de création sont persistés ensemble lors de la transaction finale ; aucune demande partielle n'est créée si les informations requises ne sont pas réunies.
 
 \section{Conception technique}
 \label{sec:02-conception-technique}
 
-\textbf{De la contrainte au choix architectural.} Le projet doit fournir une interface web, centraliser les règles métier, persister des données relationnelles et intégrer un fournisseur IA externe. Une architecture Angular, API REST Spring Boot et PostgreSQL répond à ces besoins en séparant l'interface, le traitement serveur et le stockage. Le backend est organisé comme un monolithe modulaire : le déploiement reste simple pour le périmètre V1, tandis que les responsabilités sont isolées autour de la gestion des demandes, de l'identité et de l'administration, de la sécurité et de l'IA. Aucune comparaison détaillée avec les microservices n'est nécessaire pour justifier ce choix.
+\textbf{De la contrainte au choix architectural.} Le projet doit fournir une interface web, centraliser les règles métier, conserver des données relationnelles et communiquer avec un fournisseur IA externe. L'association d'Angular, d'une API REST Spring Boot et de PostgreSQL sépare l'interface, le traitement serveur et le stockage. Le backend reste un monolithe modulaire : il conserve un déploiement simple pour la V1 tout en isolant la gestion des demandes, l'identité et l'administration, la sécurité et l'IA.
 
-Dans Angular, les fonctionnalités sont regroupées par domaine et les éléments transversaux sont placés dans les espaces communs. Les formulaires réactifs représentent les données saisies et les services d'accès à l'API évitent de placer les règles métier dans les composants. Dans Spring Boot, les Controllers reçoivent les contrats HTTP, les Services d'application orchestrent les cas d'utilisation, le domaine porte les invariants et les Repositories isolent la persistance. Les DTO séparent les représentations d'entrée et de sortie des entités JPA.
+Le principal problème de conception est d'éviter le mélange entre présentation, traitement HTTP, règles métier et persistance. Dans Angular, les fonctionnalités sont regroupées par domaine et les services d'accès à l'API évitent de placer les règles métier dans les composants. Dans Spring Boot, les contrôleurs reçoivent les requêtes HTTP, les services orchestrent les cas d'utilisation, le domaine protège les invariants et les repositories isolent la persistance. Les objets de transfert de données (DTO) empêchent enfin d'exposer directement les entités persistantes.
 
-\textbf{SOLID et techniques effectivement observables.} La séparation Controller, Service, domaine, Repository et DTO illustre le principe de responsabilité unique (SRP) : chaque responsabilité principale possède un emplacement identifiable. Cette observation ne signifie pas que toutes les classes respectent parfaitement SRP, ni que les cinq principes SOLID sont appliqués uniformément.
+Cette séparation rend les responsabilités plus lisibles et facilite l'évolution de chaque couche. Elle illustre le principe de responsabilité unique (SRP), dans la mesure où chaque composant possède un rôle principal identifiable. Cette application reste ciblée : elle ne permet pas d'affirmer que toutes les classes respectent parfaitement ce principe ni que l'ensemble des principes SOLID est appliqué uniformément.
 
-Le service d'analyse dépend de `AnalyseIaPort`, tandis que `GroqAnalyseIaAdapter` fournit l'intégration concrète. Cette organisation illustre le principe d'inversion des dépendances (DIP) et la technique Port/Adapter : le cœur métier ne dépend pas directement du SDK ou du protocole du fournisseur. Le Repository Pattern est observable dans les interfaces de persistance utilisées par les services. Les DTO constituent une séparation de contrat entre HTTP et entités persistées ; ils ne sont pas présentés comme un pattern universel, mais comme une technique de découplage utile dans ce projet.
+L'intégration IA pose un autre problème : le cœur métier ne doit pas dépendre directement d'un fournisseur externe. Pour le résoudre, l'abstraction \texttt{AnalyseIaPort} définit le besoin d'analyse, tandis que \texttt{GroqAnalyseIaAdapter} réalise l'appel au fournisseur. Ce choix illustre le principe d'inversion des dépendances (DIP) et l'organisation Port/Adapter ; il isole le fournisseur et limite l'impact d'un changement d'intégration.
+
+Le Repository Pattern répond de la même manière au besoin d'isoler la persistance des services métier. Les DTO assurent, quant à eux, le découplage entre les contrats HTTP et les entités persistantes. Ils sont utilisés ici comme une technique de séparation des échanges, sans être présentés comme une solution universelle.
 
 Le State Pattern n'a pas été retenu pour le workflow. Pour la V1, un enum de statut et des opérations métier explicites suffisent à vérifier les transitions. Cette décision réduit la complexité tant que le nombre d'états et de règles reste limité ; elle pourrait être réévaluée si le cycle de vie s'étend fortement.
 
-\textbf{Sécurité conçue.} Le besoin de protection conduit d'abord à distinguer l'authentification et l'autorisation. L'authentification vérifie l'identité d'un utilisateur actif. Le JSON Web Token (JWT) est ensuite utilisé comme jeton d'accès transmis dans l'en-tête HTTP. Le contrôle d'accès basé sur les rôles (RBAC) organise les permissions générales selon les rôles Responsable technique, Agent technique et Administrateur. Il est complété par des contrôles métier contextuels : un Agent ne traite que ses demandes affectées, les transitions dépendent de l'état et l'auto-désactivation est interdite.
+\textbf{Sécurité conçue.} Le besoin de protection impose d'abord de distinguer l'authentification de l'autorisation. L'authentification vérifie l'identité et l'état actif du compte. Après cette vérification, un JSON Web Token (JWT) de durée limitée est transmis avec les requêtes protégées \parencite{rfc7519-jwt}.
 
-Les mots de passe sont transformés par `PasswordEncoder` et les secrets sont fournis par une configuration externe. La session Angular peut être restaurée depuis le stockage de session, mais cette facilité d'interface ne remplace pas la vérification backend de la signature du JWT, du compte actif, des rôles courants et de l'autorisation de l'action. La conception conserve ainsi l'API comme autorité de sécurité.
+L'autorisation détermine ensuite les actions permises. Le contrôle d'accès basé sur les rôles (RBAC) attribue les permissions générales aux rôles Responsable technique, Agent technique et Administrateur. Il est complété par des contrôles contextuels : un Agent ne peut traiter que les demandes qui lui sont affectées, chaque transition dépend de l'état courant et un Administrateur ne peut pas se désactiver lui-même.
 
-\textbf{Assistance IA.} La conception suit le flux : titre et description, analyse, proposition d'une catégorie et d'une priorité, puis validation ou modification humaine. Le port d'intégration isole le fournisseur Groq du cœur métier. Cette séparation permet de contrôler le format de la réponse et de maintenir la qualification manuelle lorsque le système externe est indisponible. Les résultats du benchmark et la validation locale appartiennent au chapitre 3 ; ils ne sont pas utilisés ici pour transformer une conception en preuve de qualité générale.
+Les mots de passe sont hachés avec \texttt{PasswordEncoder} et les secrets sont fournis par une configuration externe. Angular restaure la session depuis \texttt{sessionStorage} pour préserver l'expérience utilisateur après un rechargement. Cette restauration locale ne constitue cependant pas une autorisation : le backend vérifie la signature et l'expiration du JWT, relit l'état actif et les rôles courants, puis contrôle l'action demandée. L'API reste ainsi l'autorité de sécurité.
+
+\textbf{Assistance IA.} Le titre et la description sont transmis au service d'analyse, qui renvoie une proposition structurée de catégorie et de priorité. Le port d'intégration permet de contrôler cette réponse et d'isoler Groq du cœur métier. La qualification manuelle demeure disponible lorsque le système externe est indisponible, et toute proposition reste soumise à une validation humaine.
 
 La figure~\ref{fig:02-composants-applicatifs} situe les grandes frontières de la solution et répond à la question : quels composants collaborent pour fournir les fonctions métier ?
 
@@ -115,7 +120,7 @@ Les contrôleurs portent la frontière HTTP, les services orchestrent les cas d'
 \section{Conception de la base de données}
 \label{sec:02-base-donnees}
 
-La base relationnelle matérialise les objets métier et les contraintes qui protègent leur cohérence. Le modèle ne cherche pas à stocker toutes les décisions dans une seule table : les utilisateurs, les clients, les demandes et les événements d'historique ont des responsabilités distinctes. Les relations sont vérifiées à la fois dans les entités JPA et dans la migration Flyway V1 initial schema.
+La base relationnelle doit préserver trois dimensions complémentaires : l'identité des utilisateurs, le contenu et le cycle des demandes, puis la trace des événements. Le modèle répartit ces responsabilités entre des structures distinctes afin de protéger leurs contraintes et d'éviter la concentration de toutes les informations dans une seule table.
 
 La figure~\ref{fig:02-entites-persistantes} présente les entités persistantes et répond à la question : quelles données sont conservées et selon quelles cardinalités ?
 
@@ -126,13 +131,13 @@ La figure~\ref{fig:02-entites-persistantes} présente les entités persistantes 
 \label{fig:02-entites-persistantes}
 \end{figure}
 
-Le modèle place la demande au centre des relations. Chaque demande possède un client et un créateur, peut être affectée à un Agent, et regroupe plusieurs événements d'historique. Les énumérations encadrent les rôles, catégories, priorités et statuts autorisés sans les transformer en entités indépendantes.
+Le modèle place la demande au centre des relations. Chaque demande possède un client et un créateur, peut être affectée à un Agent et regroupe plusieurs événements d'historique. Les énumérations encadrent les rôles, catégories, priorités et statuts autorisés sans les transformer en entités indépendantes.
 
-`Utilisateur` possède un identifiant généré par séquence, un nom, un email, un état actif, un hash de mot de passe et un ensemble de rôles. L'email est non nul et unique dans la base ; sa normalisation est assurée par le domaine. Les rôles sont stockés dans une table d'association dont la clé primaire combine l'identifiant utilisateur et le code du rôle.
+L'identité repose sur Utilisateur et ses rôles. L'adresse électronique, obligatoire et unique, identifie le compte ; l'état actif permet d'en bloquer l'usage sans supprimer son historique. Une table d'association conserve les rôles cumulables attribués à chaque utilisateur.
 
-`Client` possède un identifiant généré par séquence, un nom, un email et un téléphone, tous obligatoires. L'email du client n'est pas déclaré unique, car aucune règle métier validée ne l'impose. `DemandeTechnique` référence obligatoirement un client et un créateur, et peut posséder au plus un Agent affecté. Sa référence est non nulle, unique et non modifiable après création. Les catégories, priorités et statuts sont persistés comme codes textuels correspondant aux enums.
+DemandeTechnique constitue le cœur du modèle. Elle référence obligatoirement le Client concerné et son créateur, possède une référence métier unique et peut être affectée à un seul Agent. Les catégories, priorités et statuts sont persistés sous forme de codes textuels afin de conserver des valeurs explicites. L'adresse électronique d'un Client n'est pas unique, car aucune règle métier validée ne l'impose.
 
-HistoriqueDemande conserve la date, le type d'événement, les anciennes et nouvelles valeurs éventuelles, la demande concernée et l'auteur. La relation vers la demande et l'auteur est obligatoire. L'historique est fonctionnellement immuable : une correction produit un nouvel événement plutôt que de réécrire l'ancien. Les dates de création, modification, résolution, clôture et annulation sont des instants ; la migration les stocke en TIMESTAMP WITH TIME ZONE, cohérent avec Instant côté Java \parencite{postgresql-datetime-types}.
+HistoriqueDemande assure la traçabilité. Chaque événement est rattaché à une demande et à son auteur, avec les anciennes et nouvelles valeurs lorsqu'elles sont utiles. Une correction crée un nouvel événement au lieu de réécrire le passé. Les dates métier sont représentées par des instants et stockées en \texttt{TIMESTAMP WITH TIME ZONE}, en cohérence avec le type \texttt{Instant} côté Java \parencite{postgresql-datetime-types}.
 
 \begin{table}[htbp]
 \centering
@@ -161,6 +166,6 @@ HistoriqueDemande & demande, auteur & FK & Obligatoires ; origine et responsable
 \normalsize
 \end{table}
 
-Le diagramme des entités persistantes complète ce dictionnaire en montrant les cardinalités : une demande est liée à un client et à un créateur, un agent peut être absent, et une demande possède plusieurs événements d'historique. Le diagramme de conception backend ajoute les repositories, services, DTO et contrôleurs ; il ne remplace pas le schéma relationnel, mais explique comment l'application y accède.
+Le dictionnaire complète le diagramme en précisant les attributs, leurs types et les contraintes qui ne sont pas détaillées graphiquement.
 
-En résumé, la conception relie chaque besoin à une responsabilité identifiable : les cas d'utilisation structurent le comportement, l'architecture répartit les responsabilités, la sécurité protège les opérations et le modèle de données garantit les relations essentielles. Les diagrammes intégrés mettent en évidence ces liens, tandis que les séquences spécialisées et le diagramme d'activité détaillé restent disponibles pour les annexes.
+En résumé, la conception relie chaque besoin à une responsabilité identifiable : les cas d'utilisation structurent le comportement, l'architecture sépare les traitements, la sécurité protège les opérations et le modèle de données garantit les relations essentielles.
