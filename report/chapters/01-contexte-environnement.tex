@@ -3,47 +3,72 @@
 \markboth{Contexte et cadrage}{ }
 \clearpage
 
-\section{Cadre professionnel et informations disponibles}
-\label{sec:01-organisme}
+% Introduction du chapitre
+Ce chapitre situe le cadre professionnel du stage et présente le besoin à l'origine du projet. Il décrit ensuite la solution proposée, les objectifs et les limites retenues, avant d'exposer la démarche suivie pour organiser le travail pendant un stage d'un mois.
 
-Le projet étudié concerne une application interne de gestion des demandes techniques. Les sources disponibles décrivent précisément le besoin logiciel et la solution réalisée, mais elles ne fournissent pas les informations administratives nécessaires pour présenter l'organisme d'accueil, son secteur d'activité, l'équipe ou l'encadrement. Ces éléments sont donc laissés à compléter : nom officiel de l'organisme, activité, service d'accueil, encadrants et dates du stage.
+\section{Organisme d'accueil et cadre du stage}
+\label{sec:01-organisme-cadre}
 
-Cette absence ne doit pas être compensée par une description générique. Le rapport distingue le contexte logiciel, vérifiable dans le projet, du contexte professionnel, qui devra être renseigné à partir des informations communiquées par l'étudiant ou l'organisme d'accueil.
+Le stage professionnel s'est déroulé du 1\ier{} au 31 août 2026 au sein de SAFYRON ENGINEERING, située rue Lac Toba, aux Berges du Lac à Tunis. L'entreprise exerce dans le domaine des études techniques industrielles. Ses activités comprennent notamment la protection incendie, les études de dangers et l'analyse des risques industriels.
 
-\section{Contexte fonctionnel}
-\label{sec:01-contexte-fonctionnel}
+Ce stage d'un mois a été réalisé dans le cadre de la cinquième année du cycle d'ingénieur en génie logiciel à EPI Digital School Sousse. Le travail a été mené individuellement, conformément aux exigences de l'école, sans rattachement à un service particulier. L'encadrement professionnel a été assuré par M.~Achref Ammar, fondateur de SAFYRON ENGINEERING.
 
-Une demande technique naît lorsqu'un client rencontre un problème ou formule un besoin nécessitant l'intervention d'une équipe technique. La difficulté n'est pas limitée à la saisie initiale. Une demande doit être suffisamment décrite pour être comprise, qualifiée pour être priorisée, affectée à une personne responsable, puis suivie jusqu'à une résolution acceptée ou à une clôture justifiée.
+La découverte du contexte de l'entreprise a permis de mieux comprendre la nature des études réalisées et la place des demandes formulées par les clients. À partir de cette compréhension des processus de travail, l'idée d'une application web interne de gestion et de suivi des demandes techniques a été proposée par l'étudiant.
 
-Le projet vise donc à fournir un espace commun où les rôles, les décisions et l'état courant d'une demande restent visibles. La V1 se concentre sur les utilisateurs internes : le client est représenté comme une donnée métier, mais ne se connecte pas à l'application.
+\section{Contexte, existant et problématique}
+\label{sec:01-contexte-existant-problematique}
 
-\section{Problématique et objectifs}
-\label{sec:01-problematique-objectifs}
+Les activités de SAFYRON ENGINEERING conduisent à traiter des demandes techniques provenant de clients. Une demande doit d'abord être comprise, puis qualifiée afin de déterminer sa catégorie et son niveau de priorité. Elle doit ensuite être prise en charge et suivie jusqu'à l'aboutissement du traitement.
 
-La problématique retenue est la suivante : comment construire une application interne capable de piloter le cycle de vie d'une demande technique, en conciliant simplicité d'utilisation, contrôle des droits, cohérence des données et traçabilité des décisions ?
+Dans ce cadre, l'étude de l'existant porte sur la logique générale de traitement des demandes, sans présumer des outils utilisés auparavant. Le fonctionnement observé fait apparaître plusieurs informations utiles au suivi : l'identité du client concerné, la nature du besoin, la priorité, la personne chargée du traitement, l'état courant et les changements successifs. Ces éléments doivent rester cohérents au cours de la prise en charge d'une demande.
 
-Les objectifs sont d'enregistrer une demande, donner à chaque rôle une vision cohérente, formaliser les transitions, conserver l'historique, protéger l'API, proposer une assistance IA facultative et rendre le fonctionnement vérifiable par des tests et une validation humaine. L'objectif n'est pas de multiplier les fonctionnalités, mais de construire un parcours cohérent sur un périmètre V1 maîtrisé.
+Le besoin ne consiste donc pas seulement à enregistrer une demande. Il faut aussi pouvoir la retrouver, connaître son niveau d'avancement, identifier la responsabilité de son traitement et conserver la trace des décisions importantes. Cette continuité est nécessaire pour disposer d'une vision partagée du travail sans attribuer au contexte antérieur des difficultés ou des résultats qui n'ont pas été mesurés.
 
-\section{Étude de l'existant et limites du périmètre}
-\label{sec:01-existant}
+La problématique du projet peut ainsi être formulée de la manière suivante : comment mettre à la disposition des intervenants internes un moyen cohérent pour centraliser, qualifier, affecter et suivre les demandes techniques des clients, tout en assurant la traçabilité de leur évolution et un accès adapté aux responsabilités de chacun ?
 
-Les sources du projet ne documentent pas un processus métier antérieur observé dans une entreprise. Il serait donc incorrect d'affirmer que l'application remplace un outil précis ou corrige des délais mesurés. L'étude de l'existant est limitée aux besoins identifiés, aux rôles, aux étapes du cycle et aux exclusions de la V1.
+\section{Solution proposée, objectifs et périmètre}
+\label{sec:01-solution-objectifs-perimetre}
 
-Le périmètre comprend les demandes internes, les clients associés, la qualification, l'affectation, le traitement, la résolution, la clôture, le refus de résolution, l'annulation avec motif, l'historisation et l'administration des utilisateurs. Il exclut le portail client, le compte client, un module autonome de gestion de clients, les sous-catégories, le statut d'attente, les commentaires, la suppression fonctionnelle et la décision IA automatique.
+Pour répondre à cette problématique, la solution proposée est une application web interne consacrée à la gestion et au suivi des demandes techniques. Elle fournit un espace commun dans lequel les demandes peuvent être enregistrées, qualifiées, affectées et suivies pendant leur traitement.
 
-Cette délimitation maîtrise le risque et évite de confondre une perspective future avec une fonction livrée.
+Les objectifs principaux sont de centraliser les demandes, de faciliter leur qualification et de formaliser leur cycle de vie. La solution doit également permettre d'affecter chaque demande, de suivre son traitement, de conserver un historique des changements et de protéger l'accès selon les responsabilités des utilisateurs. Une assistance fondée sur l'intelligence artificielle peut proposer une catégorie et une priorité ; elle reste facultative et toute proposition doit être validée par une personne avant son utilisation.
 
-\section{Acteurs et responsabilités}
-\label{sec:01-acteurs}
+Trois acteurs internes interviennent dans ce périmètre. Le Responsable technique pilote la prise en charge des demandes, l'Agent technique réalise leur traitement et l'Administrateur gère les comptes internes. Cette présentation reste volontairement générale ; l'analyse de leurs besoins et de leurs responsabilités détaillées relève du chapitre suivant.
 
-Le Responsable technique enregistre et qualifie les demandes, organise l'affectation et examine les résolutions. L'Agent technique traite les demandes qui lui sont affectées, renseigne la solution et déclare la résolution. L'Administrateur gère les comptes internes et leurs rôles métier ; ce rôle administratif ne donne pas automatiquement accès aux opérations métier. Un utilisateur peut cumuler plusieurs rôles, ce qui explique la vérification de l'ensemble des rôles et du contexte de la demande.
+La première version se limite aux fonctions effectivement réalisées pour les utilisateurs internes. Le client y est représenté comme une entité métier associée à ses demandes, mais il ne dispose ni d'un compte ni d'un portail. L'assistance par intelligence artificielle ne prend aucune décision automatique et ne réalise aucune affectation. Les choix finaux de catégorie et de priorité, comme les décisions relatives au traitement, restent sous contrôle humain. Cette délimitation maintient un périmètre réaliste pour un stage court et évite de confondre les objectifs de la version réalisée avec des évolutions possibles.
 
-\section{Démarche et organisation du travail}
-\label{sec:01-demarche}
+\section{Méthodologie et planification du travail}
+\label{sec:01-methodologie-planification}
 
-La démarche suit une progression de génie logiciel : formalisation du besoin et du périmètre, modélisation des règles de cycle de vie, conception de l'architecture et des données, réalisation, puis validation. La validation distingue les tests automatisés, les vérifications d'intégration locale et l'observation humaine des parcours dans le navigateur.
+La démarche retenue suit une progression simple de génie logiciel. Elle commence par l'analyse du besoin et la définition du périmètre, puis se poursuit par la modélisation fonctionnelle et la conception de la solution. La réalisation intervient ensuite, avant les tests et la validation. Cet enchaînement permet de relier chaque étape aux besoins identifiés et de contrôler progressivement la cohérence du projet.
 
-\section{Synthèse du cadrage}
-\label{sec:01-synthese}
+La durée d'un mois impose de privilégier la simplicité, une progression contrôlée et des validations régulières. Le périmètre de la première version a donc été limité à un ensemble cohérent de fonctions pouvant être analysées, réalisées et vérifiées pendant le stage. Le tableau~\ref{tab:01-planning-previsionnel} présente une répartition indicative par semaines. Il s'agit d'un planning prévisionnel du stage et non d'une chronologie observée.
 
-Le cadrage fait apparaître une tension centrale : l'application doit guider le processus sans empêcher les décisions métier. Les statuts, les rôles et l'historique structurent le fonctionnement ; l'assistance IA réduit l'effort de qualification mais reste une proposition. Le chapitre suivant montre comment cette tension a été traduite en exigences, modèles et choix d'architecture.
+\clearpage
+% TODO VALIDATION HUMAINE : confirmer la répartition temporelle du Gantt.
+\begin{table}[htbp]
+\centering
+\small
+\caption{Planning prévisionnel du stage}
+\label{tab:01-planning-previsionnel}
+\renewcommand{\arraystretch}{1.45}
+\begin{tabular}{p{0.53\textwidth}cccc}
+\textbf{Activité proposée} & \shortstack{\textbf{S1}\\01--07} & \shortstack{\textbf{S2}\\08--14} & \shortstack{\textbf{S3}\\15--21} & \shortstack{\textbf{S4}\\22--31} \\
+Compréhension du contexte de l'entreprise & \rule{1.5em}{0.65em} & & & \\
+Analyse du besoin et définition du périmètre & \rule{1.5em}{0.65em} & & & \\
+Analyse fonctionnelle et UML & & \rule{1.5em}{0.65em} & & \\
+Conception de l'architecture et des données & & \rule{1.5em}{0.65em} & & \\
+Réalisation backend et frontend & & & \rule{1.5em}{0.65em} & \\
+Intégration progressive et finalisation & & & \rule{1.5em}{0.65em} & \rule{1.5em}{0.65em} \\
+Tests et validation & & & & \rule{1.5em}{0.65em} \\
+Intégration de l'assistance IA et corrections finales & & & & \rule{1.5em}{0.65em} \\
+\end{tabular}
+\normalsize
+\end{table}
+
+La première semaine serait ainsi consacrée à la compréhension du contexte et au cadrage. La deuxième regrouperait l'analyse et la conception, tandis que la troisième porterait principalement sur la réalisation et le début de l'intégration. La dernière semaine permettrait de finaliser la solution, de conduire les vérifications et d'intégrer l'assistance IA ainsi que les corrections finales.
+
+Ce découpage reste une proposition indicative destinée à organiser un stage court. Il devra être confronté au déroulement réel du travail avant d'être présenté comme planning définitif.
+
+% Conclusion du chapitre
+Le cadrage met ainsi en évidence le besoin de structurer le traitement des demandes techniques dans un périmètre volontairement maîtrisé. La solution proposée centralise leur suivi tout en maintenant les décisions importantes sous contrôle humain. Le chapitre suivant approfondit ce cadre par l'analyse des besoins et la conception fonctionnelle et technique de la solution.
