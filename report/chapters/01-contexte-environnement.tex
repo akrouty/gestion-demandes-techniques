@@ -4,25 +4,34 @@
 \clearpage
 
 % Introduction du chapitre
-Ce chapitre situe le cadre professionnel du stage et présente le besoin à l'origine du projet. Il décrit ensuite la solution proposée, les objectifs et les limites retenues, avant d'exposer la démarche suivie pour organiser le travail pendant un stage d'un mois.
+Le cadre professionnel permet de situer l'origine du besoin et la problématique étudiée. La solution proposée, son périmètre et les objectifs retenus sont ensuite présentés, avant la démarche de travail et la planification du stage.
 
 \section{Organisme d'accueil et cadre du stage}
 \label{sec:01-organisme-cadre}
 
 Le stage professionnel s'est déroulé du 1\ier{} au 31 août 2026 au sein de SAFYRON ENGINEERING, située rue Lac Toba, aux Berges du Lac à Tunis. L'entreprise exerce dans le domaine des études techniques industrielles. Ses activités comprennent notamment la protection incendie, les études de dangers et l'analyse des risques industriels.
 
-Ce stage d'un mois a été réalisé dans le cadre de la cinquième année du cycle d'ingénieur en génie logiciel à EPI Digital School Sousse. Le travail a été mené individuellement, conformément aux exigences de l'école, sans rattachement à un service particulier. L'encadrement professionnel a été assuré par M.~Achref Ammar, fondateur de SAFYRON ENGINEERING.
+La figure~\ref{fig:01-logo-safyron} présente l'identité visuelle de l'organisme d'accueil.
 
-La découverte du contexte de l'entreprise a permis de mieux comprendre la nature des études réalisées et la place des demandes formulées par les clients. À partir de cette compréhension des processus de travail, l'idée d'une application web interne de gestion et de suivi des demandes techniques a été proposée par l'étudiant.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.38\textwidth]{figures/company/safyron-logo.png}
+\caption{Logo de SAFYRON ENGINEERING}
+\label{fig:01-logo-safyron}
+\end{figure}
+
+Le stage professionnel d'un mois a été réalisé dans le cadre de la cinquième année du cycle d'ingénieur en génie logiciel à EPI Digital School Sousse. Le travail a été mené individuellement, conformément aux exigences de l'école, sans rattachement à un service particulier. L'encadrement professionnel a été assuré par M.~Achref Ammar, fondateur de SAFYRON ENGINEERING.
+
+L'observation du contexte de l'entreprise a permis de mieux comprendre la nature des études réalisées et la place des demandes formulées par les clients. Sur la base de cette compréhension des processus de travail, l'étudiant a proposé l'idée d'une application web interne de gestion et de suivi des demandes techniques.
 
 \section{Contexte, existant et problématique}
 \label{sec:01-contexte-existant-problematique}
 
 Les activités de SAFYRON ENGINEERING conduisent à traiter des demandes techniques provenant de clients. Une demande doit d'abord être comprise, puis qualifiée afin de déterminer sa catégorie et son niveau de priorité. Elle doit ensuite être prise en charge et suivie jusqu'à l'aboutissement du traitement.
 
-Dans ce cadre, l'étude de l'existant porte sur la logique générale de traitement des demandes, sans présumer des outils utilisés auparavant. Le fonctionnement observé fait apparaître plusieurs informations utiles au suivi : l'identité du client concerné, la nature du besoin, la priorité, la personne chargée du traitement, l'état courant et les changements successifs. Ces éléments doivent rester cohérents au cours de la prise en charge d'une demande.
+L'étude de l'existant porte sur la logique générale de traitement des demandes, sans présumer des outils utilisés auparavant. L'analyse du fonctionnement métier met en évidence plusieurs informations utiles au suivi : l'identité du client concerné, la nature du besoin, la priorité, la personne chargée du traitement, l'état courant et les changements successifs. Ces éléments doivent rester cohérents au cours de la prise en charge d'une demande.
 
-Le besoin ne consiste donc pas seulement à enregistrer une demande. Il faut aussi pouvoir la retrouver, connaître son niveau d'avancement, identifier la responsabilité de son traitement et conserver la trace des décisions importantes. Cette continuité est nécessaire pour disposer d'une vision partagée du travail sans attribuer au contexte antérieur des difficultés ou des résultats qui n'ont pas été mesurés.
+Le besoin ne consiste donc pas seulement à enregistrer une demande. Le suivi doit permettre de la retrouver, de connaître son niveau d'avancement, d'identifier la personne responsable de son traitement et de conserver la trace des décisions importantes. Les intervenants disposent ainsi d'une vue claire de l'état de chaque demande et de la responsabilité associée à sa prise en charge.
 
 La problématique du projet peut ainsi être formulée de la manière suivante : comment mettre à la disposition des intervenants internes un moyen cohérent pour centraliser, qualifier, affecter et suivre les demandes techniques des clients, tout en assurant la traçabilité de leur évolution et un accès adapté aux responsabilités de chacun ?
 
@@ -33,14 +42,14 @@ Pour répondre à cette problématique, la solution proposée est une applicatio
 
 Les objectifs principaux sont de centraliser les demandes, de faciliter leur qualification et de formaliser leur cycle de vie. La solution doit également permettre d'affecter chaque demande, de suivre son traitement, de conserver un historique des changements et de protéger l'accès selon les responsabilités des utilisateurs. Une assistance fondée sur l'intelligence artificielle peut proposer une catégorie et une priorité ; elle reste facultative et toute proposition doit être validée par une personne avant son utilisation.
 
-Trois acteurs internes interviennent dans ce périmètre. Le Responsable technique pilote la prise en charge des demandes, l'Agent technique réalise leur traitement et l'Administrateur gère les comptes internes. Cette présentation reste volontairement générale ; l'analyse de leurs besoins et de leurs responsabilités détaillées relève du chapitre suivant.
+Les responsabilités internes se répartissent entre trois profils. Le Responsable technique pilote la prise en charge des demandes, l'Agent technique réalise leur traitement et l'Administrateur gère les comptes internes. Leurs interactions et leurs besoins sont détaillés dans l'analyse fonctionnelle.
 
-La première version se limite aux fonctions effectivement réalisées pour les utilisateurs internes. Le client y est représenté comme une entité métier associée à ses demandes, mais il ne dispose ni d'un compte ni d'un portail. L'assistance par intelligence artificielle ne prend aucune décision automatique et ne réalise aucune affectation. Les choix finaux de catégorie et de priorité, comme les décisions relatives au traitement, restent sous contrôle humain. Cette délimitation maintient un périmètre réaliste pour un stage court et évite de confondre les objectifs de la version réalisée avec des évolutions possibles.
+Le périmètre retenu pour la V1 concerne les fonctions effectivement réalisées pour les utilisateurs internes. Le client y est représenté comme une entité métier associée à ses demandes, mais il ne dispose ni d'un compte ni d'un portail. L'assistance par intelligence artificielle ne décide ni de la qualification ni de l'affectation : les choix finaux de catégorie et de priorité ainsi que les décisions de traitement restent sous contrôle humain. Ces limites correspondent à la durée du stage et distinguent la version réalisée des évolutions possibles.
 
 \section{Méthodologie et planification du travail}
 \label{sec:01-methodologie-planification}
 
-La démarche retenue suit une progression simple de génie logiciel. Elle commence par l'analyse du besoin et la définition du périmètre, puis se poursuit par la modélisation fonctionnelle et la conception de la solution. La réalisation intervient ensuite, avant les tests et la validation. Cet enchaînement permet de relier chaque étape aux besoins identifiés et de contrôler progressivement la cohérence du projet.
+La méthodologie retenue repose sur une démarche progressive de génie logiciel : analyse du besoin et définition du périmètre, modélisation fonctionnelle, conception, réalisation, tests et validation. Cet enchaînement relie chaque étape aux besoins identifiés et permet de contrôler progressivement la cohérence du projet.
 
 La durée d'un mois impose de privilégier la simplicité, une progression contrôlée et des validations régulières. Le périmètre de la première version a donc été limité à un ensemble cohérent de fonctions pouvant être analysées, réalisées et vérifiées pendant le stage. Le tableau~\ref{tab:01-planning-previsionnel} présente le planning prévisionnel retenu et sa répartition en quatre périodes.
 
@@ -64,9 +73,9 @@ Intégration de l'assistance IA et corrections finales & & & & \rule{1.5em}{0.65
 \normalsize
 \end{table}
 
-Selon ce planning, la première semaine est consacrée à la compréhension du contexte et au cadrage. La deuxième regroupe l'analyse et la conception, tandis que la troisième porte principalement sur la réalisation et le début de l'intégration. La dernière semaine permet de finaliser la solution, de conduire les vérifications et d'intégrer l'assistance IA ainsi que les corrections finales.
+Selon ce planning, la première semaine est consacrée au contexte et au cadrage, la deuxième à l'analyse et à la conception, et la troisième principalement à la réalisation et au début de l'intégration. La dernière semaine permet de finaliser la solution, de conduire les vérifications et d'intégrer l'assistance IA ainsi que les corrections finales.
 
-Ce découpage constitue le cadre de planification retenu pour organiser les activités du stage sur un mois.
+Cette répartition organise les activités du stage sur quatre périodes au cours du mois.
 
 % Conclusion du chapitre
-Le cadrage met ainsi en évidence le besoin de structurer le traitement des demandes techniques dans un périmètre volontairement maîtrisé. La solution proposée centralise leur suivi tout en maintenant les décisions importantes sous contrôle humain. Le chapitre suivant approfondit ce cadre par l'analyse des besoins et la conception fonctionnelle et technique de la solution.
+Le périmètre retenu structure le traitement et le suivi des demandes techniques tout en laissant les décisions importantes aux utilisateurs concernés. Le chapitre suivant présente l'analyse des besoins ainsi que la conception fonctionnelle et technique.
