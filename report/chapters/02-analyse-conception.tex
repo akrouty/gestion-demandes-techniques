@@ -25,7 +25,7 @@ Le diagramme complète cette description en visualisant les interactions. Il mon
 
 \textbf{Besoins fonctionnels.} Les attentes sont regroupées en grandes capacités : contrôler l'accès interne, enregistrer et suivre les demandes, encadrer leur cycle de traitement, administrer les utilisateurs et assister la qualification. Le tableau~\ref{tab:02-capacites-fonctionnelles} en donne une synthèse sans reprendre le détail des responsabilités déjà présenté.
 
-Ces besoins décrivent ce que le système doit permettre, et non la manière de le réaliser. Par exemple, « réserver l'accès aux utilisateurs autorisés » est un besoin de protection ; le JWT et le contrôle d'accès basé sur les rôles sont des moyens techniques étudiés plus loin. De même, « conserver les changements importants » est un besoin de traçabilité ; l'entité d'historique et la transaction sont des choix de conception.
+Ces besoins décrivent ce que le système doit permettre, et non la manière de le réaliser. Par exemple, réserver l'accès aux utilisateurs autorisés constitue un besoin de sécurité ; les mécanismes retenus sont présentés dans la conception technique. De même, préserver la cohérence des informations et conserver la trace des changements importants constituent des exigences, indépendamment des choix techniques qui permettront d'y répondre.
 
 \begin{table}[htbp]
 \centering
@@ -43,9 +43,9 @@ Assistance IA & Proposer une catégorie et une priorité, sans décision automat
 \end{tabular}
 \end{table}
 
-\textbf{Besoins non fonctionnels.} La sécurité est nécessaire parce que les actions dépendent du rôle et parfois de la demande concernée. La cohérence garantit qu'une transition et sa trace historique sont enregistrées ensemble. La traçabilité permet ensuite de comprendre les changements importants sans réécrire un événement passé.
+\textbf{Besoins non fonctionnels.} La sécurité exige que chaque utilisateur accède uniquement aux fonctions autorisées par ses responsabilités. La cohérence impose que les informations d'une demande restent compatibles avec son évolution. La traçabilité doit permettre de comprendre les changements importants intervenus pendant son traitement.
 
-La maintenabilité repose sur des responsabilités et des contrats d'échange clairement séparés. L'ergonomie et l'adaptation aux différentes tailles d'écran doivent permettre d'identifier rapidement l'état d'une demande. Enfin, l'indisponibilité du fournisseur IA ne doit jamais empêcher une qualification manuelle.
+La maintenabilité exige que la solution puisse évoluer sans rendre ses responsabilités difficiles à comprendre ou à modifier. L'ergonomie et l'adaptation aux différentes tailles d'écran doivent permettre d'identifier rapidement l'état d'une demande. Enfin, l'indisponibilité du fournisseur IA ne doit jamais empêcher une qualification manuelle.
 
 \section{Conception fonctionnelle}
 \label{sec:02-conception-fonctionnelle}
@@ -74,25 +74,12 @@ La qualification précède l'enregistrement définitif. Les informations d'un no
 \section{Conception technique}
 \label{sec:02-conception-technique}
 
-\textbf{De la contrainte au choix architectural.} Le projet doit fournir une interface web, centraliser les règles métier, conserver des données relationnelles et communiquer avec un fournisseur IA externe. L'association d'Angular, d'une API REST Spring Boot et de PostgreSQL sépare l'interface, le traitement serveur et le stockage. Le backend reste un monolithe modulaire : il conserve un déploiement simple pour la V1 tout en isolant la gestion des demandes, l'identité et l'administration, la sécurité et l'IA.
+\subsection{Architecture générale}
+\label{subsec:02-architecture-generale}
+
+Le projet doit fournir une interface web, centraliser les règles métier, conserver des données relationnelles et communiquer avec un fournisseur IA externe. L'association d'Angular, d'une API REST Spring Boot et de PostgreSQL sépare l'interface, le traitement serveur et le stockage. Le backend reste un monolithe modulaire : il conserve un déploiement simple pour la V1 tout en isolant la gestion des demandes, l'identité et l'administration, la sécurité et l'IA.
 
 Le principal problème de conception est d'éviter le mélange entre présentation, traitement HTTP, règles métier et persistance. Dans Angular, les fonctionnalités sont regroupées par domaine et les services d'accès à l'API évitent de placer les règles métier dans les composants. Dans Spring Boot, les contrôleurs reçoivent les requêtes HTTP, les services orchestrent les cas d'utilisation, le domaine protège les invariants et les repositories isolent la persistance. Les objets de transfert de données (DTO) empêchent enfin d'exposer directement les entités persistantes.
-
-Cette séparation rend les responsabilités plus lisibles et facilite l'évolution de chaque couche. Elle illustre le principe de responsabilité unique (SRP), dans la mesure où chaque composant possède un rôle principal identifiable. Cette application reste ciblée : elle ne permet pas d'affirmer que toutes les classes respectent parfaitement ce principe ni que l'ensemble des principes SOLID est appliqué uniformément.
-
-L'intégration IA pose un autre problème : le cœur métier ne doit pas dépendre directement d'un fournisseur externe. Pour le résoudre, l'abstraction \texttt{AnalyseIaPort} définit le besoin d'analyse, tandis que \texttt{GroqAnalyseIaAdapter} réalise l'appel au fournisseur. Ce choix illustre le principe d'inversion des dépendances (DIP) et l'organisation Port/Adapter ; il isole le fournisseur et limite l'impact d'un changement d'intégration.
-
-Le Repository Pattern répond de la même manière au besoin d'isoler la persistance des services métier. Les DTO assurent, quant à eux, le découplage entre les contrats HTTP et les entités persistantes. Ils sont utilisés ici comme une technique de séparation des échanges, sans être présentés comme une solution universelle.
-
-Le State Pattern n'a pas été retenu pour le workflow. Pour la V1, un enum de statut et des opérations métier explicites suffisent à vérifier les transitions. Cette décision réduit la complexité tant que le nombre d'états et de règles reste limité ; elle pourrait être réévaluée si le cycle de vie s'étend fortement.
-
-\textbf{Sécurité conçue.} Le besoin de protection impose d'abord de distinguer l'authentification de l'autorisation. L'authentification vérifie l'identité et l'état actif du compte. Après cette vérification, un JSON Web Token (JWT) de durée limitée est transmis avec les requêtes protégées \parencite{rfc7519-jwt}.
-
-L'autorisation détermine ensuite les actions permises. Le contrôle d'accès basé sur les rôles (RBAC) attribue les permissions générales aux rôles Responsable technique, Agent technique et Administrateur. Il est complété par des contrôles contextuels : un Agent ne peut traiter que les demandes qui lui sont affectées, chaque transition dépend de l'état courant et un Administrateur ne peut pas se désactiver lui-même.
-
-Les mots de passe sont hachés avec \texttt{PasswordEncoder} et les secrets sont fournis par une configuration externe. Angular restaure la session depuis \texttt{sessionStorage} pour préserver l'expérience utilisateur après un rechargement. Cette restauration locale ne constitue cependant pas une autorisation : le backend vérifie la signature et l'expiration du JWT, relit l'état actif et les rôles courants, puis contrôle l'action demandée. L'API reste ainsi l'autorité de sécurité.
-
-\textbf{Assistance IA.} Le titre et la description sont transmis au service d'analyse, qui renvoie une proposition structurée de catégorie et de priorité. Le port d'intégration permet de contrôler cette réponse et d'isoler Groq du cœur métier. La qualification manuelle demeure disponible lorsque le système externe est indisponible, et toute proposition reste soumise à une validation humaine.
 
 La figure~\ref{fig:02-composants-applicatifs} situe les grandes frontières de la solution et répond à la question : quels composants collaborent pour fournir les fonctions métier ?
 
@@ -105,17 +92,43 @@ La figure~\ref{fig:02-composants-applicatifs} situe les grandes frontières de l
 
 Le diagramme distingue l'application Angular, le monolithe modulaire Spring Boot, PostgreSQL et l'API Groq. Il rend aussi visible l'isolation de l'intégration IA derrière un port, tandis que les modules de gestion des demandes et d'identité accèdent à PostgreSQL par la persistance JPA/Hibernate.
 
-La figure~\ref{fig:02-conception-backend} affine cette vue en montrant comment les responsabilités sont réparties à l'intérieur du backend.
+\subsection{Principes de conception et patterns}
+\label{subsec:02-principes-patterns}
 
-\begin{figure}[htbp]
+La séparation décrite précédemment rend les responsabilités plus lisibles et facilite leur évolution. Elle illustre le principe de responsabilité unique (SRP), dans la mesure où chaque composant possède un rôle principal identifiable. Cette application reste ciblée : elle ne permet pas d'affirmer que toutes les classes respectent parfaitement ce principe ni que l'ensemble des principes SOLID est appliqué uniformément \parencite{martin-clean-architecture}.
+
+Le principe d'inversion des dépendances (DIP) conduit le cœur applicatif à dépendre d'une abstraction plutôt que d'une intégration externe concrète. Dans le projet, le port \texttt{AnalyseIaPort} exprime le besoin d'analyse. L'adaptateur \texttt{GroqAnalyseIaAdapter} réalise l'appel au fournisseur. Cet exemple concret d'organisation Port/Adapter isole Groq et limite l'impact d'un changement d'intégration \parencite{martin-clean-architecture,gamma-design-patterns}.
+
+Le Repository Pattern répond au besoin d'isoler la persistance des services métier \parencite{fowler-poeaa}. Les DTO assurent, quant à eux, le découplage entre les contrats HTTP et les entités persistantes. Ils sont utilisés ici comme une technique de séparation des échanges, sans être présentés comme une solution universelle.
+
+Le State Pattern n'a pas été retenu pour le workflow. Pour la V1, un enum de statut et des opérations métier explicites suffisent à vérifier les transitions. Cette décision réduit la complexité tant que le nombre d'états et de règles reste limité ; elle pourrait être réévaluée si le cycle de vie s'étend fortement \parencite{gamma-design-patterns}.
+
+La figure~\ref{fig:02-conception-backend} affine la vue générale en montrant comment les responsabilités et ces choix de conception sont répartis à l'intérieur du backend.
+
+\begin{landscape}
+\begin{figure}[p]
 \centering
-\includegraphics[width=\textwidth,height=0.68\textheight,keepaspectratio]{figures/uml/backend-design-v1.png}
+\includegraphics[trim=4 4 4 4,clip,width=0.98\linewidth,height=0.78\textheight,keepaspectratio]{figures/uml/backend-design-v1.png}
 \caption{Organisation des responsabilités dans la conception backend}
 \label{fig:02-conception-backend}
 \end{figure}
-\clearpage
+\end{landscape}
 
-Les contrôleurs portent la frontière HTTP, les services orchestrent les cas d'utilisation et les repositories isolent la persistance. Le couple \texttt{AnalyseIaPort}/\texttt{GroqAnalyseIaAdapter} matérialise la dépendance du cœur applicatif vers une abstraction, puis l'implémentation de cette abstraction par l'adaptateur externe. Les deux figures sont donc complémentaires : la première expose les composants, la seconde les rôles techniques qui structurent le backend.
+Les contrôleurs portent la frontière HTTP, les services orchestrent les cas d'utilisation et les repositories isolent la persistance. Le port \texttt{AnalyseIaPort} matérialise la dépendance du cœur applicatif vers une abstraction ; \texttt{GroqAnalyseIaAdapter} fournit l'implémentation externe de cette abstraction. Les deux figures sont donc complémentaires : la première expose les composants, la seconde les rôles techniques qui structurent le backend.
+
+\subsection{Sécurité de la solution}
+\label{subsec:02-securite-solution}
+
+Le besoin de protection impose d'abord de distinguer l'authentification de l'autorisation. L'authentification vérifie l'identité et l'état actif du compte. Après cette vérification, un JSON Web Token (JWT) de durée limitée est transmis avec les requêtes protégées \parencite{rfc7519-jwt}.
+
+L'autorisation détermine ensuite les actions permises. Le contrôle d'accès basé sur les rôles (RBAC) attribue les permissions générales aux rôles Responsable technique, Agent technique et Administrateur. Il est complété par des contrôles contextuels : un Agent ne peut traiter que les demandes qui lui sont affectées, chaque transition dépend de l'état courant et un Administrateur ne peut pas se désactiver lui-même.
+
+Les mots de passe sont hachés avec BCrypt et les secrets sont fournis par une configuration externe. Le navigateur conserve temporairement les informations de session afin de préserver l'expérience utilisateur après un rechargement. Cette conservation locale ne constitue cependant pas une autorisation : le backend vérifie la signature et l'expiration du JWT, relit l'état actif et les rôles courants, puis contrôle l'action demandée. Le backend reste ainsi l'autorité pour l'authentification et les autorisations.
+
+\subsection{Assistance intelligente}
+\label{subsec:02-assistance-intelligente}
+
+Le titre et la description sont transmis au service d'analyse, qui renvoie une proposition structurée de catégorie et de priorité. Le port d'intégration permet de contrôler cette réponse et d'isoler Groq du cœur métier. La qualification manuelle demeure disponible lorsque le système externe est indisponible, et toute proposition reste soumise à une validation humaine.
 
 \section{Conception de la base de données}
 \label{sec:02-base-donnees}
@@ -144,7 +157,7 @@ HistoriqueDemande assure la traçabilité. Chaque événement est rattaché à u
 \caption{Dictionnaire de données synthétique}
 \label{tab:02-dictionnaire}
 \small
-\begin{tabular}{p{0.18\textwidth}p{0.22\textwidth}p{0.18\textwidth}p{0.32\textwidth}}
+\begin{tabular}{p{0.20\textwidth}p{0.20\textwidth}p{0.17\textwidth}p{0.29\textwidth}}
 \textbf{Entité} & \textbf{Attribut} & \textbf{Type} & \textbf{Contrainte et signification}\\
 Utilisateur & id & Long / BIGINT & Clé primaire, séquence.\\
 Utilisateur & email & String / VARCHAR & Obligatoire, normalisé et unique.\\
@@ -153,10 +166,11 @@ Utilisateur & roles & Set\textless Role\textgreater & Association ; plusieurs r�
 Client & id & Long / BIGINT & Clé primaire, séquence.\\
 Client & nom, email, telephone & String / VARCHAR & Trois informations obligatoires ; email non unique.\\
 DemandeTechnique & reference & String / VARCHAR & Obligatoire, unique et immuable ; référence métier.\\
-DemandeTechnique & titre, description & String / TEXT & Obligatoires ; contenu de la demande.\\
+DemandeTechnique & titre & String / VARCHAR & Obligatoire ; intitulé de la demande.\\
+DemandeTechnique & description & String / TEXT & Obligatoire ; détail de la demande.\\
 DemandeTechnique & categorie & Categorie / VARCHAR & Obligatoire ; valeur de la liste V1.\\
 DemandeTechnique & priorite & Priorite / VARCHAR & Obligatoire ; BASSE à CRITIQUE.\\
-DemandeTechnique & statut & Statut / VARCHAR & Obligatoire ; état du cycle de vie.\\
+DemandeTechnique & statut & StatutDemande / VARCHAR & Obligatoire ; état du cycle de vie.\\
 DemandeTechnique & agentAffecte & Utilisateur / FK & Optionnel ; au plus un Agent affecté.\\
 DemandeTechnique & dates métier & Instant / timestamptz & Création et modification obligatoires ; résolution, clôture et annulation optionnelles.\\
 HistoriqueDemande & typeEvenement & String / VARCHAR & Obligatoire ; nature du changement.\\
