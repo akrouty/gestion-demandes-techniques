@@ -8,23 +8,14 @@ La conception transforme les besoins du stage en responsabilités, règles et st
 \section{Spécification des besoins}
 \label{sec:02-specification-besoins}
 
+Cette section précise les personnes concernées par la solution et les attentes auxquelles elle doit répondre. Elle distingue les fonctions attendues des qualités générales du système, avant d'aborder les choix de conception.
+
 \subsection{Acteurs et responsabilités}
 \label{subsec:02-acteurs-responsabilites}
 
 L'application est réservée aux utilisateurs internes. Le Responsable technique pilote la demande depuis son enregistrement jusqu'à la décision de clôture. L'Agent technique prend en charge les demandes qui lui sont affectées et documente leur résolution. L'Administrateur maintient les comptes et leurs rôles. Cette répartition sépare le pilotage, l'exécution et l'administration, tout en autorisant une même personne à cumuler plusieurs rôles lorsque l'organisation l'exige.
 
 Le Client n'est pas un utilisateur de l'application. Il constitue une entité métier associée à une demande. Cette distinction est importante : elle permet de conserver les informations nécessaires au suivi sans introduire dans la V1 un portail, une authentification ou des droits d'accès pour les clients.
-
-La figure~\ref{fig:02-cas-utilisation-global} présente les acteurs internes et les capacités du système auxquelles ils participent.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.88\textwidth,height=0.72\textheight,keepaspectratio]{figures/uml/Use_caseV1.png}
-\caption{Diagramme global des cas d'utilisation de la V1}
-\label{fig:02-cas-utilisation-global}
-\end{figure}
-
-Le diagramme complète cette description en visualisant les interactions. Il montre notamment que la connexion est commune aux acteurs, alors que la qualification et le déclenchement de l'assistance IA restent sous la responsabilité du Responsable technique.
 
 \subsection{Besoins fonctionnels}
 \label{subsec:02-besoins-fonctionnels}
@@ -65,21 +56,32 @@ La maintenabilité exige que la solution puisse évoluer sans rendre ses respons
 \section{Conception fonctionnelle}
 \label{sec:02-conception-fonctionnelle}
 
-\textbf{Cycle de vie.} Une demande suit un cycle contrôlé afin qu'aucune action ne contourne les responsabilités définies. Elle passe de \texttt{NOUVELLE} à \texttt{ASSIGNEE}, puis à \texttt{EN\_COURS} lorsque l'Agent commence effectivement son travail. Après saisie de la solution, elle devient \texttt{RESOLUE}, mais seule la décision du Responsable technique peut la rendre \texttt{CLOTUREE}. Une annulation reste possible avant la clôture, avec un motif obligatoire ; \texttt{CLOTUREE} et \texttt{ANNULEE} sont des états terminaux.
+La conception fonctionnelle décrit les interactions attendues sans anticiper leur réalisation technique. Le diagramme global situe d'abord les responsabilités ; les cas majeurs et leurs scénarios précisent ensuite le comportement attendu.
 
-La réaffectation protège la responsabilité du nouvel Agent. Si le traitement avait déjà commencé, la demande revient de \texttt{EN\_COURS} à \texttt{ASSIGNEE} : le nouvel Agent doit confirmer explicitement sa prise en charge. Les informations déjà saisies sont conservées afin de ne pas perdre le travail antérieur.
-
-\textbf{Enregistrement et qualification.} Une demande ne peut être créée qu'avec un client identifiable, une catégorie et une priorité validées. Le Responsable technique peut sélectionner un client existant ou fournir les informations minimales d'un nouveau client. La figure~\ref{fig:02-sequence-enregistrement} porte le détail de ces deux alternatives et de leur transaction finale.
-
-\textbf{Résolution.} La déclaration de résolution par l'Agent ne clôt pas automatiquement la demande. Le Responsable technique examine le résultat ; s'il le refuse, la demande revient à \texttt{EN\_COURS}, car un travail complémentaire est attendu. La date de résolution est alors réinitialisée et la décision reste tracée dans l'historique.
-
-\textbf{Assistance IA.} L'analyse est déclenchée explicitement à partir du titre et de la description. Elle produit une proposition modifiable de catégorie et de priorité, jamais une décision automatique. Le Responsable technique conserve donc la responsabilité finale, et une indisponibilité du fournisseur n'interrompt pas la qualification manuelle.
-
-La figure~\ref{fig:02-sequence-enregistrement} montre comment ces règles sont appliquées lors de l'enregistrement, notamment pour le choix entre un client existant et un nouveau client.
+La figure~\ref{fig:02-cas-utilisation-global} présente les acteurs internes et les capacités du système auxquelles ils participent.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.88\textwidth,height=0.74\textheight,keepaspectratio]{figures/uml/register-qualify-request-v1.png}
+\includegraphics[width=0.88\textwidth,height=0.72\textheight,keepaspectratio]{figures/uml/Use_caseV1.png}
+\caption{Diagramme global des cas d'utilisation de la V1}
+\label{fig:02-cas-utilisation-global}
+\end{figure}
+
+Le diagramme montre que la connexion est commune aux acteurs internes, tandis que le pilotage des demandes relève du Responsable technique, leur traitement de l'Agent technique et l'administration des comptes de l'Administrateur. La qualification et le déclenchement de l'assistance IA restent sous la responsabilité du Responsable technique.
+
+\textbf{Enregistrement et qualification.} Dans le scénario nominal, le Responsable technique renseigne la demande, sélectionne un client existant, puis valide la catégorie et la priorité avant l'enregistrement. Si le client n'est pas encore enregistré, ses informations minimales sont saisies dans le même parcours. Une demande ne peut être créée qu'avec un client identifiable et une qualification validée.
+
+\textbf{Traitement et résolution.} L'Agent affecté prend en charge la demande et documente sa résolution. Cette déclaration ne clôt pas automatiquement le dossier : le Responsable technique examine le résultat. En cas de refus, la demande revient à \texttt{EN\_COURS}, la date de résolution est réinitialisée et la décision reste tracée dans l'historique.
+
+\textbf{Assistance IA.} L'analyse est déclenchée explicitement à partir du titre et de la description. Elle produit une proposition modifiable de catégorie et de priorité, jamais une décision automatique. Le Responsable technique conserve la décision finale ; si le fournisseur est indisponible, la qualification manuelle reste possible.
+
+\textbf{Cycle de vie et réaffectation.} Une demande passe de \texttt{NOUVELLE} à \texttt{ASSIGNEE}, puis à \texttt{EN\_COURS} lorsque l'Agent commence effectivement son travail. Après saisie de la solution, elle devient \texttt{RESOLUE}, puis \texttt{CLOTUREE} sur décision du Responsable technique. Une annulation reste possible avant la clôture, avec un motif obligatoire ; \texttt{CLOTUREE} et \texttt{ANNULEE} sont des états terminaux. Si une demande en cours est réaffectée, elle revient à \texttt{ASSIGNEE} afin que le nouvel Agent confirme sa prise en charge, sans perte des informations déjà saisies.
+
+La figure~\ref{fig:02-sequence-enregistrement} détaille le scénario d'enregistrement et ses deux alternatives selon que le client existe déjà ou doit être renseigné.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.94\textwidth,height=0.74\textheight,keepaspectratio]{figures/uml/register-qualify-request-v1.png}
 \caption{Enregistrement et qualification des demandes}
 \label{fig:02-sequence-enregistrement}
 \end{figure}
@@ -88,6 +90,8 @@ La qualification précède l'enregistrement définitif. Les informations d'un no
 
 \section{Conception technique}
 \label{sec:02-conception-technique}
+
+Cette section traduit les besoins précédents en organisation technique. Elle présente les frontières de l'application, les principes de conception retenus, la protection des accès et l'intégration de l'assistance intelligente.
 
 \subsection{Architecture générale}
 \label{subsec:02-architecture-generale}
@@ -146,24 +150,7 @@ Le titre et la description sont transmis au service d'analyse, qui renvoie une p
 \section{Conception de la base de données}
 \label{sec:02-base-donnees}
 
-La base relationnelle doit préserver trois dimensions complémentaires : l'identité des utilisateurs, le contenu et le cycle des demandes, puis la trace des événements. Le modèle répartit ces responsabilités entre des structures distinctes afin de protéger leurs contraintes et d'éviter la concentration de toutes les informations dans une seule table.
-
-La figure~\ref{fig:02-entites-persistantes} présente les données conservées et les cardinalités qui structurent leurs relations.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\textwidth,height=0.70\textheight,keepaspectratio]{figures/uml/entity-model-v1.png}
-\caption{Entités persistantes et cardinalités du modèle de données V1}
-\label{fig:02-entites-persistantes}
-\end{figure}
-
-Le modèle place la demande au centre des relations. Chaque demande possède un client et un créateur, peut être affectée à un Agent et regroupe plusieurs événements d'historique. Les énumérations encadrent les rôles, catégories, priorités et statuts autorisés sans les transformer en entités indépendantes.
-
-L'identité repose sur Utilisateur et ses rôles. L'adresse électronique, obligatoire et unique, identifie le compte ; l'état actif permet d'en bloquer l'usage sans supprimer son historique. Une table d'association conserve les rôles cumulables attribués à chaque utilisateur.
-
-DemandeTechnique constitue le cœur du modèle. Elle référence obligatoirement le Client concerné et son créateur, possède une référence métier unique et peut être affectée à un seul Agent. Les catégories, priorités et statuts sont persistés sous forme de codes textuels afin de conserver des valeurs explicites. L'adresse électronique d'un Client n'est pas unique, car aucune règle métier validée ne l'impose.
-
-HistoriqueDemande assure la traçabilité. Chaque événement est rattaché à une demande et à son auteur, avec les anciennes et nouvelles valeurs lorsqu'elles sont utiles. Une correction crée un nouvel événement au lieu de réécrire le passé. Les dates métier sont représentées par des instants et stockées en \texttt{TIMESTAMP WITH TIME ZONE}, en cohérence avec le type \texttt{Instant} côté Java \parencite{postgresql-datetime-types}.
+La base relationnelle doit préserver l'identité des utilisateurs, le contenu et le cycle des demandes, puis la trace des événements. Le dictionnaire précise d'abord les principales données et leurs contraintes ; le modèle d'entités montre ensuite leurs relations.
 
 \begin{center}
 \begin{minipage}{\textwidth}
@@ -203,6 +190,23 @@ HistoriqueDemande assure la traçabilité. Chaque événement est rattaché à u
 \end{minipage}
 \end{center}
 
-Le dictionnaire complète le diagramme en précisant les attributs, leurs types et les contraintes qui ne sont pas détaillées graphiquement.
+Le dictionnaire synthétise les attributs, leurs types et les contraintes essentielles sans reproduire artificiellement toutes les colonnes de la base.
+
+La figure~\ref{fig:02-entites-persistantes} présente ensuite les données conservées et les cardinalités qui structurent leurs relations.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth,height=0.70\textheight,keepaspectratio]{figures/uml/entity-model-v1.png}
+\caption{Entités persistantes et cardinalités du modèle de données V1}
+\label{fig:02-entites-persistantes}
+\end{figure}
+
+Le modèle place la demande au centre des relations. Chaque demande possède un client et un créateur, peut être affectée à un Agent et regroupe plusieurs événements d'historique. Les énumérations encadrent les rôles, catégories, priorités et statuts autorisés sans les transformer en entités indépendantes.
+
+L'identité repose sur Utilisateur et ses rôles. L'adresse électronique, obligatoire et unique, identifie le compte ; l'état actif permet d'en bloquer l'usage sans supprimer son historique. Une table d'association conserve les rôles cumulables attribués à chaque utilisateur.
+
+DemandeTechnique constitue le cœur du modèle. Elle référence obligatoirement le Client concerné et son créateur, possède une référence métier unique et peut être affectée à un seul Agent. Les catégories, priorités et statuts sont persistés sous forme de codes textuels afin de conserver des valeurs explicites. L'adresse électronique d'un Client n'est pas unique, car aucune règle métier validée ne l'impose.
+
+HistoriqueDemande assure la traçabilité. Chaque événement est rattaché à une demande et à son auteur, avec les anciennes et nouvelles valeurs lorsqu'elles sont utiles. Une correction crée un nouvel événement au lieu de réécrire le passé. Les dates métier sont représentées par des instants et stockées en \texttt{TIMESTAMP WITH TIME ZONE}, en cohérence avec le type \texttt{Instant} côté Java \parencite{postgresql-datetime-types}.
 
 En résumé, la conception relie chaque besoin à une responsabilité identifiable : les cas d'utilisation structurent le comportement, l'architecture sépare les traitements, la sécurité protège les opérations et le modèle de données garantit les relations essentielles.
