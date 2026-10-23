@@ -134,20 +134,33 @@ Le corps du rapport explique uniquement les concepts et décisions nécessaires 
 
 Une section importante comporte généralement une introduction, le besoin ou le concept étudié, les explications essentielles, une figure ou un tableau si utile, son interprétation et une transition. Adapter cette organisation au propos : ne pas la transformer en sous-sections artificielles ni en simple liste de décisions.
 
+### Introduction et conclusion des chapitres
+
+Chaque chapitre comporte une courte section non numérotée « Introduction », son développement, puis une courte section non numérotée « Conclusion » qui résume l'apport du chapitre et prépare le suivant. Ces deux titres apparaissent dans le sommaire sous le chapitre concerné, sans créer de numérotation artificielle telle que « 2.0 » ou « 2.5 » ; utiliser `\section*` et une entrée de sommaire au niveau `section`.
+
+Cette règle s'applique immédiatement au chapitre 2 et aux prochaines révisions du chapitre 3. Le chapitre 1 reste figé ; son harmonisation éventuelle relève uniquement d'une revue finale explicitement autorisée par l'utilisateur.
+
+### Usage des listes
+
+Réserver les listes aux ensembles réellement parallèles qui doivent être identifiés rapidement, notamment les acteurs ou des catégories d'exigences distinctes. Pour un raisonnement, un scénario, une interprétation de figure ou une justification, préférer de courts paragraphes naturels, éventuellement ouverts par un intitulé en gras. Une liste ne remplace jamais l'explication nécessaire.
+
 ### Présentation pédagogique des figures, tableaux et idées parallèles
 
 - Une figure ou un tableau ne coupe jamais un paragraphe et reste dans la section qui l'introduit.
 - L'enchaînement recommandé est : courte introduction → figure ou tableau → interprétation synthétique.
 - L'interprétation d'un diagramme retient seulement trois à cinq idées utiles au lecteur ; elle ne décrit pas exhaustivement tout ce qui est visible.
-- Lorsque plusieurs éléments parallèles doivent être comparés, notamment des acteurs, qualités, responsabilités ou mécanismes, privilégier une liste courte avec un libellé en gras plutôt qu'un long bloc mêlant des idées indépendantes.
+- Lorsque plusieurs éléments parallèles doivent être comparés, notamment des acteurs ou des qualités indépendantes, une liste courte avec un libellé en gras peut être préférable à un long bloc mêlant des idées indépendantes. Elle n'est pas systématique après une figure.
 - Éviter les questions rhétoriques dans les transitions et les explications de figures. La problématique générale peut naturellement rester formulée sous forme de question.
 - Ne pas répéter en prose le contenu déjà présenté dans un tableau. Une phrase peut introduire le tableau et une courte interprétation peut le suivre, sans reprendre chacune de ses lignes.
+- Un tableau conserve des lignes lisibles, un alignement clair et un espacement vertical raisonnable ; l'interligne 1,5 ne lui est pas imposé mécaniquement.
 
 Ces règles s'appliquent aux chapitres restant à rédiger ou à corriger. Elles n'entraînent aucune modification rétroactive du chapitre 1, déjà figé.
 
 ### Usage pédagogique des diagrammes
 
 Chaque diagramme doit avoir un objectif de lecture précis : présenter les utilisateurs du système (cas d'utilisation), le cycle de vie d'une demande (activité), les données liées (classes) ou le déroulement d'un scénario (séquence). Introduire cet objectif avant la figure et interpréter les éléments importants après celle-ci. Sélectionner les diagrammes utiles à l'argumentation ; réserver les compléments secondaires aux annexes au lieu de reproduire systématiquement tous les modèles.
+
+Les rendus UML intégrés au rapport n'affichent ni titre PlantUML interne ni mention `VALIDATED` : la légende LaTeX fournit seule le titre visible. Ils restent lisibles à l'impression. Lorsqu'un diagramme horizontal est trop large, privilégier sa rotation dans une page A4 portrait plutôt qu'une page paysage, si cette solution conserve une lecture confortable.
 
 ### Conception et réalisation
 
