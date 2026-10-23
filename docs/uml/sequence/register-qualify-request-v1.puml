@@ -1,7 +1,6 @@
 @startuml
 
 ' Statut : VALIDATED
-title Enregistrer et qualifier une demande - V1\nVALIDATED
 
 hide footbox
 ' PlantUML affiche nativement les gardes des fragments entre crochets.
@@ -64,10 +63,6 @@ deactivate SYSTEM
 
 RT -> SYSTEM : Enregistrer la demande
 activate SYSTEM
-note right of SYSTEM
-  Transaction finale : nouveau Client si nécessaire,
-  demande et événement de création persistés ensemble.
-end note
 SYSTEM --> RT : Demande enregistrée ; statut NOUVELLE
 deactivate SYSTEM
 
