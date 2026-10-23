@@ -152,31 +152,35 @@ DemandeTechnique constitue le cœur du modèle. Elle référence obligatoirement
 
 HistoriqueDemande assure la traçabilité. Chaque événement est rattaché à une demande et à son auteur, avec les anciennes et nouvelles valeurs lorsqu'elles sont utiles. Une correction crée un nouvel événement au lieu de réécrire le passé. Les dates métier sont représentées par des instants et stockées en \texttt{TIMESTAMP WITH TIME ZONE}, en cohérence avec le type \texttt{Instant} côté Java \parencite{postgresql-datetime-types}.
 
-\begin{table}[htbp]
+\begin{table}[!ht]
 \centering
 \caption{Dictionnaire de données synthétique}
 \label{tab:02-dictionnaire}
 \small
-\begin{tabular}{p{0.20\textwidth}p{0.20\textwidth}p{0.17\textwidth}p{0.29\textwidth}}
-\textbf{Entité} & \textbf{Attribut} & \textbf{Type} & \textbf{Contrainte et signification}\\
-Utilisateur & id & Long / BIGINT & Clé primaire, séquence.\\
-Utilisateur & email & String / VARCHAR & Obligatoire, normalisé et unique.\\
-Utilisateur & actif & boolean / BOOLEAN & Obligatoire ; compte autorisé ou désactivé.\\
-Utilisateur & roles & Set\textless Role\textgreater & Association ; plusieurs rôles possibles.\\
-Client & id & Long / BIGINT & Clé primaire, séquence.\\
-Client & nom, email, telephone & String / VARCHAR & Trois informations obligatoires ; email non unique.\\
-DemandeTechnique & reference & String / VARCHAR & Obligatoire, unique et immuable ; référence métier.\\
-DemandeTechnique & titre & String / VARCHAR & Obligatoire ; intitulé de la demande.\\
-DemandeTechnique & description & String / TEXT & Obligatoire ; détail de la demande.\\
-DemandeTechnique & categorie & Categorie / VARCHAR & Obligatoire ; valeur de la liste V1.\\
-DemandeTechnique & priorite & Priorite / VARCHAR & Obligatoire ; BASSE à CRITIQUE.\\
-DemandeTechnique & statut & StatutDemande / VARCHAR & Obligatoire ; état du cycle de vie.\\
-DemandeTechnique & agentAffecte & Utilisateur / FK & Optionnel ; au plus un Agent affecté.\\
-DemandeTechnique & dates métier & Instant / timestamptz & Création et modification obligatoires ; résolution, clôture et annulation optionnelles.\\
-HistoriqueDemande & typeEvenement & String / VARCHAR & Obligatoire ; nature du changement.\\
-HistoriqueDemande & ancienne/nouvelle valeur & String / TEXT & Optionnelles ; valeurs avant et après.\\
-HistoriqueDemande & demande, auteur & FK & Obligatoires ; origine et responsable de l'événement.\\
+\begingroup
+\setlength{\tabcolsep}{4pt}
+\newcommand{\DCell}[1]{{\raggedright #1\par}}
+\begin{tabular}{@{}p{0.20\textwidth}p{0.20\textwidth}p{0.19\textwidth}p{0.35\textwidth}@{}}
+\DCell{\textbf{Entité}} & \DCell{\textbf{Attribut}} & \DCell{\textbf{Type}} & \DCell{\textbf{Contrainte et signification}}\\
+\DCell{Utilisateur} & \DCell{id} & \DCell{Long / BIGINT} & \DCell{Clé primaire, séquence.}\\
+\DCell{Utilisateur} & \DCell{email} & \DCell{String / VARCHAR} & \DCell{Obligatoire, normalisé et unique.}\\
+\DCell{Utilisateur} & \DCell{actif} & \DCell{boolean / BOOLEAN} & \DCell{Obligatoire ; compte autorisé ou désactivé.}\\
+\DCell{Utilisateur} & \DCell{roles} & \DCell{Set\textless Role\textgreater} & \DCell{Association ; plusieurs rôles possibles.}\\
+\DCell{Client} & \DCell{id} & \DCell{Long / BIGINT} & \DCell{Clé primaire, séquence.}\\
+\DCell{Client} & \DCell{nom, email, telephone} & \DCell{String / VARCHAR} & \DCell{Trois informations obligatoires ; email non unique.}\\
+\DCell{DemandeTechnique} & \DCell{reference} & \DCell{String / VARCHAR} & \DCell{Obligatoire, unique et immuable ; référence métier.}\\
+\DCell{DemandeTechnique} & \DCell{titre} & \DCell{String / VARCHAR} & \DCell{Obligatoire ; intitulé de la demande.}\\
+\DCell{DemandeTechnique} & \DCell{description} & \DCell{String / TEXT} & \DCell{Obligatoire ; détail de la demande.}\\
+\DCell{DemandeTechnique} & \DCell{categorie} & \DCell{Categorie / VARCHAR} & \DCell{Obligatoire ; valeur de la liste V1.}\\
+\DCell{DemandeTechnique} & \DCell{priorite} & \DCell{Priorite / VARCHAR} & \DCell{Obligatoire ; BASSE à CRITIQUE.}\\
+\DCell{DemandeTechnique} & \DCell{statut} & \DCell{StatutDemande / VARCHAR} & \DCell{Obligatoire ; état du cycle de vie.}\\
+\DCell{DemandeTechnique} & \DCell{agentAffecte} & \DCell{Utilisateur / FK} & \DCell{Optionnel ; au plus un Agent affecté.}\\
+\DCell{DemandeTechnique} & \DCell{dates métier} & \DCell{Instant / timestamptz} & \DCell{Création et modification obligatoires ; résolution, clôture et annulation optionnelles.}\\
+\DCell{HistoriqueDemande} & \DCell{typeEvenement} & \DCell{String / VARCHAR} & \DCell{Obligatoire ; nature du changement.}\\
+\DCell{HistoriqueDemande} & \DCell{ancienne/nouvelle valeur} & \DCell{String / TEXT} & \DCell{Optionnelles ; valeurs avant et après.}\\
+\DCell{HistoriqueDemande} & \DCell{demande, auteur} & \DCell{FK} & \DCell{Obligatoires ; origine et responsable de l'événement.}\\
 \end{tabular}
+\endgroup
 \normalsize
 \end{table}
 
