@@ -8,11 +8,14 @@ La conception transforme les besoins du stage en responsabilités, règles et st
 \section{Spécification des besoins}
 \label{sec:02-specification-besoins}
 
-\textbf{Acteurs et responsabilités.} L'application est réservée aux utilisateurs internes. Le Responsable technique pilote la demande depuis son enregistrement jusqu'à la décision de clôture. L'Agent technique prend en charge les demandes qui lui sont affectées et documente leur résolution. L'Administrateur maintient les comptes et leurs rôles. Cette répartition sépare le pilotage, l'exécution et l'administration, tout en autorisant une même personne à cumuler plusieurs rôles lorsque l'organisation l'exige.
+\subsection{Acteurs et responsabilités}
+\label{subsec:02-acteurs-responsabilites}
+
+L'application est réservée aux utilisateurs internes. Le Responsable technique pilote la demande depuis son enregistrement jusqu'à la décision de clôture. L'Agent technique prend en charge les demandes qui lui sont affectées et documente leur résolution. L'Administrateur maintient les comptes et leurs rôles. Cette répartition sépare le pilotage, l'exécution et l'administration, tout en autorisant une même personne à cumuler plusieurs rôles lorsque l'organisation l'exige.
 
 Le Client n'est pas un utilisateur de l'application. Il constitue une entité métier associée à une demande. Cette distinction est importante : elle permet de conserver les informations nécessaires au suivi sans introduire dans la V1 un portail, une authentification ou des droits d'accès pour les clients.
 
-La figure~\ref{fig:02-cas-utilisation-global} répond à une première question de cadrage : quels acteurs internes utilisent quelles capacités du système ?
+La figure~\ref{fig:02-cas-utilisation-global} présente les acteurs internes et les capacités du système auxquelles ils participent.
 
 \begin{figure}[htbp]
 \centering
@@ -23,7 +26,10 @@ La figure~\ref{fig:02-cas-utilisation-global} répond à une première question 
 
 Le diagramme complète cette description en visualisant les interactions. Il montre notamment que la connexion est commune aux acteurs, alors que la qualification et le déclenchement de l'assistance IA restent sous la responsabilité du Responsable technique.
 
-\textbf{Besoins fonctionnels.} Les attentes sont regroupées en grandes capacités : contrôler l'accès interne, enregistrer et suivre les demandes, encadrer leur cycle de traitement, administrer les utilisateurs et assister la qualification. Le tableau~\ref{tab:02-capacites-fonctionnelles} en donne une synthèse sans reprendre le détail des responsabilités déjà présenté.
+\subsection{Besoins fonctionnels}
+\label{subsec:02-besoins-fonctionnels}
+
+Les attentes sont regroupées en grandes capacités : contrôler l'accès interne, enregistrer et suivre les demandes, encadrer leur cycle de traitement, administrer les utilisateurs et assister la qualification. Le tableau~\ref{tab:02-capacites-fonctionnelles} en donne une synthèse sans reprendre le détail des responsabilités déjà présenté.
 
 Ces besoins décrivent ce que le système doit permettre, et non la manière de le réaliser. Par exemple, réserver l'accès aux utilisateurs autorisés constitue un besoin de sécurité ; les mécanismes retenus sont présentés dans la conception technique. De même, préserver la cohérence des informations et conserver la trace des changements importants constituent des exigences, indépendamment des choix techniques qui permettront d'y répondre.
 
@@ -32,18 +38,27 @@ Ces besoins décrivent ce que le système doit permettre, et non la manière de 
 \small
 \caption{Capacités fonctionnelles de la V1}
 \label{tab:02-capacites-fonctionnelles}
-\begin{tabular}{p{0.27\textwidth}p{0.60\textwidth}}
-\textbf{Capacité} & \textbf{Comportement attendu}\\
-Accès interne & Authentifier un utilisateur et orienter son accès selon ses rôles.\\
-Gestion des demandes & Enregistrer, consulter, filtrer et suivre les demandes techniques.\\
-Qualification & Définir une catégorie et une priorité validées par le Responsable technique.\\
-Workflow & Affecter, traiter, résoudre, clôturer, refuser ou annuler selon l'état courant.\\
-Administration & Gérer les comptes, l'état actif et les rôles métier autorisés.\\
-Assistance IA & Proposer une catégorie et une priorité, sans décision automatique.\\
+\begingroup
+\setlength{\arrayrulewidth}{0.3pt}
+\renewcommand{\arraystretch}{1.12}
+\newcommand{\FCell}[1]{{\raggedright #1\par}}
+\begin{tabular}{@{}p{0.28\textwidth}p{0.66\textwidth}@{}}
+\hline
+\FCell{\textbf{Capacité}} & \FCell{\textbf{Comportement attendu}}\\ \hline
+\FCell{Accès interne} & \FCell{Authentifier un utilisateur et orienter son accès selon ses rôles.}\\ \hline
+\FCell{Gestion des demandes} & \FCell{Enregistrer, consulter, filtrer et suivre les demandes techniques.}\\ \hline
+\FCell{Qualification} & \FCell{Définir une catégorie et une priorité validées par le Responsable technique.}\\ \hline
+\FCell{Workflow} & \FCell{Affecter, traiter, résoudre, clôturer, refuser ou annuler selon l'état courant.}\\ \hline
+\FCell{Administration} & \FCell{Gérer les comptes, l'état actif et les rôles métier autorisés.}\\ \hline
+\FCell{Assistance IA} & \FCell{Proposer une catégorie et une priorité, sans décision automatique.}\\ \hline
 \end{tabular}
+\endgroup
 \end{table}
 
-\textbf{Besoins non fonctionnels.} La sécurité exige que chaque utilisateur accède uniquement aux fonctions autorisées par ses responsabilités. La cohérence impose que les informations d'une demande restent compatibles avec son évolution. La traçabilité doit permettre de comprendre les changements importants intervenus pendant son traitement.
+\subsection{Besoins non fonctionnels}
+\label{subsec:02-besoins-non-fonctionnels}
+
+La sécurité exige que chaque utilisateur accède uniquement aux fonctions autorisées par ses responsabilités. La cohérence impose que les informations d'une demande restent compatibles avec son évolution. La traçabilité doit permettre de comprendre les changements importants intervenus pendant son traitement.
 
 La maintenabilité exige que la solution puisse évoluer sans rendre ses responsabilités difficiles à comprendre ou à modifier. L'ergonomie et l'adaptation aux différentes tailles d'écran doivent permettre d'identifier rapidement l'état d'une demande. Enfin, l'indisponibilité du fournisseur IA ne doit jamais empêcher une qualification manuelle.
 
@@ -64,7 +79,7 @@ La figure~\ref{fig:02-sequence-enregistrement} montre comment ces règles sont a
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.82\textwidth,height=0.70\textheight,keepaspectratio]{figures/uml/register-qualify-request-v1.png}
+\includegraphics[width=0.88\textwidth,height=0.74\textheight,keepaspectratio]{figures/uml/register-qualify-request-v1.png}
 \caption{Enregistrement et qualification des demandes}
 \label{fig:02-sequence-enregistrement}
 \end{figure}
@@ -81,7 +96,7 @@ Le projet doit fournir une interface web, centraliser les règles métier, conse
 
 Le principal problème de conception est d'éviter le mélange entre présentation, traitement HTTP, règles métier et persistance. Dans Angular, les fonctionnalités sont regroupées par domaine et les services d'accès à l'API évitent de placer les règles métier dans les composants. Dans Spring Boot, les contrôleurs reçoivent les requêtes HTTP, les services orchestrent les cas d'utilisation, le domaine protège les invariants et les repositories isolent la persistance. Les objets de transfert de données (DTO) empêchent enfin d'exposer directement les entités persistantes.
 
-La figure~\ref{fig:02-composants-applicatifs} situe les grandes frontières de la solution et répond à la question : quels composants collaborent pour fournir les fonctions métier ?
+La figure~\ref{fig:02-composants-applicatifs} présente les grandes frontières de la solution et les composants qui collaborent pour fournir les fonctions métier.
 
 \begin{figure}[htbp]
 \centering
@@ -105,14 +120,12 @@ Le State Pattern n'a pas été retenu pour le workflow. Pour la V1, un enum de s
 
 La figure~\ref{fig:02-conception-backend} affine la vue générale en montrant comment les responsabilités et ces choix de conception sont répartis à l'intérieur du backend.
 
-\begin{landscape}
 \begin{figure}[p]
 \centering
-\includegraphics[trim=4 4 4 4,clip,width=0.98\linewidth,height=0.78\textheight,keepaspectratio]{figures/uml/backend-design-v1.png}
+\includegraphics[trim=4 4 4 4,clip,width=0.78\textheight,angle=90,origin=c,keepaspectratio]{figures/uml/backend-design-v1.png}
 \caption{Organisation des responsabilités dans la conception backend}
 \label{fig:02-conception-backend}
 \end{figure}
-\end{landscape}
 
 Les contrôleurs portent la frontière HTTP, les services orchestrent les cas d'utilisation et les repositories isolent la persistance. Le port \texttt{AnalyseIaPort} matérialise la dépendance du cœur applicatif vers une abstraction ; \texttt{GroqAnalyseIaAdapter} fournit l'implémentation externe de cette abstraction. Les deux figures sont donc complémentaires : la première expose les composants, la seconde les rôles techniques qui structurent le backend.
 
@@ -135,7 +148,7 @@ Le titre et la description sont transmis au service d'analyse, qui renvoie une p
 
 La base relationnelle doit préserver trois dimensions complémentaires : l'identité des utilisateurs, le contenu et le cycle des demandes, puis la trace des événements. Le modèle répartit ces responsabilités entre des structures distinctes afin de protéger leurs contraintes et d'éviter la concentration de toutes les informations dans une seule table.
 
-La figure~\ref{fig:02-entites-persistantes} présente les entités persistantes et répond à la question : quelles données sont conservées et selon quelles cardinalités ?
+La figure~\ref{fig:02-entites-persistantes} présente les données conservées et les cardinalités qui structurent leurs relations.
 
 \begin{figure}[htbp]
 \centering
@@ -152,37 +165,43 @@ DemandeTechnique constitue le cœur du modèle. Elle référence obligatoirement
 
 HistoriqueDemande assure la traçabilité. Chaque événement est rattaché à une demande et à son auteur, avec les anciennes et nouvelles valeurs lorsqu'elles sont utiles. Une correction crée un nouvel événement au lieu de réécrire le passé. Les dates métier sont représentées par des instants et stockées en \texttt{TIMESTAMP WITH TIME ZONE}, en cohérence avec le type \texttt{Instant} côté Java \parencite{postgresql-datetime-types}.
 
-\begin{table}[!ht]
+\begin{center}
+\begin{minipage}{\textwidth}
+\captionsetup{type=table}
 \centering
 \caption{Dictionnaire de données synthétique}
 \label{tab:02-dictionnaire}
 \small
 \begingroup
 \setlength{\tabcolsep}{4pt}
+\setlength{\arrayrulewidth}{0.3pt}
+\renewcommand{\arraystretch}{1.08}
 \newcommand{\DCell}[1]{{\raggedright #1\par}}
 \begin{tabular}{@{}p{0.20\textwidth}p{0.20\textwidth}p{0.19\textwidth}p{0.35\textwidth}@{}}
-\DCell{\textbf{Entité}} & \DCell{\textbf{Attribut}} & \DCell{\textbf{Type}} & \DCell{\textbf{Contrainte et signification}}\\
-\DCell{Utilisateur} & \DCell{id} & \DCell{Long / BIGINT} & \DCell{Clé primaire, séquence.}\\
-\DCell{Utilisateur} & \DCell{email} & \DCell{String / VARCHAR} & \DCell{Obligatoire, normalisé et unique.}\\
-\DCell{Utilisateur} & \DCell{actif} & \DCell{boolean / BOOLEAN} & \DCell{Obligatoire ; compte autorisé ou désactivé.}\\
-\DCell{Utilisateur} & \DCell{roles} & \DCell{Set\textless Role\textgreater} & \DCell{Association ; plusieurs rôles possibles.}\\
-\DCell{Client} & \DCell{id} & \DCell{Long / BIGINT} & \DCell{Clé primaire, séquence.}\\
-\DCell{Client} & \DCell{nom, email, telephone} & \DCell{String / VARCHAR} & \DCell{Trois informations obligatoires ; email non unique.}\\
-\DCell{DemandeTechnique} & \DCell{reference} & \DCell{String / VARCHAR} & \DCell{Obligatoire, unique et immuable ; référence métier.}\\
-\DCell{DemandeTechnique} & \DCell{titre} & \DCell{String / VARCHAR} & \DCell{Obligatoire ; intitulé de la demande.}\\
-\DCell{DemandeTechnique} & \DCell{description} & \DCell{String / TEXT} & \DCell{Obligatoire ; détail de la demande.}\\
-\DCell{DemandeTechnique} & \DCell{categorie} & \DCell{Categorie / VARCHAR} & \DCell{Obligatoire ; valeur de la liste V1.}\\
-\DCell{DemandeTechnique} & \DCell{priorite} & \DCell{Priorite / VARCHAR} & \DCell{Obligatoire ; BASSE à CRITIQUE.}\\
-\DCell{DemandeTechnique} & \DCell{statut} & \DCell{StatutDemande / VARCHAR} & \DCell{Obligatoire ; état du cycle de vie.}\\
-\DCell{DemandeTechnique} & \DCell{agentAffecte} & \DCell{Utilisateur / FK} & \DCell{Optionnel ; au plus un Agent affecté.}\\
-\DCell{DemandeTechnique} & \DCell{dates métier} & \DCell{Instant / timestamptz} & \DCell{Création et modification obligatoires ; résolution, clôture et annulation optionnelles.}\\
-\DCell{HistoriqueDemande} & \DCell{typeEvenement} & \DCell{String / VARCHAR} & \DCell{Obligatoire ; nature du changement.}\\
-\DCell{HistoriqueDemande} & \DCell{ancienne/nouvelle valeur} & \DCell{String / TEXT} & \DCell{Optionnelles ; valeurs avant et après.}\\
-\DCell{HistoriqueDemande} & \DCell{demande, auteur} & \DCell{FK} & \DCell{Obligatoires ; origine et responsable de l'événement.}\\
+\hline
+\DCell{\textbf{Entité}} & \DCell{\textbf{Attribut}} & \DCell{\textbf{Type}} & \DCell{\textbf{Contrainte et signification}}\\ \hline
+\DCell{Utilisateur} & \DCell{id} & \DCell{Long / BIGINT} & \DCell{Clé primaire, séquence.}\\ \hline
+\DCell{Utilisateur} & \DCell{email} & \DCell{String / VARCHAR} & \DCell{Obligatoire, normalisé et unique.}\\ \hline
+\DCell{Utilisateur} & \DCell{actif} & \DCell{boolean / BOOLEAN} & \DCell{Obligatoire ; compte autorisé ou désactivé.}\\ \hline
+\DCell{Utilisateur} & \DCell{roles} & \DCell{Set\textless Role\textgreater} & \DCell{Association ; plusieurs rôles possibles.}\\ \hline
+\DCell{Client} & \DCell{id} & \DCell{Long / BIGINT} & \DCell{Clé primaire, séquence.}\\ \hline
+\DCell{Client} & \DCell{nom, email, telephone} & \DCell{String / VARCHAR} & \DCell{Trois informations obligatoires ; email non unique.}\\ \hline
+\DCell{DemandeTechnique} & \DCell{reference} & \DCell{String / VARCHAR} & \DCell{Obligatoire, unique et immuable ; référence métier.}\\ \hline
+\DCell{DemandeTechnique} & \DCell{titre} & \DCell{String / VARCHAR} & \DCell{Obligatoire ; intitulé de la demande.}\\ \hline
+\DCell{DemandeTechnique} & \DCell{description} & \DCell{String / TEXT} & \DCell{Obligatoire ; détail de la demande.}\\ \hline
+\DCell{DemandeTechnique} & \DCell{categorie} & \DCell{Categorie / VARCHAR} & \DCell{Obligatoire ; valeur de la liste V1.}\\ \hline
+\DCell{DemandeTechnique} & \DCell{priorite} & \DCell{Priorite / VARCHAR} & \DCell{Obligatoire ; BASSE à CRITIQUE.}\\ \hline
+\DCell{DemandeTechnique} & \DCell{statut} & \DCell{StatutDemande / VARCHAR} & \DCell{Obligatoire ; état du cycle de vie.}\\ \hline
+\DCell{DemandeTechnique} & \DCell{agentAffecte} & \DCell{Utilisateur / FK} & \DCell{Optionnel ; au plus un Agent affecté.}\\ \hline
+\DCell{DemandeTechnique} & \DCell{dates métier} & \DCell{Instant / timestamptz} & \DCell{Création et modification obligatoires ; résolution, clôture et annulation optionnelles.}\\ \hline
+\DCell{HistoriqueDemande} & \DCell{typeEvenement} & \DCell{String / VARCHAR} & \DCell{Obligatoire ; nature du changement.}\\ \hline
+\DCell{HistoriqueDemande} & \DCell{ancienne/nouvelle valeur} & \DCell{String / TEXT} & \DCell{Optionnelles ; valeurs avant et après.}\\ \hline
+\DCell{HistoriqueDemande} & \DCell{demande, auteur} & \DCell{FK} & \DCell{Obligatoires ; origine et responsable de l'événement.}\\ \hline
 \end{tabular}
 \endgroup
 \normalsize
-\end{table}
+\end{minipage}
+\end{center}
 
 Le dictionnaire complète le diagramme en précisant les attributs, leurs types et les contraintes qui ne sont pas détaillées graphiquement.
 
