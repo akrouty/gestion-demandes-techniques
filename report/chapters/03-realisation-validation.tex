@@ -3,109 +3,184 @@
 \markboth{Réalisation et validation}{ }
 \clearpage
 
-\section{Vue d'ensemble de la solution réalisée}
-\label{sec:03-vue-ensemble}
+\addtocontents{toc}{\protect\enlargethispage{2\baselineskip}}
 
-Angular fournit l'application web et les parcours utilisateur. Spring Boot expose l'API et applique les règles métier. PostgreSQL conserve les données et l'historique. Cette répartition permet de faire évoluer l'interface sans déplacer les invariants métier dans le navigateur.
+\section*{Introduction}
+\phantomsection
+\addcontentsline{toc}{section}{Introduction}
 
-\begin{figure}[htbp]
+Ce chapitre présente la concrétisation de la conception décrite précédemment. Il expose l'environnement technique, les principales fonctionnalités réalisées, la protection des accès, l'assistance intelligente et les validations obtenues, avant d'en préciser les difficultés, les limites et les perspectives.
+
+\section{Environnement de réalisation et technologies utilisées}
+\label{sec:03-environnement}
+
+La solution s'organise autour d'une interface web Angular, d'un backend Spring Boot qui porte les règles métier, d'une base PostgreSQL et d'un service Groq externe. Le tableau~\ref{tab:03-technologies} distingue les versions déclarées par le projet, celles verrouillées dans le lockfile et celles observées lors du contrôle local ; une version simplement gérée par Spring Boot n'est pas présentée comme une version de serveur exécutée.
+
+\begin{table}[htbp]
 \centering
-\includegraphics[width=0.72\textwidth]{figures/screenshots/01-connexion.png}
-\caption{Connexion à l'application}
-\label{fig:03-login}
-\end{figure}
+\small
+\caption{Technologies principales et nature des versions vérifiées}
+\label{tab:03-technologies}
+\begingroup
+\setlength{\tabcolsep}{4pt}
+\setlength{\arrayrulewidth}{0.3pt}
+\renewcommand{\arraystretch}{1.12}
+\newcommand{\TCell}[1]{{\raggedright #1\par}}
+\begin{tabular}{@{}p{0.25\textwidth}p{0.29\textwidth}p{0.40\textwidth}@{}}
+\hline
+\TCell{\textbf{Technologie}} & \TCell{\textbf{Version vérifiée}} & \TCell{\textbf{Rôle dans le projet}}\\ \hline
+\TCell{Java et Maven} & \TCell{Java 21, cible déclarée ; Java 25.0.2 observé ; Maven 3.9.16 observé} & \TCell{Compilation et exécution du backend avec le wrapper Maven du projet.}\\ \hline
+\TCell{Spring Boot et Spring Security} & \TCell{4.1.1 déclarée ; Security 7.1.1 gérée} & \TCell{API métier, authentification et autorisation.}\\ \hline
+\TCell{Spring Data JPA et Hibernate} & \TCell{Hibernate 7.4.5.Final gérée} & \TCell{Accès relationnel et validation du mapping de persistance.}\\ \hline
+\TCell{Flyway et PostgreSQL} & \TCell{Flyway 12.4.0 et pilote JDBC 42.7.13 gérés ; version serveur non affirmée} & \TCell{Migration du schéma et stockage des données métier.}\\ \hline
+\TCell{Angular et Angular Material} & \TCell{Angular 22.2.1 et Material 22.2.2 verrouillées} & \TCell{Application web, navigation, formulaires et composants d'interface.}\\ \hline
+\TCell{TypeScript et SCSS} & \TCell{TypeScript 6.0.3 verrouillée ; SCSS configuré sans version propre} & \TCell{Développement typé et styles de l'interface.}\\ \hline
+\TCell{npm et Vitest} & \TCell{npm 11.19.0 déclaré et observé ; Vitest 5.0.3 verrouillée} & \TCell{Gestion des dépendances, construction et tests frontend.}\\ \hline
+\TCell{API Groq} & \TCell{Service externe ; modèle \texttt{qwen/qwen3.8-27b} fixé dans le code} & \TCell{Proposition de catégorie et de priorité.}\\ \hline
+\end{tabular}
+\endgroup
+\end{table}
+\FloatBarrier
 
-Après authentification, le frontend conserve le token et le snapshot minimal utile à l'orientation de l'interface. Les autorisations effectives restent décidées par l'API.
+Cette organisation maintient les règles métier et les contrôles de sécurité côté serveur. L'interface reste chargée des interactions, tandis que PostgreSQL et Groq sont accessibles à travers des frontières dédiées.
 
-\section{Parcours complet d'une demande}
+\section{Réalisation des fonctionnalités principales}
 \label{sec:03-parcours-demande}
 
-Le parcours commence par la création et la qualification. Le Responsable technique renseigne un titre, une description, un client, une catégorie et une priorité. Il peut demander une suggestion IA, mais garde la possibilité de modifier les valeurs avant l'enregistrement.
+Les fonctionnalités ont été réalisées autour du cycle de vie d'une demande. Les actions proposées dans l'interface dépendent du rôle et de l'état courant, mais les règles correspondantes restent également contrôlées par le backend.
+
+\textbf{Création et qualification.} Le Responsable technique renseigne le titre et la description, puis choisit un client existant ou saisit les informations minimales d'un nouveau client. Il valide ensuite la catégorie et la priorité ; l'assistance IA peut proposer ces deux valeurs, sans les imposer.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.86\textwidth]{figures/screenshots/03-creation-demande.png}
-\caption{Création et qualification initiale d'une demande}
+\includegraphics[width=0.90\textwidth,height=0.54\textheight,keepaspectratio]{figures/screenshots/03-creation-demande.png}
+\caption{Formulaire de création et de qualification d'une demande}
 \label{fig:03-creation}
 \end{figure}
+\FloatBarrier
 
-La liste permet ensuite de retrouver les demandes par filtres, tri et pagination côté serveur. Après affectation, l'Agent traite la demande, renseigne la solution et déclare la résolution. Le Responsable examine cette proposition : il clôture la demande ou la refuse pour demander une reprise.
+Le formulaire réunit les informations nécessaires à l'enregistrement sans mélanger la qualification et l'affectation. La demande n'est créée qu'après la validation des données finales par le Responsable technique.
+
+\textbf{Suivi et affectation.} La liste permet de rechercher et filtrer les demandes, de les trier et de parcourir les résultats paginés par le serveur. Le Responsable technique peut ouvrir une demande puis l'affecter ou la réaffecter ; l'Agent dispose d'une visibilité adaptée aux demandes qu'il doit traiter.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.86\textwidth]{figures/screenshots/02-liste-demandes.png}
-\caption{Liste filtrable des demandes}
+\includegraphics[width=0.90\textwidth,height=0.54\textheight,keepaspectratio]{figures/screenshots/02-liste-demandes.png}
+\caption{Suivi des demandes avec filtres, tri et pagination}
 \label{fig:03-liste}
 \end{figure}
+\FloatBarrier
+
+Cette vue donne une lecture synthétique du portefeuille de demandes et de leur état. Elle sert de point d'entrée vers les actions autorisées sur chaque dossier.
+
+\textbf{Traitement et résolution.} Une fois affectée, la demande est prise en charge par l'Agent technique. Celui-ci démarre le traitement, documente progressivement son intervention, saisit la solution retenue puis déclare la demande résolue.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.82\textwidth]{figures/screenshots/07-traitement.png}
+\includegraphics[width=0.90\textwidth,height=0.54\textheight,keepaspectratio]{figures/screenshots/07-traitement.png}
 \caption{Traitement d'une demande affectée}
 \label{fig:03-traitement}
 \end{figure}
+\FloatBarrier
+
+Le détail rassemble le contexte, l'affectation et la zone de traitement. Il permet à l'Agent de documenter la solution sans lui donner les décisions réservées au Responsable technique.
+
+\textbf{Examen et clôture.} Le Responsable technique examine la résolution déclarée. Il peut clôturer la demande lorsqu'elle est satisfaisante ou la refuser ; dans ce dernier cas, la demande revient en traitement et la décision reste tracée.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.82\textwidth]{figures/screenshots/09-cloture.png}
+\includegraphics[width=0.90\textwidth,height=0.54\textheight,keepaspectratio]{figures/screenshots/09-cloture.png}
 \caption{Clôture après examen de la résolution}
 \label{fig:03-cloture}
 \end{figure}
+\FloatBarrier
 
-Ces écrans illustrent une propriété importante : l'interface présente des actions dépendantes du rôle et du statut, mais cette présentation ne remplace pas le contrôle côté serveur.
+La clôture termine le cycle après une décision humaine explicite. L'interface rend le statut et la solution visibles, tandis que le backend vérifie que la transition demandée reste autorisée.
 
-\section{Administration et contrôle des accès}
+\section{Administration et sécurité}
 \label{sec:03-administration}
 
-L'administration permet de créer et modifier les comptes, de gérer leur état actif et de remplacer leurs rôles métier. L'auto-désactivation du compte courant est refusée par l'API avec une réponse 409 et l'interface conserve un retour compréhensible.
+L'administration permet de créer un utilisateur, de modifier son identité, de gérer son état actif et de remplacer ses rôles métier. Le rôle Administrateur est séparé des rôles de Responsable technique et d'Agent technique : ces derniers sont attribués comme rôles métier, tandis que l'administration reste une responsabilité distincte.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.86\textwidth]{figures/screenshots/10-administration.png}
+\includegraphics[width=0.90\textwidth,height=0.54\textheight,keepaspectratio]{figures/screenshots/10-administration.png}
 \caption{Gestion des utilisateurs internes}
 \label{fig:03-administration}
 \end{figure}
+\FloatBarrier
 
-Le backend relit l'utilisateur et ses rôles à chaque requête protégée. Un rôle supprimé ou un compte désactivé ne conserve donc pas ses droits simplement parce qu'un snapshot ancien existe dans le navigateur.
+La vue présente l'état et les rôles des comptes sans exposer les détails de sécurité. Elle permet d'accéder aux opérations d'administration tout en retirant l'action de désactivation pour le compte courant.
+
+L'authentification repose sur un JSON Web Token (JWT) transmis dans l'en-tête des requêtes. L'API est sans session serveur : le token établit l'identité annoncée, puis le backend relit le compte, son état actif et ses rôles actuels pour chaque requête protégée.
+
+L'autorisation associe les rôles métier à des contrôles contextuels. Par exemple, un Agent ne traite que les demandes qui lui sont affectées et une transition dépend du statut courant. Les mots de passe sont hachés avec BCrypt ; les secrets JWT, le coût BCrypt et les origines autorisées par la politique CORS proviennent de la configuration externe.
+
+Angular conserve temporairement la session dans \texttt{sessionStorage} afin de la restaurer après un rechargement. Cette conservation ne rend pas le navigateur autoritatif : un compte désactivé ou un rôle retiré perd ses droits dès la requête protégée suivante, et une réponse 401 invalide la session locale.
 
 \section{Assistance IA et validation humaine}
 \label{sec:03-realisation-ia}
 
-L'analyse IA est déclenchée depuis le formulaire de nouvelle demande. Le frontend envoie uniquement le titre et la description à l'endpoint backend. Le serveur appelle l'adaptateur Groq via `AnalyseIaPort`, contrôle la réponse puis renvoie une proposition temporaire. La catégorie et la priorité ne sont jamais appliquées automatiquement.
+Le Responsable technique déclenche volontairement l'analyse depuis le formulaire de création. Angular transmet uniquement le titre et la description au backend. Le service passe par \texttt{AnalyseIaPort}, puis l'adaptateur Groq appelle le modèle configuré et contrôle que la réponse structurée contient exactement une catégorie et une priorité reconnues.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.86\textwidth]{figures/screenshots/04-assistance-ia.png}
+\includegraphics[width=0.90\textwidth,height=0.54\textheight,keepaspectratio]{figures/screenshots/04-assistance-ia.png}
 \caption{Assistance IA lors de la qualification}
 \label{fig:03-ia}
 \end{figure}
+\FloatBarrier
 
-Une modification du titre ou de la description invalide la suggestion. Lorsque la clé Groq est absente, l'API renvoie une indisponibilité contrôlée et le formulaire reste utilisable manuellement. Le benchmark exploratoire porte sur 24 exemples : sorties valides dans les 24 cas, catégorie correcte dans 23 cas et priorité dans 22 cas. Ces valeurs ne permettent pas d'annoncer une performance générale ni une supériorité universelle d'un fournisseur.
+Les valeurs retournées restent des propositions. Elles ne sont appliquées qu'après une action humaine explicite et demeurent modifiables avant la création. Une modification du titre ou de la description invalide la suggestion et impose une nouvelle analyse volontaire.
+
+L'indisponibilité de Groq constitue une contrainte d'intégration prévue et testée. Une clé absente, une réponse invalide ou une indisponibilité externe rend seulement l'analyse IA indisponible ; la saisie manuelle de la catégorie et de la priorité reste accessible.
+
+Le benchmark exploratoire utilise le jeu P01--P24, soit 24 cas dont la catégorie et la priorité proposées sont comparées aux valeurs attendues puis relues humainement. Les 24 sorties sont valides ; la catégorie est correcte dans 23 cas, la priorité dans 22 cas et la correspondance exacte dans 22 cas. Ce petit corpus ne représente ni la diversité future des demandes ni une mesure générale de performance ; les résultats restent liés à ce jeu, à cette configuration et à cette évaluation humaine.
 
 \section{Tests et validation}
 \label{sec:03-tests}
 
-La validation backend atteint 270 tests réussis avec `clean test` et `clean verify`, sans échec, erreur ou test ignoré. Les tests IA hors ligne utilisent H2 et un stub HTTP local ; ils ne constituent pas un appel Groq. Le frontend a été vérifié par `npm ci`, `npm run build` et `npm test -- --watch=false`, avec 184 tests réussis dans 15 fichiers pour la clôture IA.
-
-La validation fonctionnelle humaine a couvert la connexion, la liste, la création, la sélection client, les transitions de demande, l'administration, l'auto-désactivation et l'assistance IA réelle en local. Une revue responsive et accessibilité a également été effectuée sur plusieurs tailles. Ces observations ne remplacent pas une campagne de test de charge ou une validation de production.
+La validation combine des tests automatisés, des vérifications d'intégration réelle et des parcours humains. Le tableau~\ref{tab:03-validation} sépare ces niveaux afin de ne pas assimiler les tests H2 à une validation PostgreSQL ou à un appel Groq réel.
 
 \begin{table}[htbp]
 \centering
-\caption{Niveaux de validation et portée}
+\small
+\caption{Résultats de validation par niveau}
 \label{tab:03-validation}
-\begin{tabular}{p{0.28\textwidth}p{0.55\textwidth}}
-\textbf{Validation} & \textbf{Ce qu'elle permet d'affirmer}\\
-Tests backend & Les comportements couverts par 270 tests réussissent dans l'environnement vérifié.\\
-Tests frontend & La construction et les scénarios automatisés couverts réussissent.\\
-Intégration locale IA & Le parcours Angular vers Spring Boot et Groq a fonctionné dans les conditions observées.\\
-Validation humaine & Les parcours et l'ergonomie vérifiés ne présentent pas de blocage constaté dans le périmètre revu.\\
-Benchmark IA & Résultats exploratoires sur 24 exemples, non généralisables.\\
+\begingroup
+\setlength{\tabcolsep}{4pt}
+\setlength{\arrayrulewidth}{0.3pt}
+\renewcommand{\arraystretch}{1.12}
+\newcommand{\VCell}[1]{{\raggedright #1\par}}
+\begin{tabular}{@{}p{0.22\textwidth}p{0.35\textwidth}p{0.37\textwidth}@{}}
+\hline
+\VCell{\textbf{Niveau}} & \VCell{\textbf{Méthode}} & \VCell{\textbf{Résultat vérifié}}\\ \hline
+\VCell{Backend automatisé} & \VCell{Maven \texttt{clean test} et \texttt{clean verify}} & \VCell{270 tests réussis ; aucun échec, erreur ou test ignoré.}\\ \hline
+\VCell{Frontend automatisé} & \VCell{Installation, build et tests Vitest} & \VCell{Build réussi ; 184 tests réussis dans 15 fichiers.}\\ \hline
+\VCell{PostgreSQL réel} & \VCell{Démarrage et appels HTTP locaux} & \VCell{Connexion réussie, migration Flyway appliquée, validation Hibernate et workflow API vérifiés.}\\ \hline
+\VCell{IA hors ligne} & \VCell{H2 et stub HTTP local} & \VCell{Comportements IA testés sans appel réel à Groq.}\\ \hline
+\VCell{Intégration IA réelle} & \VCell{Parcours Angular vers Spring Boot puis Groq} & \VCell{Proposition reçue et appliquée seulement après action humaine ; scénario sans clé vérifié en 503.}\\ \hline
+\VCell{Validation humaine} & \VCell{Parcours navigateur et revue responsive} & \VCell{Connexion, création, affectation, traitement, résolution, refus, clôture, administration, IA et UX vérifiés.}\\ \hline
 \end{tabular}
+\endgroup
 \end{table}
+\FloatBarrier
 
-\section{Limites et perspectives}
+Ces résultats valident le périmètre fonctionnel et technique effectivement vérifié. Ils ne constituent ni un test de charge, ni une qualification de sécurité exhaustive, ni une validation de production.
+
+\section{Difficultés rencontrées, limites et perspectives}
 \label{sec:03-limites}
 
-Le rapport ne prétend pas mesurer la performance en production, la résistance à la charge ou la qualité IA sur un corpus représentatif du long terme. Le périmètre reste interne et le client n'interagit pas directement avec la plateforme. La session navigateur utilise `sessionStorage`, ce qui permet une restauration après rechargement mais conserve les risques propres à un stockage accessible au JavaScript du navigateur.
+\textbf{Difficulté rencontrée et corrigée.} La validation navigateur a révélé qu'un administrateur pouvait tenter de désactiver son propre compte. Le backend refuse désormais cette opération avec une réponse HTTP 409, l'interface masque l'action concernée et conserve un message compréhensible. Le retest humain a confirmé le refus de l'auto-désactivation et le maintien de la désactivation des autres comptes.
 
-Les perspectives cohérentes avec la V1 sont l'élargissement du corpus d'évaluation IA, l'ajout de mesures répétées et l'amélioration de l'observabilité. Toute extension du workflow, du portail client ou du déploiement devra être précédée d'une analyse de besoin et d'une validation dédiée.
+\textbf{Contrainte technique prévue.} L'assistance dépend d'un service Groq externe dont la disponibilité et la configuration ne sont pas garanties. La conception isole cette dépendance et la rend non bloquante. Le scénario sans clé a été testé : seule l'analyse renvoie une indisponibilité, tandis que la qualification manuelle demeure opérationnelle.
+
+\textbf{Limites actuelles.} La V1 reste réservée aux utilisateurs internes et ne propose pas de portail client. Le benchmark IA repose sur un corpus exploratoire de 24 cas. Aucun test de charge ni validation de production n'a été réalisé. Enfin, le JWT est conservé dans \texttt{sessionStorage} pour permettre la restauration de session, avec les risques propres à un stockage accessible au JavaScript exécuté dans le navigateur.
+
+\textbf{Perspectives.} Une évaluation IA sur un corpus plus large et des mesures répétées permettraient de mieux caractériser les propositions. Une meilleure observabilité faciliterait le suivi des erreurs et des dépendances externes. Un portail client ou une extension du workflow ne seraient envisagés qu'après analyse et validation du besoin correspondant.
+
+\section*{Conclusion}
+\phantomsection
+\addcontentsline{toc}{section}{Conclusion}
+
+Ce chapitre a montré la réalisation des choix de conception à travers le parcours des demandes, l'administration, la sécurité et l'assistance IA sous contrôle humain. Les validations automatisées, réelles et humaines confirment le périmètre vérifié, tout en laissant apparaître des limites clairement identifiées. Ces éléments permettent d'aborder la conclusion générale avec une vision équilibrée des résultats obtenus.
