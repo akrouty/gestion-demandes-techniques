@@ -1,6 +1,25 @@
-% STATUT : COMPLÉTER PLUS TARD
 % SOURCE : modèle officiel fourni dans frontmatter/page_du_garde.pdf.
-% TODO : remplacer proprement 2025/2026 par 2026/2027 dans le modèle source.
-% Le sous-ensemble Arial intégré au PDF ne contient pas le chiffre 7.
-% TODO : spécialité, intitulé définitif, lieu, étudiant et encadrant à confirmer.
-\includepdf[pages=1,pagecommand={\thispagestyle{empty}}]{frontmatter/page_du_garde.pdf}
+% Les champs non confirmés restent volontairement non renseignés.
+\definecolor{epicoverpurple}{RGB}{115,74,149}
+\includepdf[
+  pages=1,
+  pagecommand={%
+    \thispagestyle{empty}%
+    \begin{tikzpicture}[remember picture,overlay]
+      % Masquage limité de l'ancienne année, dans la couleur exacte du fond.
+      \fill[epicoverpurple]
+        ([xshift=352pt,yshift=-24pt]current page.north west)
+        rectangle
+        ([xshift=470pt,yshift=-58pt]current page.north west);
+      \node[text=white,font=\fontsize{14}{17}\selectfont]
+        at ([xshift=411pt,yshift=-43pt]current page.north west)
+        {\AcademicYear};
+      \node[align=center,text width=150pt,font=\fontsize{10}{12}\selectfont]
+        at ([xshift=99pt,yshift=-735pt]current page.north west)
+        {\HostOrganization\\\StageLocation};
+      \node[align=center,text width=150pt,font=\fontsize{10}{12}\selectfont]
+        at ([xshift=496pt,yshift=-735pt]current page.north west)
+        {\ProfessionalSupervisor};
+    \end{tikzpicture}%
+  }
+]{frontmatter/page_du_garde.pdf}

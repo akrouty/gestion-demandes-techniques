@@ -132,7 +132,9 @@ Les choix retenus répondent à des besoins précis sans permettre d'affirmer qu
 
 \textbf{Responsabilité unique (SRP).} La séparation des rôles rend les composants plus lisibles ; contrôleurs, services, domaine et persistance gardent chacun une responsabilité principale identifiable \parencite{martin-clean-architecture}.
 
-\textbf{Inversion des dépendances (DIP) et Port/Adapter.} \texttt{AnalyseIaPort} exprime le besoin du cœur applicatif, tandis que \texttt{GroqAnalyseIaAdapter} réalise l'appel externe. Cette séparation limite l'impact d'un changement de fournisseur \parencite{martin-clean-architecture,gamma-design-patterns}.
+\textbf{DIP et Port/Adapter.} Le principe d'inversion des dépendances guide la séparation entre le cœur applicatif et les détails externes \parencite{martin-clean-architecture}.
+
+\texttt{AnalyseIaPort} exprime ainsi le besoin du cœur applicatif. \texttt{GroqAnalyseIaAdapter} réalise l'appel externe selon une organisation Ports \& Adapters. Cette séparation limite l'impact d'un changement de fournisseur \parencite{cockburn-hexagonal-architecture}.
 
 \textbf{Repository.} Ce pattern isole l'accès aux données des services métier \parencite{fowler-poeaa}.
 
@@ -142,12 +144,14 @@ Les choix retenus répondent à des besoins précis sans permettre d'affirmer qu
 
 La figure~\ref{fig:02-conception-backend} affine la vue générale en montrant comment les responsabilités et ces choix de conception sont répartis à l'intérieur du backend.
 
+\begin{landscape}
 \begin{figure}[p]
 \centering
-\includegraphics[trim=4 4 4 4,clip,width=0.84\textheight,angle=90,origin=c,keepaspectratio]{figures/uml/backend-design-v1.png}
+\includegraphics[trim=6 4 6 4,clip,width=0.92\linewidth,keepaspectratio]{figures/uml/backend-design-v1.png}
 \caption{Organisation des responsabilités dans la conception backend}
 \label{fig:02-conception-backend}
 \end{figure}
+\end{landscape}
 \FloatBarrier
 
 Le diagramme précise que les contrôleurs portent la frontière HTTP, que les services orchestrent les cas d'utilisation et que le domaine protège les invariants. Les repositories isolent la persistance, tandis que le port et son adaptateur séparent l'intégration Groq du cœur applicatif.
