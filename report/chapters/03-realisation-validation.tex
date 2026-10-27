@@ -14,29 +14,29 @@ Ce chapitre présente la concrétisation de la conception décrite précédemmen
 \section{Environnement de réalisation et technologies utilisées}
 \label{sec:03-environnement}
 
-La solution s'organise autour d'une interface web Angular, d'un backend Spring Boot qui porte les règles métier, d'une base PostgreSQL et d'un service Groq externe. Le tableau~\ref{tab:03-technologies} distingue les versions déclarées par le projet, celles verrouillées dans le lockfile et celles observées lors du contrôle local ; une version simplement gérée par Spring Boot n'est pas présentée comme une version de serveur exécutée.
+La solution s'organise autour d'une interface web Angular, d'un backend Spring Boot qui porte les règles métier, d'une base PostgreSQL et d'un service Groq externe. Le tableau~\ref{tab:03-technologies} présente les versions pertinentes du projet ; les dépendances prises en charge par Spring Boot sont indiquées sans détailler leur résolution interne.
 
 \begin{table}[htbp]
 \centering
 \small
-\caption{Technologies principales et nature des versions vérifiées}
+\caption{Technologies et versions du projet}
 \label{tab:03-technologies}
 \begingroup
 \setlength{\tabcolsep}{4pt}
 \setlength{\arrayrulewidth}{0.3pt}
 \renewcommand{\arraystretch}{1.12}
 \newcommand{\TCell}[1]{{\raggedright #1\par}}
-\begin{tabular}{@{}p{0.25\textwidth}p{0.29\textwidth}p{0.40\textwidth}@{}}
+\begin{tabular}{@{}p{0.25\textwidth}p{0.27\textwidth}p{0.42\textwidth}@{}}
 \hline
-\TCell{\textbf{Technologie}} & \TCell{\textbf{Version vérifiée}} & \TCell{\textbf{Rôle dans le projet}}\\ \hline
-\TCell{Java et Maven} & \TCell{Java 21, cible déclarée ; Java 25.0.2 observé ; Maven 3.9.16 observé} & \TCell{Compilation et exécution du backend avec le wrapper Maven du projet.}\\ \hline
-\TCell{Spring Boot et Spring Security} & \TCell{4.1.1 déclarée ; Security 7.1.1 gérée} & \TCell{API métier, authentification et autorisation.}\\ \hline
-\TCell{Spring Data JPA et Hibernate} & \TCell{Hibernate 7.4.5.Final gérée} & \TCell{Accès relationnel et validation du mapping de persistance.}\\ \hline
-\TCell{Flyway et PostgreSQL} & \TCell{Flyway 12.4.0 et pilote JDBC 42.7.13 gérés ; version serveur non affirmée} & \TCell{Migration du schéma et stockage des données métier.}\\ \hline
-\TCell{Angular et Angular Material} & \TCell{Angular 22.2.1 et Material 22.2.2 verrouillées} & \TCell{Application web, navigation, formulaires et composants d'interface.}\\ \hline
-\TCell{TypeScript et SCSS} & \TCell{TypeScript 6.0.3 verrouillée ; SCSS configuré sans version propre} & \TCell{Développement typé et styles de l'interface.}\\ \hline
-\TCell{npm et Vitest} & \TCell{npm 11.19.0 déclaré et observé ; Vitest 5.0.3 verrouillée} & \TCell{Gestion des dépendances, construction et tests frontend.}\\ \hline
-\TCell{API Groq} & \TCell{Service externe ; modèle \texttt{qwen/qwen3.8-27b} fixé dans le code} & \TCell{Proposition de catégorie et de priorité.}\\ \hline
+\TCell{\textbf{Technologie}} & \TCell{\textbf{Version du projet}} & \TCell{\textbf{Rôle dans le projet}}\\ \hline
+\TCell{Java} & \TCell{21} & \TCell{Langage et cible d'exécution du backend.}\\ \hline
+\TCell{Spring Boot et Spring Security} & \TCell{Spring Boot 4.1.1 ; Spring Security géré par Spring Boot} & \TCell{API métier, authentification et autorisation.}\\ \hline
+\TCell{JPA, Hibernate et Flyway} & \TCell{Gérés par Spring Boot} & \TCell{Persistance relationnelle et migration du schéma.}\\ \hline
+\TCell{PostgreSQL} & \TCell{Version serveur non spécifiée} & \TCell{Stockage des données métier.}\\ \hline
+\TCell{Angular et Angular Material} & \TCell{Angular 22.2.1 ; Angular Material 22.2.2, versions verrouillées} & \TCell{Application web, navigation, formulaires et composants d'interface.}\\ \hline
+\TCell{TypeScript} & \TCell{6.0.3 verrouillée} & \TCell{Développement typé de l'interface.}\\ \hline
+\TCell{npm et Vitest} & \TCell{npm 11.19.0 déclarée ; Vitest 5.0.3 verrouillée} & \TCell{Gestion des dépendances, construction et tests frontend.}\\ \hline
+\TCell{Groq} & \TCell{Modèle \texttt{qwen/qwen3.8-27b} configuré} & \TCell{Proposition de catégorie et de priorité.}\\ \hline
 \end{tabular}
 \endgroup
 \end{table}
@@ -58,6 +58,7 @@ Les fonctionnalités ont été réalisées autour du cycle de vie d'une demande.
 \label{fig:03-creation}
 \end{figure}
 \FloatBarrier
+\vspace{-0.4\baselineskip}
 
 Le formulaire réunit les informations nécessaires à l'enregistrement sans mélanger la qualification et l'affectation. La demande n'est créée qu'après la validation des données finales par le Responsable technique.
 
@@ -82,6 +83,7 @@ Cette vue donne une lecture synthétique du portefeuille de demandes et de leur 
 \label{fig:03-traitement}
 \end{figure}
 \FloatBarrier
+\vspace{-0.4\baselineskip}
 
 Le détail rassemble le contexte, l'affectation et la zone de traitement. Il permet à l'Agent de documenter la solution sans lui donner les décisions réservées au Responsable technique.
 
@@ -121,7 +123,7 @@ Angular conserve temporairement la session dans \texttt{sessionStorage} afin de 
 \section{Assistance IA et validation humaine}
 \label{sec:03-realisation-ia}
 
-Le Responsable technique déclenche volontairement l'analyse depuis le formulaire de création. Angular transmet uniquement le titre et la description au backend. Le service passe par \texttt{AnalyseIaPort}, puis l'adaptateur Groq appelle le modèle configuré et contrôle que la réponse structurée contient exactement une catégorie et une priorité reconnues.
+Le Responsable technique déclenche volontairement l'analyse depuis le formulaire de création. Angular transmet uniquement le titre et la description au backend. Le service passe par le port d'analyse défini lors de la conception, puis l'adaptateur Groq appelle le modèle configuré et contrôle que la réponse structurée contient exactement une catégorie et une priorité reconnues.
 
 \begin{figure}[htbp]
 \centering
