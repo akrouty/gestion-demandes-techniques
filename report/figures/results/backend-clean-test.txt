@@ -1,0 +1,413 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ----------< com.akrouty:gestion-demandes-techniques-backend >-----------
+[INFO] Building gestion-demandes-techniques-backend 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ gestion-demandes-techniques-backend ---
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ gestion-demandes-techniques-backend ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ gestion-demandes-techniques-backend ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 98 source files with javac [debug parameters release 21] to target\classes
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ gestion-demandes-techniques-backend ---
+[INFO] Copying 1 resource from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ gestion-demandes-techniques-backend ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 31 source files with javac [debug parameters release 21] to target\test-classes
+[INFO] 
+[INFO] --- surefire:3.5.6:test (default-test) @ gestion-demandes-techniques-backend ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.akrouty.gestiondemandes.ai.groq.GroqAnalyseIaAdapterTest
+[INFO] Tests run: 39, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.494 s -- in com.akrouty.gestiondemandes.ai.groq.GroqAnalyseIaAdapterTest
+[INFO] Running com.akrouty.gestiondemandes.GestionDemandesApplicationTests
+01:52:17.000 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.GestionDemandesApplicationTests]: GestionDemandesApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+01:52:17.100 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.GestionDemandesApplicationTests
+01:52:17.172 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.GestionDemandesApplicationTests]: GestionDemandesApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+01:52:17.173 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.GestionDemandesApplicationTests
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+2026-10-28T01:52:17.421-11:00  INFO 10896 --- [           main] c.a.g.GestionDemandesApplicationTests    : Starting GestionDemandesApplicationTests using Java 25.0.2 with PID 10896 (started by Aizen in D:\gestion_demandes_techniques\backend)
+2026-10-28T01:52:17.422-11:00  INFO 10896 --- [           main] c.a.g.GestionDemandesApplicationTests    : No active profile set, falling back to 1 default profile: "default"
+2026-10-28T01:52:18.561-11:00  INFO 10896 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-28T01:52:18.616-11:00  INFO 10896 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 46 ms. Found 3 JPA repository interfaces.
+2026-10-28T01:52:19.077-11:00  INFO 10896 --- [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-10-28T01:52:19.195-11:00  INFO 10896 --- [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.5.Final
+2026-10-28T01:52:19.611-11:00  INFO 10896 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-28T01:52:19.642-11:00  INFO 10896 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-10-28T01:52:19.811-11:00  INFO 10896 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:gdt_test user=SA
+2026-10-28T01:52:19.813-11:00  INFO 10896 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-28T01:52:19.889-11:00  INFO 10896 --- [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:h2:mem:gdt_test]
+	Database driver: H2 JDBC Driver
+	Database dialect: H2Dialect
+	Database version: 2.4.240
+	Default catalog/schema: GDT_TEST/PUBLIC
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 100
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-10-28T01:52:20.959-11:00  INFO 10896 --- [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-28T01:52:21.007-11:00  INFO 10896 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-28T01:52:21.087-11:00  INFO 10896 --- [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-10-28T01:52:22.064-11:00  WARN 10896 --- [           main] .s.a.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: [REDACTED - temporary test value]
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-10-28T01:52:22.071-11:00  INFO 10896 --- [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-10-28T01:52:22.586-11:00  INFO 10896 --- [           main] c.a.g.GestionDemandesApplicationTests    : Started GestionDemandesApplicationTests in 5.362 seconds (process running for 8.376)
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+Java HotSpot(TM) 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+WARNING: A Java agent has been loaded dynamically (C:\Users\Aizen\.m2\repository\net\bytebuddy\byte-buddy-agent\1.18.11\byte-buddy-agent-1.18.11.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.938 s -- in com.akrouty.gestiondemandes.GestionDemandesApplicationTests
+[INFO] Running com.akrouty.gestiondemandes.identity.domain.UtilisateurTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s -- in com.akrouty.gestiondemandes.identity.domain.UtilisateurTest
+[INFO] Running com.akrouty.gestiondemandes.identity.persistence.UtilisateurRepositoryTest
+2026-10-28T01:52:22.887-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.identity.persistence.UtilisateurRepositoryTest]: UtilisateurRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:22.895-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.identity.persistence.UtilisateurRepositoryTest
+2026-10-28T01:52:22.896-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.identity.persistence.UtilisateurRepositoryTest]: UtilisateurRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:22.897-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.identity.persistence.UtilisateurRepositoryTest
+2026-10-28T01:52:23.015-11:00  WARN 10896 --- [           main] org.hibernate.orm.jdbc.error             : HHH000247: ErrorCode: 23505, SQLState: 23505
+2026-10-28T01:52:23.016-11:00  WARN 10896 --- [           main] org.hibernate.orm.jdbc.error             : Unique index or primary key violation: "PUBLIC.UK_UTILISATEUR_EMAIL INDEX PUBLIC.UK_UTILISATEUR_EMAIL_INDEX_5 ON PUBLIC.UTILISATEUR(EMAIL NULLS FIRST) VALUES ( /* 2 */ 'duplique@example.com' )"; SQL statement:
+insert into utilisateur (actif,email,nom,password_hash,id) values (?,?,?,?,?) [23505-240]
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.218 s -- in com.akrouty.gestiondemandes.identity.persistence.UtilisateurRepositoryTest
+[INFO] Running com.akrouty.gestiondemandes.identity.presentation.UtilisateurApiTest
+2026-10-28T01:52:23.108-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.identity.presentation.UtilisateurApiTest]: UtilisateurApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:23.124-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.identity.presentation.UtilisateurApiTest
+2026-10-28T01:52:23.125-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.identity.presentation.UtilisateurApiTest]: UtilisateurApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:23.125-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.support.ApiTestSupport]: ApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:23.127-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.identity.presentation.UtilisateurApiTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+2026-10-28T01:52:23.148-11:00  INFO 10896 --- [           main] c.a.g.i.presentation.UtilisateurApiTest  : Starting UtilisateurApiTest using Java 25.0.2 with PID 10896 (started by Aizen in D:\gestion_demandes_techniques\backend)
+2026-10-28T01:52:23.148-11:00  INFO 10896 --- [           main] c.a.g.i.presentation.UtilisateurApiTest  : No active profile set, falling back to 1 default profile: "default"
+2026-10-28T01:52:23.283-11:00  INFO 10896 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-28T01:52:23.297-11:00  INFO 10896 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 12 ms. Found 3 JPA repository interfaces.
+2026-10-28T01:52:23.367-11:00  INFO 10896 --- [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-10-28T01:52:23.390-11:00  INFO 10896 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-28T01:52:23.391-11:00  INFO 10896 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2026-10-28T01:52:23.392-11:00  INFO 10896 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection conn10: url=jdbc:h2:mem:gdt_test user=SA
+2026-10-28T01:52:23.393-11:00  INFO 10896 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2026-10-28T01:52:23.393-11:00  INFO 10896 --- [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:h2:mem:gdt_test]
+	Database driver: H2 JDBC Driver
+	Database dialect: H2Dialect
+	Database version: 2.4.240
+	Default catalog/schema: GDT_TEST/PUBLIC
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 100
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-10-28T01:52:23.483-11:00  INFO 10896 --- [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-28T01:52:23.505-11:00  INFO 10896 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-28T01:52:23.596-11:00  WARN 10896 --- [           main] .s.a.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: [REDACTED - temporary test value]
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-10-28T01:52:23.597-11:00  INFO 10896 --- [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-10-28T01:52:23.692-11:00  INFO 10896 --- [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-10-28T01:52:23.692-11:00  INFO 10896 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-28T01:52:23.694-11:00  INFO 10896 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 2 ms
+2026-10-28T01:52:23.708-11:00  INFO 10896 --- [           main] c.a.g.i.presentation.UtilisateurApiTest  : Started UtilisateurApiTest in 0.577 seconds (process running for 9.497)
+[INFO] Tests run: 19, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.386 s -- in com.akrouty.gestiondemandes.identity.presentation.UtilisateurApiTest
+[INFO] Running com.akrouty.gestiondemandes.request.application.DemandeServicePersistanceTest
+2026-10-28T01:52:24.493-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.application.DemandeServicePersistanceTest]: DemandeServicePersistanceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:24.507-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.application.DemandeServicePersistanceTest
+2026-10-28T01:52:24.508-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.application.DemandeServicePersistanceTest]: DemandeServicePersistanceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:24.508-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.application.DemandeServicePersistanceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.065 s -- in com.akrouty.gestiondemandes.request.application.DemandeServicePersistanceTest
+[INFO] Running com.akrouty.gestiondemandes.request.domain.DemandeTechniqueTest
+[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.029 s -- in com.akrouty.gestiondemandes.request.domain.DemandeTechniqueTest
+[INFO] Running com.akrouty.gestiondemandes.request.persistence.ClientRepositoryTest
+2026-10-28T01:52:24.588-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.persistence.ClientRepositoryTest]: ClientRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:24.596-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.persistence.ClientRepositoryTest
+2026-10-28T01:52:24.597-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.persistence.ClientRepositoryTest]: ClientRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:24.598-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.persistence.ClientRepositoryTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.023 s -- in com.akrouty.gestiondemandes.request.persistence.ClientRepositoryTest
+[INFO] Running com.akrouty.gestiondemandes.request.persistence.DemandeTechniqueRepositoryTest
+2026-10-28T01:52:24.612-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.persistence.DemandeTechniqueRepositoryTest]: DemandeTechniqueRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:24.613-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.persistence.DemandeTechniqueRepositoryTest
+2026-10-28T01:52:24.613-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.persistence.DemandeTechniqueRepositoryTest]: DemandeTechniqueRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:24.614-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.persistence.DemandeTechniqueRepositoryTest
+2026-10-28T01:52:24.639-11:00  WARN 10896 --- [           main] org.hibernate.orm.jdbc.error             : HHH000247: ErrorCode: 23505, SQLState: 23505
+2026-10-28T01:52:24.639-11:00  WARN 10896 --- [           main] org.hibernate.orm.jdbc.error             : Unique index or primary key violation: "PUBLIC.UK_DEMANDE_TECHNIQUE_REFERENCE INDEX PUBLIC.UK_DEMANDE_TECHNIQUE_REFERENCE_INDEX_1 ON PUBLIC.DEMANDE_TECHNIQUE(REFERENCE NULLS FIRST) VALUES ( /* 4 */ 'REF-TEST-DUP' )"; SQL statement:
+insert into demande_technique (agent_affecte_id,categorie,client_id,createur_id,date_annulation,date_cloture,date_creation,date_modification,date_resolution,description,description_traitement,motif_annulation,priorite,reference,solution,statut,titre,id) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) [23505-240]
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.037 s -- in com.akrouty.gestiondemandes.request.persistence.DemandeTechniqueRepositoryTest
+[INFO] Running com.akrouty.gestiondemandes.request.persistence.HistoriqueDemandeTest
+2026-10-28T01:52:24.650-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.persistence.HistoriqueDemandeTest]: HistoriqueDemandeTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:24.651-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.persistence.HistoriqueDemandeTest
+2026-10-28T01:52:24.651-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.persistence.HistoriqueDemandeTest]: HistoriqueDemandeTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:24.652-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.persistence.HistoriqueDemandeTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.031 s -- in com.akrouty.gestiondemandes.request.persistence.HistoriqueDemandeTest
+[INFO] Running com.akrouty.gestiondemandes.request.presentation.AnalyseIaApiTest
+2026-10-28T01:52:24.685-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.AnalyseIaApiTest]: AnalyseIaApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:24.699-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.presentation.AnalyseIaApiTest
+2026-10-28T01:52:24.700-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.AnalyseIaApiTest]: AnalyseIaApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:24.700-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.WorkflowApiTestSupport]: WorkflowApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:24.700-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeApiTestSupport]: DemandeApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:24.700-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.support.ApiTestSupport]: ApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:24.701-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.presentation.AnalyseIaApiTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+2026-10-28T01:52:24.724-11:00  INFO 10896 --- [           main] c.a.g.r.presentation.AnalyseIaApiTest    : Starting AnalyseIaApiTest using Java 25.0.2 with PID 10896 (started by Aizen in D:\gestion_demandes_techniques\backend)
+2026-10-28T01:52:24.724-11:00  INFO 10896 --- [           main] c.a.g.r.presentation.AnalyseIaApiTest    : No active profile set, falling back to 1 default profile: "default"
+2026-10-28T01:52:24.835-11:00  INFO 10896 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-28T01:52:24.847-11:00  INFO 10896 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 10 ms. Found 3 JPA repository interfaces.
+2026-10-28T01:52:24.975-11:00  INFO 10896 --- [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-10-28T01:52:24.996-11:00  INFO 10896 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-28T01:52:24.997-11:00  INFO 10896 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Starting...
+2026-10-28T01:52:24.999-11:00  INFO 10896 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-3 - Added connection conn20: url=jdbc:h2:mem:gdt_test user=SA
+2026-10-28T01:52:24.999-11:00  INFO 10896 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Start completed.
+2026-10-28T01:52:25.000-11:00  INFO 10896 --- [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:h2:mem:gdt_test]
+	Database driver: H2 JDBC Driver
+	Database dialect: H2Dialect
+	Database version: 2.4.240
+	Default catalog/schema: GDT_TEST/PUBLIC
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 100
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-10-28T01:52:25.073-11:00  INFO 10896 --- [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-28T01:52:25.084-11:00  INFO 10896 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-28T01:52:25.151-11:00  WARN 10896 --- [           main] .s.a.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: [REDACTED - temporary test value]
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-10-28T01:52:25.152-11:00  INFO 10896 --- [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-10-28T01:52:25.207-11:00  INFO 10896 --- [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-10-28T01:52:25.208-11:00  INFO 10896 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-28T01:52:25.208-11:00  INFO 10896 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-28T01:52:25.215-11:00  INFO 10896 --- [           main] c.a.g.r.presentation.AnalyseIaApiTest    : Started AnalyseIaApiTest in 0.51 seconds (process running for 11.005)
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.944 s -- in com.akrouty.gestiondemandes.request.presentation.AnalyseIaApiTest
+[INFO] Running com.akrouty.gestiondemandes.request.presentation.AnalyseIaConfigurationAbsenteApiTest
+2026-10-28T01:52:25.630-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.AnalyseIaConfigurationAbsenteApiTest]: AnalyseIaConfigurationAbsenteApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:25.633-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.presentation.AnalyseIaConfigurationAbsenteApiTest
+2026-10-28T01:52:25.634-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.AnalyseIaConfigurationAbsenteApiTest]: AnalyseIaConfigurationAbsenteApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:25.634-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.WorkflowApiTestSupport]: WorkflowApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:25.634-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeApiTestSupport]: DemandeApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:25.634-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.support.ApiTestSupport]: ApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:25.635-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.presentation.AnalyseIaConfigurationAbsenteApiTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+2026-10-28T01:52:25.649-11:00  INFO 10896 --- [           main] r.p.AnalyseIaConfigurationAbsenteApiTest : Starting AnalyseIaConfigurationAbsenteApiTest using Java 25.0.2 with PID 10896 (started by Aizen in D:\gestion_demandes_techniques\backend)
+2026-10-28T01:52:25.649-11:00  INFO 10896 --- [           main] r.p.AnalyseIaConfigurationAbsenteApiTest : No active profile set, falling back to 1 default profile: "default"
+2026-10-28T01:52:25.766-11:00  INFO 10896 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-28T01:52:25.781-11:00  INFO 10896 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 13 ms. Found 3 JPA repository interfaces.
+2026-10-28T01:52:25.820-11:00  INFO 10896 --- [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-10-28T01:52:25.837-11:00  INFO 10896 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-28T01:52:25.838-11:00  INFO 10896 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Starting...
+2026-10-28T01:52:25.839-11:00  INFO 10896 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-4 - Added connection conn30: url=jdbc:h2:mem:gdt_test user=SA
+2026-10-28T01:52:25.839-11:00  INFO 10896 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Start completed.
+2026-10-28T01:52:25.840-11:00  INFO 10896 --- [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:h2:mem:gdt_test]
+	Database driver: H2 JDBC Driver
+	Database dialect: H2Dialect
+	Database version: 2.4.240
+	Default catalog/schema: GDT_TEST/PUBLIC
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 100
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-10-28T01:52:25.891-11:00  INFO 10896 --- [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-28T01:52:25.898-11:00  INFO 10896 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-28T01:52:25.950-11:00  WARN 10896 --- [           main] .s.a.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: [REDACTED - temporary test value]
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-10-28T01:52:25.951-11:00  INFO 10896 --- [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-10-28T01:52:25.991-11:00  INFO 10896 --- [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-10-28T01:52:25.991-11:00  INFO 10896 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-28T01:52:25.992-11:00  INFO 10896 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-10-28T01:52:25.997-11:00  INFO 10896 --- [           main] r.p.AnalyseIaConfigurationAbsenteApiTest : Started AnalyseIaConfigurationAbsenteApiTest in 0.36 seconds (process running for 11.787)
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.439 s -- in com.akrouty.gestiondemandes.request.presentation.AnalyseIaConfigurationAbsenteApiTest
+[INFO] Running com.akrouty.gestiondemandes.request.presentation.ClientAgentApiTest
+2026-10-28T01:52:26.070-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.ClientAgentApiTest]: ClientAgentApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:26.071-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.presentation.ClientAgentApiTest
+2026-10-28T01:52:26.072-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.ClientAgentApiTest]: ClientAgentApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:26.072-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.WorkflowApiTestSupport]: WorkflowApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:26.072-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeApiTestSupport]: DemandeApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:26.072-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.support.ApiTestSupport]: ApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:26.073-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.presentation.ClientAgentApiTest
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.503 s -- in com.akrouty.gestiondemandes.request.presentation.ClientAgentApiTest
+[INFO] Running com.akrouty.gestiondemandes.request.presentation.DemandeAffectationApiTest
+2026-10-28T01:52:26.573-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeAffectationApiTest]: DemandeAffectationApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:26.574-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.presentation.DemandeAffectationApiTest
+2026-10-28T01:52:26.575-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeAffectationApiTest]: DemandeAffectationApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:26.575-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.WorkflowApiTestSupport]: WorkflowApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:26.575-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeApiTestSupport]: DemandeApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:26.575-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.support.ApiTestSupport]: ApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:26.576-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.presentation.DemandeAffectationApiTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.519 s -- in com.akrouty.gestiondemandes.request.presentation.DemandeAffectationApiTest
+[INFO] Running com.akrouty.gestiondemandes.request.presentation.DemandeAnnulationApiTest
+2026-10-28T01:52:27.093-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeAnnulationApiTest]: DemandeAnnulationApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:27.094-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.presentation.DemandeAnnulationApiTest
+2026-10-28T01:52:27.094-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeAnnulationApiTest]: DemandeAnnulationApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:27.095-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.WorkflowApiTestSupport]: WorkflowApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:27.095-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeApiTestSupport]: DemandeApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:27.095-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.support.ApiTestSupport]: ApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:27.096-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.presentation.DemandeAnnulationApiTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.412 s -- in com.akrouty.gestiondemandes.request.presentation.DemandeAnnulationApiTest
+[INFO] Running com.akrouty.gestiondemandes.request.presentation.DemandeConsultationApiTest
+2026-10-28T01:52:27.506-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeConsultationApiTest]: DemandeConsultationApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:27.507-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.presentation.DemandeConsultationApiTest
+2026-10-28T01:52:27.508-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeConsultationApiTest]: DemandeConsultationApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:27.508-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.WorkflowApiTestSupport]: WorkflowApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:27.508-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeApiTestSupport]: DemandeApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:27.508-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.support.ApiTestSupport]: ApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:27.509-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.presentation.DemandeConsultationApiTest
+[INFO] Tests run: 20, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.153 s -- in com.akrouty.gestiondemandes.request.presentation.DemandeConsultationApiTest
+[INFO] Running com.akrouty.gestiondemandes.request.presentation.DemandeCreationApiTest
+2026-10-28T01:52:28.660-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeCreationApiTest]: DemandeCreationApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:28.662-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.presentation.DemandeCreationApiTest
+2026-10-28T01:52:28.663-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeCreationApiTest]: DemandeCreationApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:28.663-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeApiTestSupport]: DemandeApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:28.663-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.support.ApiTestSupport]: ApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:28.664-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.presentation.DemandeCreationApiTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.230 s -- in com.akrouty.gestiondemandes.request.presentation.DemandeCreationApiTest
+[INFO] Running com.akrouty.gestiondemandes.request.presentation.DemandeHistoriqueApiTest
+2026-10-28T01:52:28.891-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeHistoriqueApiTest]: DemandeHistoriqueApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:28.892-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.presentation.DemandeHistoriqueApiTest
+2026-10-28T01:52:28.893-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeHistoriqueApiTest]: DemandeHistoriqueApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:28.893-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.WorkflowApiTestSupport]: WorkflowApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:28.893-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeApiTestSupport]: DemandeApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:28.893-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.support.ApiTestSupport]: ApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:28.894-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.presentation.DemandeHistoriqueApiTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.097 s -- in com.akrouty.gestiondemandes.request.presentation.DemandeHistoriqueApiTest
+[INFO] Running com.akrouty.gestiondemandes.request.presentation.DemandeQualificationApiTest
+2026-10-28T01:52:28.988-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeQualificationApiTest]: DemandeQualificationApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:28.989-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.presentation.DemandeQualificationApiTest
+2026-10-28T01:52:28.989-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeQualificationApiTest]: DemandeQualificationApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:28.989-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeApiTestSupport]: DemandeApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:28.989-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.support.ApiTestSupport]: ApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:28.990-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.presentation.DemandeQualificationApiTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.161 s -- in com.akrouty.gestiondemandes.request.presentation.DemandeQualificationApiTest
+[INFO] Running com.akrouty.gestiondemandes.request.presentation.DemandeResolutionApiTest
+2026-10-28T01:52:29.150-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeResolutionApiTest]: DemandeResolutionApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:29.151-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.presentation.DemandeResolutionApiTest
+2026-10-28T01:52:29.151-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeResolutionApiTest]: DemandeResolutionApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:29.151-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.WorkflowApiTestSupport]: WorkflowApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:29.151-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeApiTestSupport]: DemandeApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:29.151-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.support.ApiTestSupport]: ApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:29.152-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.presentation.DemandeResolutionApiTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.486 s -- in com.akrouty.gestiondemandes.request.presentation.DemandeResolutionApiTest
+[INFO] Running com.akrouty.gestiondemandes.request.presentation.DemandeTraitementApiTest
+2026-10-28T01:52:29.637-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeTraitementApiTest]: DemandeTraitementApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:29.641-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.presentation.DemandeTraitementApiTest
+2026-10-28T01:52:29.641-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeTraitementApiTest]: DemandeTraitementApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:29.641-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.WorkflowApiTestSupport]: WorkflowApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:29.641-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.request.presentation.DemandeApiTestSupport]: DemandeApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:29.641-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.support.ApiTestSupport]: ApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:29.642-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.request.presentation.DemandeTraitementApiTest
+[INFO] Tests run: 20, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.619 s -- in com.akrouty.gestiondemandes.request.presentation.DemandeTraitementApiTest
+[INFO] Running com.akrouty.gestiondemandes.security.config.JwtPropertiesTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s -- in com.akrouty.gestiondemandes.security.config.JwtPropertiesTest
+[INFO] Running com.akrouty.gestiondemandes.security.jwt.JwtServiceAlgorithmeTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 s -- in com.akrouty.gestiondemandes.security.jwt.JwtServiceAlgorithmeTest
+[INFO] Running com.akrouty.gestiondemandes.security.presentation.CorsApiTest
+2026-10-28T01:52:30.278-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.security.presentation.CorsApiTest]: CorsApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:30.286-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.security.presentation.CorsApiTest
+2026-10-28T01:52:30.287-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.security.presentation.CorsApiTest]: CorsApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:30.287-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.support.ApiTestSupport]: ApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:30.288-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.security.presentation.CorsApiTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.027 s -- in com.akrouty.gestiondemandes.security.presentation.CorsApiTest
+[INFO] Running com.akrouty.gestiondemandes.security.presentation.JwtSecuriteTest
+2026-10-28T01:52:30.305-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.security.presentation.JwtSecuriteTest]: JwtSecuriteTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:30.306-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.security.presentation.JwtSecuriteTest
+2026-10-28T01:52:30.306-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.security.presentation.JwtSecuriteTest]: JwtSecuriteTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:30.307-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.support.ApiTestSupport]: ApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:30.307-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.security.presentation.JwtSecuriteTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.051 s -- in com.akrouty.gestiondemandes.security.presentation.JwtSecuriteTest
+[INFO] Running com.akrouty.gestiondemandes.security.presentation.LoginApiTest
+2026-10-28T01:52:30.357-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.security.presentation.LoginApiTest]: LoginApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:30.358-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.security.presentation.LoginApiTest
+2026-10-28T01:52:30.359-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.security.presentation.LoginApiTest]: LoginApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:30.359-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.support.ApiTestSupport]: ApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:30.359-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.security.presentation.LoginApiTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.034 s -- in com.akrouty.gestiondemandes.security.presentation.LoginApiTest
+[INFO] Running com.akrouty.gestiondemandes.security.presentation.RbacApiTest
+2026-10-28T01:52:30.391-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.security.presentation.RbacApiTest]: RbacApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:30.392-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.security.presentation.RbacApiTest
+2026-10-28T01:52:30.392-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.security.presentation.RbacApiTest]: RbacApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:30.392-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.support.ApiTestSupport]: ApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:30.393-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.security.presentation.RbacApiTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.082 s -- in com.akrouty.gestiondemandes.security.presentation.RbacApiTest
+[INFO] Running com.akrouty.gestiondemandes.security.presentation.RelectureIdentiteTest
+2026-10-28T01:52:30.474-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.security.presentation.RelectureIdentiteTest]: RelectureIdentiteTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:30.475-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.security.presentation.RelectureIdentiteTest
+2026-10-28T01:52:30.475-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.security.presentation.RelectureIdentiteTest]: RelectureIdentiteTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:30.475-11:00  INFO 10896 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.akrouty.gestiondemandes.support.ApiTestSupport]: ApiTestSupport does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-28T01:52:30.477-11:00  INFO 10896 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.akrouty.gestiondemandes.GestionDemandesApplication for test class com.akrouty.gestiondemandes.security.presentation.RelectureIdentiteTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.032 s -- in com.akrouty.gestiondemandes.security.presentation.RelectureIdentiteTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 270, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  27.756 s
+[INFO] Finished at: 2026-10-28T01:52:30-11:00
+[INFO] ------------------------------------------------------------------------

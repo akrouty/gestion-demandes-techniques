@@ -23,18 +23,18 @@ L'application distingue trois rôles internes, qu'une même personne peut cumule
   \item \textbf{Responsable technique :} il pilote la demande depuis son enregistrement et sa qualification jusqu'à la décision de clôture.
   \item \textbf{Agent technique :} il prend en charge les demandes qui lui sont affectées et documente leur traitement puis leur résolution.
   \item \textbf{Administrateur :} il maintient les comptes des utilisateurs internes et leurs rôles.
-  \item \textbf{Client :} il constitue une entité métier associée à la demande, et non un acteur utilisateur de la V1 ; aucun portail ni droit d'accès client n'est introduit.
+  \item \textbf{Client :} il constitue une entité métier associée à la demande, et non un acteur utilisateur de la solution actuelle ; aucun portail ni droit d'accès client n'est introduit.
 \end{itemize}
 
 \subsection{Besoins fonctionnels}
 \label{subsec:02-besoins-fonctionnels}
 
-Le tableau~\ref{tab:02-capacites-fonctionnelles} synthétise les grandes fonctions attendues de la V1, depuis l'accès interne jusqu'à l'assistance à la qualification.
+Le tableau~\ref{tab:02-capacites-fonctionnelles} synthétise les grandes fonctions attendues dans le périmètre du stage, depuis l'accès interne jusqu'à l'assistance à la qualification.
 
 \begin{table}[htbp]
 \centering
 \small
-\caption{Capacités fonctionnelles de la V1}
+\caption{Capacités fonctionnelles de la solution}
 \label{tab:02-capacites-fonctionnelles}
 \begingroup
 \setlength{\arrayrulewidth}{0.3pt}
@@ -78,7 +78,7 @@ La figure~\ref{fig:02-cas-utilisation-global} présente les acteurs internes et 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.88\textwidth,height=0.72\textheight,keepaspectratio]{figures/uml/Use_caseV1.png}
-\caption{Diagramme global des cas d'utilisation de la V1}
+\caption{Diagramme global des cas d'utilisation}
 \label{fig:02-cas-utilisation-global}
 \end{figure}
 \FloatBarrier
@@ -113,12 +113,12 @@ Cette section traduit les besoins précédents en organisation technique. Elle p
 \subsection{Architecture générale}
 \label{subsec:02-architecture-generale}
 
-L'architecture doit séparer l'interaction utilisateur, les règles métier, la persistance relationnelle et le fournisseur IA, tout en conservant un déploiement simple pour la V1. La figure~\ref{fig:02-composants-applicatifs} présente les frontières retenues.
+L'architecture doit séparer l'interaction utilisateur, les règles métier, la persistance relationnelle et le fournisseur IA, tout en conservant un déploiement simple pour le périmètre retenu. La figure~\ref{fig:02-composants-applicatifs} présente les frontières retenues.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth,height=0.68\textheight,keepaspectratio]{figures/uml/application-components-v1.png}
-\caption{Composants applicatifs et systèmes externes de la V1}
+\caption{Composants applicatifs et systèmes externes}
 \label{fig:02-composants-applicatifs}
 \end{figure}
 \FloatBarrier
@@ -140,18 +140,16 @@ Les choix retenus répondent à des besoins précis sans permettre d'affirmer qu
 
 \textbf{DTO.} Les objets de transfert séparent les contrats HTTP des entités persistantes, sans être présentés comme une solution universelle.
 
-\textbf{State Pattern.} Il n'est pas retenu pour la V1, car un enum de statut et des opérations métier explicites suffisent au cycle actuel. Ce choix pourrait être réévalué si le workflow s'étend fortement \parencite{gamma-design-patterns}.
+\textbf{State Pattern.} Il n'est pas retenu pour le périmètre actuel, car un enum de statut et des opérations métier explicites suffisent au cycle considéré. Ce choix pourrait être réévalué si le workflow s'étend fortement \parencite{gamma-design-patterns}.
 
 La figure~\ref{fig:02-conception-backend} affine la vue générale en montrant comment les responsabilités et ces choix de conception sont répartis à l'intérieur du backend.
 
-\begin{landscape}
 \begin{figure}[p]
 \centering
-\includegraphics[trim=6 4 6 4,clip,width=0.92\linewidth,keepaspectratio]{figures/uml/backend-design-v1.png}
+\makebox[\textwidth][c]{\includegraphics[trim=2 2 2 2,clip,width=1.08\textwidth,keepaspectratio]{figures/uml/backend-design-v1.png}}
 \caption{Organisation des responsabilités dans la conception backend}
 \label{fig:02-conception-backend}
 \end{figure}
-\end{landscape}
 \FloatBarrier
 
 Le diagramme précise que les contrôleurs portent la frontière HTTP, que les services orchestrent les cas d'utilisation et que le domaine protège les invariants. Les repositories isolent la persistance, tandis que le port et son adaptateur séparent l'intégration Groq du cœur applicatif.
@@ -199,7 +197,7 @@ La base relationnelle doit préserver l'identité des utilisateurs, le contenu e
 \DCell{DemandeTechnique} & \DCell{reference} & \DCell{String / VARCHAR} & \DCell{Obligatoire, unique et immuable ; référence métier.}\\ \hline
 \DCell{DemandeTechnique} & \DCell{titre} & \DCell{String / VARCHAR} & \DCell{Obligatoire ; intitulé de la demande.}\\ \hline
 \DCell{DemandeTechnique} & \DCell{description} & \DCell{String / TEXT} & \DCell{Obligatoire ; détail de la demande.}\\ \hline
-\DCell{DemandeTechnique} & \DCell{categorie} & \DCell{Categorie / VARCHAR} & \DCell{Obligatoire ; valeur de la liste V1.}\\ \hline
+\DCell{DemandeTechnique} & \DCell{categorie} & \DCell{Categorie / VARCHAR} & \DCell{Obligatoire ; valeur de la liste retenue.}\\ \hline
 \DCell{DemandeTechnique} & \DCell{priorite} & \DCell{Priorite / VARCHAR} & \DCell{Obligatoire ; BASSE à CRITIQUE.}\\ \hline
 \DCell{DemandeTechnique} & \DCell{statut} & \DCell{StatutDemande / VARCHAR} & \DCell{Obligatoire ; état du cycle de vie.}\\ \hline
 \DCell{DemandeTechnique} & \DCell{agentAffecte} & \DCell{Utilisateur / FK} & \DCell{Optionnel ; au plus un Agent affecté.}\\ \hline
@@ -218,7 +216,7 @@ Le dictionnaire constitue la synthèse principale des attributs, types et contra
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth,height=0.70\textheight,keepaspectratio]{figures/uml/entity-model-v1.png}
-\caption{Entités persistantes et cardinalités du modèle de données V1}
+\caption{Entités persistantes et cardinalités du modèle de données}
 \label{fig:02-entites-persistantes}
 \end{figure}
 \FloatBarrier

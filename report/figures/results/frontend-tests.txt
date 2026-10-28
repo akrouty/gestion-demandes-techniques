@@ -1,0 +1,17 @@
+
+> safyron@0.0.0 test
+> ng test --watch=false
+
+> Building...
+√ Building...
+Application bundle generation complete. [2.969 seconds] - 2026-10-28T12:53:58.934Z
+
+
+ RUN  v5.0.3 D:/gestion_demandes_techniques/frontend
+
+
+ Test Files  16 passed (16)
+      Tests  207 passed (207)
+   Start at  01:54:01
+   Duration  22.77s (environment 88%, tests 5%, setup 3%, import 2%, transform 1%)
+

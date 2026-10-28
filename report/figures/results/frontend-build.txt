@@ -1,0 +1,39 @@
+
+> safyron@0.0.0 build
+> ng build
+
+> Building...
+√ Building...
+Initial chunk files | Names              |  Raw size | Estimated transfer size
+main-CAG3X6EV.js    | main               | 445.10 kB |               109.06 kB
+styles-BPIFSCC6.css | styles             |  11.20 kB |                 2.22 kB
+
+                    | Initial total      | 456.30 kB |               111.27 kB
+
+Lazy chunk files    | Names              |  Raw size | Estimated transfer size
+chunk-C81do0RD.js   | -                  | 125.27 kB |                26.89 kB
+chunk-56NOUZWf.js   | -                  | 107.86 kB |                19.18 kB
+chunk-BT-vDK_y.js   | utilisateurs-list  |  60.74 kB |                13.87 kB
+chunk-Binzh6TN.js   | demande-create     |  43.78 kB |                 9.55 kB
+chunk-CeN1eedo.js   | -                  |  29.23 kB |                 4.86 kB
+chunk-DFefchy7.js   | demande-detail     |  27.58 kB |                 6.85 kB
+chunk-BNgN1UwX.js   | demandes-list      |  18.06 kB |                 5.04 kB
+chunk-CWtm8q1E.js   | utilisateur-edit   |  18.02 kB |                 4.96 kB
+chunk-BoAjpExW.js   | -                  |  15.46 kB |                 4.24 kB
+chunk-CWiYDAxi.js   | -                  |  10.03 kB |                 2.90 kB
+chunk-DNJh56ak.js   | utilisateur-create |   8.13 kB |                 2.76 kB
+chunk-DAj4Tl9g.js   | login              |   5.37 kB |                 2.08 kB
+chunk-DT6lPjYE.js   | -                  |   2.83 kB |                 1.30 kB
+chunk-BVaQMJZt.js   | -                  |   2.72 kB |               998 bytes
+chunk-CRo1RT3-.js   | -                  |   2.34 kB |                 1.07 kB
+...and 1 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [10.637 seconds] - 2026-10-28T12:53:45.019Z
+
+Output location: D:\gestion_demandes_techniques\frontend\dist\safyron
+
+npm notice
+npm notice New major version of npm available! 11.19.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

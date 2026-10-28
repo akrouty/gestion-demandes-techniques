@@ -139,7 +139,7 @@ Le benchmark exploratoire utilise le jeu P01--P24, soit 24 cas dont la catégori
 \section{Tests et validation}
 \label{sec:03-tests}
 
-La validation combine des tests automatisés, des vérifications d'intégration réelle et des parcours humains. Le tableau~\ref{tab:03-validation} sépare ces niveaux afin de ne pas assimiler les tests H2 à une validation PostgreSQL ou à un appel Groq réel.
+La validation combine des tests automatisés, des vérifications d'intégration réelle et des parcours humains. Le tableau~\ref{tab:03-validation} sépare ces niveaux afin de ne pas assimiler les tests H2 à une validation PostgreSQL ou à un appel Groq réel. Les workflows automatisés ont été réexécutés pour cette vérification ; les lignes relatives à PostgreSQL réel, à Groq réel et aux parcours navigateur reprennent des validations effectivement réalisées et documentées auparavant, sans les présenter comme réexécutées pendant cette passe.
 
 \begin{table}[htbp]
 \centering
@@ -155,7 +155,7 @@ La validation combine des tests automatisés, des vérifications d'intégration 
 \hline
 \VCell{\textbf{Niveau}} & \VCell{\textbf{Méthode}} & \VCell{\textbf{Résultat vérifié}}\\ \hline
 \VCell{Backend automatisé} & \VCell{Maven \texttt{clean test} et \texttt{clean verify}} & \VCell{270 tests réussis ; aucun échec, erreur ou test ignoré.}\\ \hline
-\VCell{Frontend automatisé} & \VCell{Installation, build et tests Vitest} & \VCell{Build réussi ; 184 tests réussis dans 15 fichiers.}\\ \hline
+\VCell{Frontend automatisé} & \VCell{Build Angular et tests Vitest} & \VCell{Build réussi ; 207 tests réussis dans 16 fichiers.}\\ \hline
 \VCell{PostgreSQL réel} & \VCell{Démarrage et appels HTTP locaux} & \VCell{Connexion réussie, migration Flyway appliquée, validation Hibernate et workflow API vérifiés.}\\ \hline
 \VCell{IA hors ligne} & \VCell{H2 et stub HTTP local} & \VCell{Comportements IA testés sans appel réel à Groq.}\\ \hline
 \VCell{Intégration IA réelle} & \VCell{Parcours Angular vers Spring Boot puis Groq} & \VCell{Proposition reçue et appliquée seulement après action humaine ; scénario sans clé vérifié en 503.}\\ \hline
@@ -165,7 +165,55 @@ La validation combine des tests automatisés, des vérifications d'intégration 
 \end{table}
 \FloatBarrier
 
-Ces résultats valident le périmètre fonctionnel et technique effectivement vérifié. Ils ne constituent ni un test de charge, ni une qualification de sécurité exhaustive, ni une validation de production.
+\paragraph{Preuves textuelles d'exécution.}
+Les sorties complètes des commandes réexécutées sont conservées dans \texttt{report/figures/results/}. Les extraits suivants reprennent directement leurs résumés, sans reconstitution graphique.
+
+\begin{center}
+\fbox{\begin{minipage}{0.91\textwidth}
+\small
+\textbf{Backend --- Maven \texttt{clean test} et \texttt{clean verify}}\\[0.35em]
+\texttt{Tests run: 270, Failures: 0, Errors: 0, Skipped: 0}\\
+\texttt{BUILD SUCCESS}
+\end{minipage}}
+
+\vspace{0.8em}
+
+\fbox{\begin{minipage}{0.91\textwidth}
+\small
+\textbf{Frontend --- build Angular et Vitest}\\[0.35em]
+\texttt{Application bundle generation complete.}\\
+\texttt{Test Files 16 passed (16)}\\
+\texttt{Tests 207 passed (207)}
+\end{minipage}}
+\end{center}
+
+Le tableau~\ref{tab:03-tracabilite-non-fonctionnelle} rapproche ensuite les besoins non fonctionnels du chapitre~2 des éléments réellement disponibles. Il distingue les résultats de tests, les vérifications humaines et les indicateurs issus de la conception.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Traçabilité des besoins non fonctionnels et des validations}
+\label{tab:03-tracabilite-non-fonctionnelle}
+\begingroup
+\setlength{\tabcolsep}{5pt}
+\setlength{\arrayrulewidth}{0.3pt}
+\renewcommand{\arraystretch}{1.14}
+\newcommand{\TCell}[1]{{\raggedright #1\par}}
+\begin{tabular}{@{}p{0.20\textwidth}p{0.74\textwidth}@{}}
+\hline
+\TCell{\textbf{Besoin}} & \TCell{\textbf{Élément de validation ou indicateur disponible}}\\ \hline
+\TCell{Sécurité} & \TCell{Tests backend portant sur JWT, RBAC, CORS, la relecture de l'identité et les contrôles métier contextuels ; ces résultats ne constituent pas un audit de sécurité.}\\ \hline
+\TCell{Cohérence} & \TCell{Tests du domaine, du workflow, de persistance et des API, complétés par les parcours fonctionnels vérifiés.}\\ \hline
+\TCell{Traçabilité} & \TCell{Historique des changements intégré au modèle et scénarios API associés, avec consultation vérifiée dans le parcours de demande.}\\ \hline
+\TCell{Ergonomie} & \TCell{Vérifications humaines dans le navigateur, revue responsive et captures réelles ; elles ne remplacent pas une étude UX exhaustive.}\\ \hline
+\TCell{Continuité de l'IA} & \TCell{Tests hors ligne avec stub, scénario sans clé renvoyant 503 et maintien vérifié de la qualification manuelle.}\\ \hline
+\TCell{Maintenabilité} & \TCell{Indicateurs de conception : modularité, séparation des responsabilités, tests automatisés et isolation de Groq par un port et un adaptateur ; aucune mesure scientifique de maintenabilité n'est revendiquée.}\\ \hline
+\end{tabular}
+\endgroup
+\end{table}
+\FloatBarrier
+
+Ces éléments confirment le périmètre fonctionnel et technique effectivement vérifié. Ils ne constituent ni un test de performance ou de charge, ni un test d'intrusion, ni une qualification exhaustive de sécurité ou de production.
 
 \section{Difficultés rencontrées, limites et perspectives}
 \label{sec:03-limites}
@@ -174,9 +222,17 @@ Ces résultats valident le périmètre fonctionnel et technique effectivement v�
 
 \textbf{Contrainte technique prévue.} L'assistance dépend d'un service Groq externe dont la disponibilité et la configuration ne sont pas garanties. La conception isole cette dépendance et la rend non bloquante. Le scénario sans clé a été testé : seule l'analyse renvoie une indisponibilité, tandis que la qualification manuelle demeure opérationnelle.
 
-\textbf{Limites actuelles.} La V1 reste réservée aux utilisateurs internes et ne propose pas de portail client. Le benchmark IA repose sur un corpus exploratoire de 24 cas. Aucun test de charge ni validation de production n'a été réalisé. Enfin, le JWT est conservé dans \texttt{sessionStorage} pour permettre la restauration de session, avec les risques propres à un stockage accessible au JavaScript exécuté dans le navigateur.
+\textbf{Limites actuelles.} La solution actuelle reste réservée aux utilisateurs internes et ne propose pas de portail client. Le benchmark IA repose sur un corpus exploratoire de 24 cas. Aucun test de charge ni validation de production n'a été réalisé. Enfin, le JWT est conservé dans \texttt{sessionStorage} pour permettre la restauration de session, avec les risques propres à un stockage accessible au JavaScript exécuté dans le navigateur.
 
-\textbf{Perspectives.} Une évaluation IA sur un corpus plus large et des mesures répétées permettraient de mieux caractériser les propositions. Une meilleure observabilité faciliterait le suivi des erreurs et des dépendances externes. Un portail client ou une extension du workflow ne seraient envisagés qu'après analyse et validation du besoin correspondant.
+\textbf{Perspectives.} Les évolutions suivantes ne font pas partie de la solution actuelle et nécessiteraient chacune une analyse et une validation spécifiques.
+
+L'assistance IA pourrait être étudiée au-delà de la proposition de catégorie et de priorité, par exemple pour extraire des informations utiles, synthétiser le besoin ou attirer l'attention sur des éléments importants pour le traitement. Toute nouvelle proposition resterait soumise à une validation humaine. Son évaluation devrait également reposer sur un corpus plus large et des mesures répétées.
+
+Un espace de discussion associé à chaque demande pourrait faciliter les échanges entre les acteurs internes et conserver les informations opérationnelles avec le dossier concerné. Cette évolution demanderait de définir les droits d'accès, l'historisation, les notifications et les règles de confidentialité, sans préjuger de la technologie de communication.
+
+L'ajout de pièces jointes permettrait d'associer aux demandes et à leur traitement des documents, des images ou certains fichiers techniques. Une conception future devrait encadrer les types autorisés, la taille maximale, le stockage, la sécurité et le contrôle des fichiers.
+
+Enfin, un espace propre au Client pourrait permettre la soumission d'une demande, la consultation de son état et l'accès aux échanges ou documents autorisés. Cette évolution modifierait le périmètre actuel : elle imposerait une authentification client, de nouvelles règles d'autorisation et de protection des données ainsi que de nouveaux cas d'utilisation. Le Client demeure, dans la solution réalisée, une entité métier et non un utilisateur. Une meilleure observabilité resterait également souhaitable pour faciliter le suivi des erreurs et des dépendances externes.
 
 \section*{Conclusion}
 \phantomsection
