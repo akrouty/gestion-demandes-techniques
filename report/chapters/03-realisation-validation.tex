@@ -3,13 +3,15 @@
 \markboth{Réalisation et validation}{ }
 \clearpage
 
-\addtocontents{toc}{\protect\enlargethispage{2\baselineskip}}
+\addtocontents{toc}{\protect\enlargethispage{4\baselineskip}}
 
 \section*{Introduction}
 \phantomsection
 \addcontentsline{toc}{section}{Introduction}
 
 Ce chapitre présente la concrétisation de la conception décrite précédemment. Il expose l'environnement technique, les principales fonctionnalités réalisées, la protection des accès, l'assistance intelligente et les validations obtenues, avant d'en préciser les difficultés, les limites et les perspectives.
+
+\captionsetup[figure]{belowskip=18pt}
 
 \section{Environnement de réalisation et technologies utilisées}
 \label{sec:03-environnement}
@@ -113,7 +115,7 @@ La vue présente l'état et les rôles des comptes sans exposer les détails de 
 
 L'authentification repose sur un JSON Web Token (JWT) transmis dans l'en-tête des requêtes. L'API est sans session serveur : le token établit l'identité annoncée, puis le backend relit le compte, son état actif et ses rôles actuels pour chaque requête protégée.
 
-L'autorisation associe les rôles métier à des contrôles contextuels. Par exemple, un Agent ne traite que les demandes qui lui sont affectées et une transition dépend du statut courant. Les mots de passe sont hachés avec BCrypt ; les secrets JWT, le coût BCrypt et les origines autorisées par la politique CORS proviennent de la configuration externe.
+L'autorisation associe les rôles métier à des contrôles contextuels. Par exemple, un Agent ne traite que les demandes qui lui sont affectées et une transition dépend du statut courant. Les mots de passe sont hachés avec BCrypt ; les secrets JWT, le coût BCrypt et les origines autorisées par la politique de partage de ressources entre origines (CORS) proviennent de la configuration externe.
 
 Angular conserve temporairement la session dans \texttt{sessionStorage} afin de la restaurer après un rechargement. Cette conservation ne rend pas le navigateur autoritatif : un compte désactivé ou un rôle retiré perd ses droits dès la requête protégée suivante, et une réponse 401 invalide la session locale.
 
@@ -139,7 +141,7 @@ Le benchmark exploratoire utilise le jeu P01--P24, soit 24 cas dont la catégori
 \section{Tests et validation}
 \label{sec:03-tests}
 
-La validation combine des tests automatisés, des vérifications d'intégration réelle et des parcours humains. Le tableau~\ref{tab:03-validation} sépare ces niveaux afin de ne pas assimiler les tests H2 à une validation PostgreSQL ou à un appel Groq réel. Les workflows automatisés ont été réexécutés pour cette vérification ; les lignes relatives à PostgreSQL réel, à Groq réel et aux parcours navigateur reprennent des validations effectivement réalisées et documentées auparavant, sans les présenter comme réexécutées pendant cette passe.
+La validation combine des tests automatisés, des vérifications d'intégration réelle et des parcours humains. Le tableau~\ref{tab:03-validation} sépare ces niveaux afin de ne pas assimiler les tests H2 à une validation PostgreSQL ou à un appel Groq réel. Les résultats automatisés proviennent des exécutions consignées dans les journaux de test. Les lignes relatives à PostgreSQL réel, à Groq réel et aux parcours navigateur reprennent des validations effectivement réalisées et documentées auparavant, sans les présenter comme réexécutées avec ces tests.
 
 \begin{table}[htbp]
 \centering
@@ -159,14 +161,14 @@ La validation combine des tests automatisés, des vérifications d'intégration 
 \VCell{PostgreSQL réel} & \VCell{Démarrage et appels HTTP locaux} & \VCell{Connexion réussie, migration Flyway appliquée, validation Hibernate et workflow API vérifiés.}\\ \hline
 \VCell{IA hors ligne} & \VCell{H2 et stub HTTP local} & \VCell{Comportements IA testés sans appel réel à Groq.}\\ \hline
 \VCell{Intégration IA réelle} & \VCell{Parcours Angular vers Spring Boot puis Groq} & \VCell{Proposition reçue et appliquée seulement après action humaine ; scénario sans clé vérifié en 503.}\\ \hline
-\VCell{Validation humaine} & \VCell{Parcours navigateur et revue responsive} & \VCell{Connexion, création, affectation, traitement, résolution, refus, clôture, administration, IA et UX vérifiés.}\\ \hline
+\VCell{Validation humaine} & \VCell{Parcours navigateur et revue responsive} & \VCell{Connexion, création, affectation, traitement, résolution, refus, clôture, administration, IA et expérience utilisateur vérifiés.}\\ \hline
 \end{tabular}
 \endgroup
 \end{table}
 \FloatBarrier
 
 \paragraph{Preuves textuelles d'exécution.}
-Les sorties complètes des commandes réexécutées sont conservées dans \texttt{report/figures/results/}. Les extraits suivants reprennent directement leurs résumés, sans reconstitution graphique.
+Les journaux complets des commandes exécutées ont été conservés comme preuves de vérification. Les extraits suivants reprennent directement leurs résumés, sans reconstitution graphique.
 
 \begin{center}
 \fbox{\begin{minipage}{0.91\textwidth}

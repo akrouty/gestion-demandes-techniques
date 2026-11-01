@@ -130,9 +130,9 @@ Le diagramme sépare l'interface Angular, le backend Spring Boot et la persistan
 
 Les choix retenus répondent à des besoins précis sans permettre d'affirmer que tous les principes SOLID sont appliqués uniformément.
 
-\textbf{Responsabilité unique (SRP).} La séparation des rôles rend les composants plus lisibles ; contrôleurs, services, domaine et persistance gardent chacun une responsabilité principale identifiable \parencite{martin-clean-architecture}.
+\textbf{Principe de responsabilité unique (SRP).} La séparation des rôles rend les composants plus lisibles ; contrôleurs, services, domaine et persistance gardent chacun une responsabilité principale identifiable \parencite{martin-clean-architecture}.
 
-\textbf{DIP et Port/Adapter.} Le principe d'inversion des dépendances guide la séparation entre le cœur applicatif et les détails externes \parencite{martin-clean-architecture}.
+\textbf{Principe d'inversion des dépendances (DIP) et Ports \& Adapters.} Le DIP guide la séparation entre le cœur applicatif et les détails externes \parencite{martin-clean-architecture}.
 
 \texttt{AnalyseIaPort} exprime ainsi le besoin du cœur applicatif. \texttt{GroqAnalyseIaAdapter} réalise l'appel externe selon une organisation Ports \& Adapters. Cette séparation limite l'impact d'un changement de fournisseur \parencite{cockburn-hexagonal-architecture}.
 
@@ -146,7 +146,9 @@ La figure~\ref{fig:02-conception-backend} affine la vue générale en montrant c
 
 \begin{figure}[p]
 \centering
-\makebox[\textwidth][c]{\includegraphics[trim=2 2 2 2,clip,width=1.08\textwidth,keepaspectratio]{figures/uml/backend-design-v1.png}}
+\rotatebox{90}{%
+  \includegraphics[trim=2 2 2 2,clip,width=0.88\textheight,keepaspectratio]{figures/uml/backend-design-v1.png}%
+}
 \caption{Organisation des responsabilités dans la conception backend}
 \label{fig:02-conception-backend}
 \end{figure}
