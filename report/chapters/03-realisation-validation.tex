@@ -55,7 +55,7 @@ Les fonctionnalités ont été réalisées autour du cycle de vie d'une demande.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.90\textwidth,height=0.54\textheight,keepaspectratio]{figures/screenshots/03-creation-demande.png}
+\includegraphics[width=0.95\textwidth,height=0.54\textheight,keepaspectratio]{figures/screenshots/03-creation-demande.png}
 \caption{Formulaire de création et de qualification d'une demande}
 \label{fig:03-creation}
 \end{figure}
@@ -106,7 +106,7 @@ L'administration permet de créer un utilisateur, de modifier son identité, de 
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.90\textwidth,height=0.54\textheight,keepaspectratio]{figures/screenshots/10-administration.png}
+\includegraphics[width=0.95\textwidth,height=0.54\textheight,keepaspectratio]{figures/screenshots/10-administration.png}
 \caption{Gestion des utilisateurs internes}
 \label{fig:03-administration}
 \end{figure}
@@ -127,7 +127,7 @@ Le Responsable technique déclenche volontairement l'analyse depuis le formulair
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.90\textwidth,height=0.54\textheight,keepaspectratio]{figures/screenshots/04-assistance-ia.png}
+\includegraphics[width=0.95\textwidth,height=0.54\textheight,keepaspectratio]{figures/screenshots/04-assistance-ia.png}
 \caption{Assistance IA lors de la qualification}
 \label{fig:03-ia}
 \end{figure}
@@ -137,7 +137,7 @@ Les valeurs retournées restent des propositions. Elles ne sont appliquées qu'a
 
 L'indisponibilité de Groq constitue une contrainte d'intégration prévue et testée. Une clé absente, une réponse invalide ou une indisponibilité externe rend seulement l'analyse IA indisponible ; la saisie manuelle de la catégorie et de la priorité reste accessible.
 
-Le benchmark exploratoire utilise le jeu P01--P24, soit 24 cas dont la catégorie et la priorité proposées sont comparées aux valeurs attendues puis relues humainement. Les 24 sorties sont valides ; la catégorie est correcte dans 23 cas, la priorité dans 22 cas et la correspondance exacte dans 22 cas. Ce petit corpus ne représente ni la diversité future des demandes ni une mesure générale de performance ; les résultats restent liés à ce jeu, à cette configuration et à cette évaluation humaine.
+Le benchmark exploratoire porte sur 24 exemples de demandes techniques, chacun associé à une catégorie et à une priorité de référence. Les propositions de l'IA ont été comparées à ces valeurs puis examinées humainement : les 24 réponses étaient exploitables, 23 catégories et 22 priorités correspondaient aux valeurs attendues, et 22 cas présentaient simultanément la bonne catégorie et la bonne priorité. Ces observations restent limitées à cet ensemble d'exemples et ne démontrent pas une performance générale du système.
 
 \section{Tests et validation}
 \label{sec:03-tests}

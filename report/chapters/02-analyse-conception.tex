@@ -168,12 +168,28 @@ Les \textbf{mots de passe} sont hachés avec BCrypt et les secrets proviennent d
 \subsection{Assistance intelligente}
 \label{subsec:02-assistance-intelligente}
 
-Le service analyse le titre et la description de la demande afin de proposer une catégorie et une priorité. Cette proposition reste soumise à une validation humaine, et la qualification manuelle demeure disponible en cas d'indisponibilité externe.
+L'assistance répond au besoin d'aider le Responsable technique à qualifier une demande sans se substituer à sa décision. Elle exploite le titre et la description, disponibles avant l'enregistrement, afin d'obtenir une proposition de catégorie et de priorité.
+
+La conception sépare le service métier du fournisseur externe au moyen d'un port et d'un adaptateur. Le service sollicite cette abstraction, récupère la proposition puis la présente au Responsable technique, qui contrôle et valide les valeurs finales. Si l'assistance IA est indisponible, le parcours reste non bloquant et la qualification manuelle demeure disponible.
 
 \section{Conception de la base de données}
 \label{sec:02-base-donnees}
 
-La base relationnelle doit préserver l'identité des utilisateurs, le contenu et le cycle des demandes, puis la trace des événements. Le dictionnaire précise d'abord les principales données et leurs contraintes ; le modèle d'entités montre ensuite leurs relations.
+La base relationnelle doit préserver l'identité des utilisateurs, le contenu et le cycle des demandes, puis la trace des événements. La figure~\ref{fig:02-entites-persistantes} présente d'abord une vue générale des entités persistantes et de leurs relations.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth,height=0.70\textheight,keepaspectratio]{figures/uml/entity-model-v1.png}
+\caption{Entités persistantes et cardinalités du modèle de données}
+\label{fig:02-entites-persistantes}
+\end{figure}
+\FloatBarrier
+
+\texttt{DemandeTechnique} constitue l'entité centrale : elle relie le Client, le créateur et, lorsqu'il existe, l'Agent affecté. \texttt{Utilisateur} porte l'identité et les rôles des acteurs internes, tandis que \texttt{Client} conserve les informations de la personne concernée par la demande.
+
+\texttt{HistoriqueDemande} assure la traçabilité des changements et de leur auteur. Les instants sont stockés en \texttt{TIMESTAMP WITH TIME ZONE}, en cohérence avec le type \texttt{Instant} côté Java \parencite{postgresql-datetime-types}. Les énumérations contrôlent les rôles, catégories, priorités et statuts autorisés sans devenir des entités indépendantes.
+
+Après cette vue d'ensemble, le tableau~\ref{tab:02-dictionnaire} détaille les principaux attributs, leurs types et les contraintes associées.
 
 \begin{center}
 \begin{minipage}{\textwidth}
@@ -213,20 +229,7 @@ La base relationnelle doit préserver l'identité des utilisateurs, le contenu e
 \end{minipage}
 \end{center}
 
-Le dictionnaire constitue la synthèse principale des attributs, types et contraintes. La figure~\ref{fig:02-entites-persistantes} montre ensuite leurs relations et cardinalités.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\textwidth,height=0.70\textheight,keepaspectratio]{figures/uml/entity-model-v1.png}
-\caption{Entités persistantes et cardinalités du modèle de données}
-\label{fig:02-entites-persistantes}
-\end{figure}
-\FloatBarrier
-
-\texttt{DemandeTechnique} constitue l'entité centrale : elle relie le Client, le créateur et, lorsqu'il existe, l'Agent affecté. \texttt{Utilisateur} porte l'identité et les rôles des acteurs internes, tandis que \texttt{Client} conserve les informations de la personne concernée par la demande.
-
-\texttt{HistoriqueDemande} assure la traçabilité des changements et de leur auteur. Les instants sont stockés en \texttt{TIMESTAMP WITH TIME ZONE}, en cohérence avec le type \texttt{Instant} côté Java \parencite{postgresql-datetime-types}. Les énumérations contrôlent les rôles, catégories, priorités et statuts autorisés sans devenir des entités indépendantes.
-
+\enlargethispage{2\baselineskip}
 \section*{Conclusion}
 \phantomsection
 \addcontentsline{toc}{section}{Conclusion}
