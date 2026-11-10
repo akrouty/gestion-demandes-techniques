@@ -18,7 +18,9 @@ Ce chapitre présente la concrétisation de la conception décrite précédemmen
 
 La solution s'organise autour d'une interface web Angular, d'un backend Spring Boot qui porte les règles métier, d'une base PostgreSQL et d'un service Groq externe. Le tableau~\ref{tab:03-technologies} présente les versions pertinentes du projet ; les dépendances prises en charge par Spring Boot sont indiquées sans détailler leur résolution interne.
 
-\begin{table}[htbp]
+\noindent
+\begin{minipage}{\textwidth}
+\captionsetup{type=table,aboveskip=0pt,belowskip=6pt}
 \centering
 \small
 \caption{Technologies et versions du projet}
@@ -26,9 +28,9 @@ La solution s'organise autour d'une interface web Angular, d'un backend Spring B
 \begingroup
 \setlength{\tabcolsep}{4pt}
 \setlength{\arrayrulewidth}{0.3pt}
-\renewcommand{\arraystretch}{1.12}
+\renewcommand{\arraystretch}{1.08}
 \newcommand{\TCell}[1]{{\raggedright #1\par}}
-\begin{tabular}{@{}p{0.25\textwidth}p{0.27\textwidth}p{0.42\textwidth}@{}}
+\begin{tabular}{@{}p{0.24\textwidth}p{0.31\textwidth}p{0.39\textwidth}@{}}
 \hline
 \TCell{\textbf{Technologie}} & \TCell{\textbf{Version du projet}} & \TCell{\textbf{Rôle dans le projet}}\\ \hline
 \TCell{Java} & \TCell{21} & \TCell{Langage et cible d'exécution du backend.}\\ \hline
@@ -41,8 +43,7 @@ La solution s'organise autour d'une interface web Angular, d'un backend Spring B
 \TCell{Groq} & \TCell{Modèle \texttt{qwen/qwen3.8-27b} configuré} & \TCell{Proposition de catégorie et de priorité.}\\ \hline
 \end{tabular}
 \endgroup
-\end{table}
-\FloatBarrier
+\end{minipage}
 
 Cette organisation maintient les règles métier et les contrôles de sécurité côté serveur. L'interface reste chargée des interactions, tandis que PostgreSQL et Groq sont accessibles à travers des frontières dédiées.
 
